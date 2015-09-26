@@ -7,12 +7,6 @@ Log.setLevel(LogLevel.Warning)
 
 require "specs.Cocos2d-x"
 
-require "game.Config"
-Singleton(Config, "/path")
-
-require "game.SaveState"
-Singleton(SaveState)
-
 require "Music"
 
 describe("Music", function()
