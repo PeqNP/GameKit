@@ -28,6 +28,8 @@ from subprocess import call
     - UGF-DEVICE = config.device
     - UGF-ORIENTATION = config.orientation
     - UGF-FACEBOOK-ID = config.facebook
+  templates/ios/*.plist
+    - UGF-APP-NAME = config.name (bundle display name)
   templates/ios/Prefix.pch
     - UGF-HOCKEY-APP-ID = config.hockey
     - UGF-ADCOLONY-APP-ID = config.ios.adcolony.id
