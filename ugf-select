@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+
+from subprocess import call
+
+# Load and save any changes made to the project to the current project
+# NOTE: I'm not sure this is necessary.
+
+# Load the target project - config.json
+
+# Save the target project as the current project
+# NOTE: I'm not sure this is necessary.
+
+# If the project does not exist, take the template for the given version of Cocos2d-x and replace all
+# instances of the template name 'GameTools' with the target app's name.
+
+# Interpolate template files: (The app will raise an exception if the files below do not contain the tags)
+"""
+  templates/config.lua
+    - UGF-DESIGN-WIDTH = config.design.width
+    - UGF-DESIGN-HEIGHT = config.design.height
+    - UGF-SHOW-FPS = (CLI Switch) --show-fps then: true, else: false
+
+  templates/ios/GameTools.xcodeproj/project.pbxproj
+    - UGF-APP-BUNDLE = config.bundle
+    - UGF-APP-NAME = config.name
+    - UGF-VERSION = config.version
+    - UGF-BUILD = config.build
+    - UGF-DEVICE = config.device
+    - UGF-ORIENTATION = config.orientation
+    - UGF-FACEBOOK-ID = config.facebook
+  templates/ios/Prefix.pch
+    - UGF-HOCKEY-APP-ID = config.hockey
+    - UGF-ADCOLONY-APP-ID = config.ios.adcolony.id
+    - UGF-ADCOLONY-ZONES = config.ios.adcolony.zones
+
+  Special cases:
+    - UGF-ORIENTATION-LANDSCAPE = config.design.orientation (landscape)
+    - UGF-ORIENTATION-LANDSCAPE = config.design.orientation (landscape)
+    - UGF-ORIENTATION-PORTRAIT = config.design.orientation (portrait)
+"""
+# The orientation config may need to be specific to files so that operations are checked correctly, but also that
+# some options are removed!
+
+# Copy interpolated file to correct location.
+# NOTE: Make it so all of the config for the app lives in this file, including AdMob interstitial info, etc.
+
+# Copy image assets
+# Replace "target/platform/ios/icons/AppIcon.appiconset" in "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/AppIcon.appiconset"
+call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/AppIcon.appiconset"])
+call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/LaunchImage.launchimage"])
+
+call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/platform/ios/resources/AppIcon.appiconset", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/AppIcon.appiconset"])
+call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/platform/ios/resources/LaunchImage.launchimage", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/LaunchImage.launchimage"])
+
+# Create symlinks for GameTools and game.
+call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
+call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
+
+call(["ln", "-s", "/Users/eric/git/GameTools/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
+call(["ln", "-s", "/Users/eric/git/LittleGhostBoy/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
