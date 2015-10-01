@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+"""
+
+  Options:
+  select -- selects game
+  clean -- completely cleans currently selected game from Cocos2d-x environment.
+     git clean -f -d <path>   -- removes all untracked files
+
+"""
 
 from subprocess import call
 
@@ -58,5 +66,5 @@ call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/platform/ios/resources/LaunchI
 call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
 call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
 
-call(["ln", "-s", "/Users/eric/git/GameTools/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
-call(["ln", "-s", "/Users/eric/git/LittleGhostBoy/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
+call(["cp", "-r", "/Users/eric/git/GameTools/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
+call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])

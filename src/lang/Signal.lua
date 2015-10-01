@@ -1,6 +1,6 @@
 -- Required dependency.
 socket = require("socket")
 
-require "src.lang.Extensions"
-require "src.lang.Class"
-require "src.lang.Set"
+require "lang.Extensions"
+require "lang.Class"
+require "lang.Set"
