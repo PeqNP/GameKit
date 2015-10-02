@@ -287,6 +287,7 @@ local function OnTouchEnded(touch, event)
     end
 
     if #V.points >= V.minimumLinePoints then
+        Log.d("Line points")
         -- Swipe gesture.
         if V.swipeCallback and gettime() - V.touchBeganTime < V.swipeMinDuration then
             local sign = V.gestureSigns[gestureId]
@@ -307,7 +308,7 @@ local function OnTouchEnded(touch, event)
                 V.longPressCallback(LongPressGesture(V.points[#V.points], V.points[#V.points], Touch.Ended))
             end
         end
-    elseif V.tapCallback and #V.points[1] then
+    elseif V.tapCallback then
         V.tapCallback(TapGesture(V.points[1]))
     end
 
