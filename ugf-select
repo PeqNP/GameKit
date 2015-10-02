@@ -68,3 +68,7 @@ call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
 
 call(["cp", "-r", "/Users/eric/git/GameTools/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
 call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
+
+call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/res"])
+call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/res", "/Users/eric/git/Cocos2d-x_v3.8.1/res"])
+

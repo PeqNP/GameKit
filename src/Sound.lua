@@ -22,6 +22,10 @@ function Sound.new()
         return isOn
     end
 
+    function self.setVolume(to)
+        engine:setEffectsVolume(to)
+    end
+
     function self.play(path, loop, pitch, pan, gain)
         pitch = pitch and pitch or 1
         pan = pan and pan or 0
