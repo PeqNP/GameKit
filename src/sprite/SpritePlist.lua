@@ -7,7 +7,7 @@
 --]]
 
 require "Promise"
-require "src.sprite.Frame"
+require "sprite.Frame"
 
 SpritePlist = Class()
 

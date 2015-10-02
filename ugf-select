@@ -72,3 +72,5 @@ call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/src/", "/Users/eric/git/Cocos2
 call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/res"])
 call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/res", "/Users/eric/git/Cocos2d-x_v3.8.1/res"])
 
+# Update a compile time script that will call this script with the currently selected project before build
+# so that all of the latest code is copied.

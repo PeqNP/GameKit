@@ -11,9 +11,9 @@
 require "Constants"
 require "Logger"
 
-require "src.gesture.LongPressGesture"
-require "src.gesture.TapGesture"
-require "src.gesture.SwipeGesture"
+require "gesture.LongPressGesture"
+require "gesture.TapGesture"
+require "gesture.SwipeGesture"
 
 local V = {}
 
