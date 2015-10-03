@@ -23,7 +23,7 @@ from subprocess import call
 
 # Interpolate template files: (The app will raise an exception if the files below do not contain the tags)
 """
-  templates/config.lua
+  templates/config.lua (src/config.lua)
     - UGF-DESIGN-WIDTH = config.design.width
     - UGF-DESIGN-HEIGHT = config.design.height
     - UGF-SHOW-FPS = (CLI Switch) --show-fps then: true, else: false
@@ -54,19 +54,21 @@ from subprocess import call
 # Copy interpolated file to correct location.
 # NOTE: Make it so all of the config for the app lives in this file, including AdMob interstitial info, etc.
 
-# Copy image assets
-# Replace "target/platform/ios/icons/AppIcon.appiconset" in "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/AppIcon.appiconset"
+# Copy Xcode assets
 call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/AppIcon.appiconset"])
 call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/LaunchImage.launchimage"])
 
 call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/platform/ios/resources/AppIcon.appiconset", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/AppIcon.appiconset"])
 call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/platform/ios/resources/LaunchImage.launchimage", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/LaunchImage.launchimage"])
 
-# Create symlinks for GameTools and game.
-call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
-call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
+# Copy Android assets
 
+# Copy GameTools
+call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
 call(["cp", "-r", "/Users/eric/git/GameTools/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
+
+# Copy game source and assets
+call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
 call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
 
 call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/res"])
