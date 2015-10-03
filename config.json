@@ -8,8 +8,8 @@
   , "orientation": "landscape"
   , "design": {"width": 960, "height": 640}
   , "twitter": {"key": "", "secret": ""}
-  , "facebook": ""
-  , "hockey": ""
+  , "facebook": {"id": ""}
+  , "hockey": {"id": ""}
   , "mediation": {
         "android": {
               "adcolony": {"id": "[app_id]", "zones": ["[zone_id]"]}

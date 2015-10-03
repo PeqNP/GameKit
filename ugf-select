@@ -34,19 +34,26 @@ from subprocess import call
     - UGF-VERSION = config.version
     - UGF-BUILD = config.build
     - UGF-DEVICE = config.device
-    - UGF-ORIENTATION = config.orientation
-    - UGF-FACEBOOK-ID = config.facebook
+    - UGF-IOS-ORIENTATION.* = config.orientation
+    - UGF-FACEBOOK-ID = config.facebook.id
   templates/ios/*.plist
     - UGF-APP-NAME = config.name (bundle display name)
   templates/ios/Prefix.pch
-    - UGF-HOCKEY-APP-ID = config.hockey
+    - UGF-HOCKEY-APP-ID = config.hockey.id
     - UGF-ADCOLONY-APP-ID = config.ios.adcolony.id
     - UGF-ADCOLONY-ZONES = config.ios.adcolony.zones
 
   Special cases:
-    - UGF-ORIENTATION-LANDSCAPE = config.design.orientation (landscape)
-    - UGF-ORIENTATION-LANDSCAPE = config.design.orientation (landscape)
-    - UGF-ORIENTATION-PORTRAIT = config.design.orientation (portrait)
+    - UGF-IOS-ORIENTATION-LANDSCAPE = config.design.orientation (landscape)
+    - UGF-IOS-ORIENTATION-LANDSCAPE = config.design.orientation (landscape)
+    - UGF-IOS-ORIENTATION-PORTRAIT = config.design.orientation (portrait)
+    - UGF-ANDROID-ORIENTATION-LANDSCAPE
+    - UGF-ANDROID-ORIENTATION-PORTRAIT
+
+  Possible. For now, just comment out.:
+    - UGF-FACEBOOK-IOS = config.facebook.enabled
+    - UGF-FACEBOOK-ANDROID = ?
+    - UGF-ADCOLONY-IOS = config.adcolony.ios.enabled, writes: configureAdColony method
 """
 # The orientation config may need to be specific to files so that operations are checked correctly, but also that
 # some options are removed!
