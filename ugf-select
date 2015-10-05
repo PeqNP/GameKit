@@ -1,14 +1,29 @@
 #!/usr/bin/env python
-"""
 
-  Options:
-  select -- selects game
-  clean -- completely cleans currently selected game from Cocos2d-x environment.
-     git clean -f -d <path>   -- removes all untracked files
+#  Options:
+#  select -- selects game
+#  clean -- completely cleans currently selected game from Cocos2d-x environment.
+#     git clean -f -d <path>   -- removes all untracked files
+#
 
-"""
-
+from datetime import datetime
 from subprocess import call
+
+import json
+import os
+import re
+
+CPATH = "/Users/eric/git/Cocos2d-x_v3.8.1/"
+JSON = "/Users/eric/git/LittleGhostBoy/config.json"
+
+fh = open(JSON, "r")
+json_blob = fh.read()
+fh.close()
+
+config = json.loads(json_blob)
+
+print("ugf-select v1.0.0, Time: {}".format(str(datetime.now())))
+print("Project: {} v{} b{}".format(config["name"], config["version"], config["build"]))
 
 # Load and save any changes made to the project to the current project
 # NOTE: I'm not sure this is necessary.
@@ -31,8 +46,8 @@ from subprocess import call
   templates/ios/GameTools.xcodeproj/project.pbxproj
     - UGF-APP-BUNDLE = config.bundle
     - UGF-APP-NAME = config.name
-    - UGF-VERSION = config.version
-    - UGF-BUILD = config.build
+    - UGF-APP-VERSION = config.version
+    - UGF-APP-BUILD = config.build
     - UGF-DEVICE = config.device
     - UGF-IOS-ORIENTATION.* = config.orientation
     - UGF-FACEBOOK-ID = config.facebook.id
@@ -55,6 +70,45 @@ from subprocess import call
     - UGF-FACEBOOK-ANDROID = ?
     - UGF-ADCOLONY-IOS = config.adcolony.ios.enabled, writes: configureAdColony method
 """
+
+TPL_PATH = CPATH + "stage/"
+
+if not os.path.exists(TPL_PATH):
+    os.makedirs(TPL_PATH)
+
+# , "##UGF-ADCOLONY-APP-ZONES##": '", @"'.join(config["mediation"]["ios"]["adcolony"]["zones"])
+keys = {
+    "##UGF-APP-BUNDLE##": config["bundle"]
+  , "##UGF-APP-NAME##": config["name"]
+  , "##UGF-APP-EXECUTABLE##": re.sub(" ", "", config["name"])
+  , "##UGF-APP-VERSION##": config["version"]
+  , "##UGF-APP-BUILD##": config["build"]
+  , "##UGF-HOCKEY-APP-ID##": config["hockey"]["id"]
+  , "##UGF-ADCOLONY-APP-ID##": config["mediation"]["ios"]["adcolony"]["id"]
+  , "##UGF-ADCOLONY-APP-ZONES##": ",".join(config["mediation"]["ios"]["adcolony"]["zones"])
+  , "##UGF-FACEBOOK-ID##": config["facebook"]["id"]
+}
+
+# Replace 'GameTools' w/ UGF-APP-EXECUTABLE
+# - (GameTools-mobile).app
+# - /* (GameTools-mobile) */
+# - "(GameTools-mobile)"
+
+# templates/ios/Prefix.pch
+# frameworks/runtime-src/proj.ios_mac/ios/Prefix.pch
+# build/ios/Prefix.pch
+fh = open(CPATH + "templates/ios/Prefix.pch", "r")
+blob = fh.read()
+for key, val in keys.iteritems():
+    blob = re.sub(key, val, blob)
+fh.close()
+fh = open(CPATH + "stage/Prefix.pch", "w")
+fh.write(blob)
+fh.close()
+
+import sys
+sys.exit(0)
+
 # The orientation config may need to be specific to files so that operations are checked correctly, but also that
 # some options are removed!
 
