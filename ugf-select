@@ -12,6 +12,7 @@ from subprocess import call
 import json
 import os
 import re
+import shutil
 import sys
 
 CPATH = "/Users/eric/git/Cocos2d-x_v3.8.1/"
@@ -81,9 +82,9 @@ if not os.path.exists(TPL_PATH):
 keys = {
     "##UGF-APP-BUNDLE##": config["bundle"]
   , "##UGF-APP-NAME##": config["name"]
-  , "##UGF-APP-EXECUTABLE##": re.sub(" ", "", config["name"])
   , "##UGF-APP-VERSION##": config["version"]
   , "##UGF-APP-BUILD##": config["build"]
+  , "##UGF-EXECUTABLE##": config["executable"]
   , "##UGF-HOCKEY-APP-ID##": config["hockey"]["id"]
   , "##UGF-ADCOLONY-APP-ID##": config["mediation"]["ios"]["adcolony"]["id"]
   , "##UGF-ADCOLONY-APP-ZONES##": ",".join(config["mediation"]["ios"]["adcolony"]["zones"])
@@ -94,39 +95,45 @@ keys = {
   , "##UGF-ORIENTATION##": config["orientation"]
 }
 
+# The pbxproj does not need to be a template.
+shutil.copyfile(CPATH + "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj", CPATH + "stage/project.pbxproj")
+
 files = {
     "templates/ios/Info.plist": "frameworks/runtime-src/proj.ios_mac/ios/Info.plist"
   , "templates/ios/Prefix.pch": "frameworks/runtime-src/proj.ios_mac/ios/Prefix.pch"
-  , "templates/ios/GameTools.xcodeproj/project.pbxproj": "frameworks/runtime-src/proj.ios_mac/ios/GameTools.xcodeproj/project.pbxproj"
-  , "templates/config.lua": "frameworks/src/config.lua"
+  , "stage/project.pbxproj": "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj"
+  , "templates/config.lua": "src/config.lua"
 }
 
-# Replace 'GameTools' w/ UGF-APP-EXECUTABLE IN THIS ORDER!
-# - (GameTools-mobile).app
-# - /* (GameTools-mobile) */
-# - "(GameTools-mobile)"
-
-# templates/ios/Prefix.pch
-# frameworks/runtime-src/proj.ios_mac/ios/Prefix.pch
-# build/ios/Prefix.pch
 for tpl, target in files.iteritems():
     # Read
     fh = open(CPATH + tpl, "r")
     blob = fh.read()
     for key, val in keys.iteritems():
         blob = re.sub(key, str(val), blob)
+    # @note These replacements MUST be done in order.
+    blob = re.sub("productName = GameTools;", "productName = {};".format(config["executable"]), blob)
+    blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = {};".format(config["bundle"]), blob)
+
+    blob = re.sub("GameTools-mobile.app", "{}-mobile.app".format(config["executable"]), blob)
+    blob = re.sub("\/\* GameTools-mobile \*\/", "/* {}-mobile */".format(config["executable"]), blob)
+    blob = re.sub('"GameTools-mobile"', '"{}-mobile"'.format(config["executable"]), blob)
+
+    blob = re.sub("GameTools-desktop.app", "{}-desktop.app".format(config["executable"]), blob)
+    blob = re.sub("\/\* GameTools-desktop \*\/", "/* {}-desktop */".format(config["executable"]), blob)
+    blob = re.sub('"GameTools-desktop"', '"{}-desktop"'.format(config["executable"]), blob)
+
+    blob = re.sub('"GameTools"', '"{}"'.format(config["executable"]), blob)
     fh.close()
     # Write
     stagepath = CPATH + "stage/" + os.path.split(tpl)[1]
     fh = open(stagepath, "w")
     fh.write(blob)
     fh.close()
-    # Copy from stage/(tpl) to (target)
-    #shutil.copyfile(stagepath, CPATH + target)
+    # Copy to target location.
+    shutil.copyfile(stagepath, CPATH + target)
 
-# Cleanup stage directory
-
-sys.exit(0)
+# @todo Cleanup stage directory
 
 # The orientation config may need to be specific to files so that operations are checked correctly, but also that
 # some options are removed!
@@ -156,3 +163,6 @@ call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/res", "/Users/eric/git/Cocos2d
 
 # Update a compile time script that will call this script with the currently selected project before build
 # so that all of the latest code is copied.
+
+#call(["git", "clean", "-f", "-d", CPATH])
+#call(["git", "checkout", CPATH])
