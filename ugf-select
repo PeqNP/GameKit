@@ -12,6 +12,7 @@ from subprocess import call
 import json
 import os
 import re
+import sys
 
 CPATH = "/Users/eric/git/Cocos2d-x_v3.8.1/"
 JSON = "/Users/eric/git/LittleGhostBoy/config.json"
@@ -49,7 +50,7 @@ print("Project: {} v{} b{}".format(config["name"], config["version"], config["bu
     - UGF-APP-VERSION = config.version
     - UGF-APP-BUILD = config.build
     - UGF-DEVICE = config.device
-    - UGF-IOS-ORIENTATION.* = config.orientation
+    - UGF-ORIENTATION.* = config.orientation
     - UGF-FACEBOOK-ID = config.facebook.id
   templates/ios/*.plist
     - UGF-APP-NAME = config.name (bundle display name)
@@ -89,7 +90,12 @@ keys = {
   , "##UGF-FACEBOOK-ID##": config["facebook"]["id"]
 }
 
-# Replace 'GameTools' w/ UGF-APP-EXECUTABLE
+files = [
+    "templates/ios/Info.plist": "frameworks/runtime-src/proj.ios_mac/ios/Info.plist"
+  , "templates/ios/Prefix.pch": "frameworks/runtime-src/proj.ios_mac/ios/Prefix.pch"
+]
+
+# Replace 'GameTools' w/ UGF-APP-EXECUTABLE IN THIS ORDER!
 # - (GameTools-mobile).app
 # - /* (GameTools-mobile) */
 # - "(GameTools-mobile)"
@@ -97,16 +103,23 @@ keys = {
 # templates/ios/Prefix.pch
 # frameworks/runtime-src/proj.ios_mac/ios/Prefix.pch
 # build/ios/Prefix.pch
-fh = open(CPATH + "templates/ios/Prefix.pch", "r")
-blob = fh.read()
-for key, val in keys.iteritems():
-    blob = re.sub(key, val, blob)
-fh.close()
-fh = open(CPATH + "stage/Prefix.pch", "w")
-fh.write(blob)
-fh.close()
+for tpl, target in keys(files).iteritems:
+    # Read
+    fh = open(CPATH + tpl, "r")
+    blob = fh.read()
+    for key, val in keys.iteritems():
+        blob = re.sub(key, val, blob)
+    fh.close()
+    # Write
+    stagepath = CPATH + "stage/" + os.path.split(tpl)[1]
+    fh = open(stagepath, "w")
+    fh.write(blob)
+    fh.close()
+    # Copy from stage/(tpl) to (target)
+    #shutil.copyfile(stagepath, CPATH + target)
 
-import sys
+# Cleanup stage directory
+
 sys.exit(0)
 
 # The orientation config may need to be specific to files so that operations are checked correctly, but also that
