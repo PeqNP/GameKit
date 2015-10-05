@@ -42,7 +42,7 @@ print("Project: {} v{} b{}".format(config["name"], config["version"], config["bu
   templates/config.lua (src/config.lua)
     - UGF-DESIGN-WIDTH = config.design.width
     - UGF-DESIGN-HEIGHT = config.design.height
-    - UGF-SHOW-FPS = (CLI Switch) --show-fps then: true, else: false
+    - GF-SHOW-FPS = (CLI Switch) --show-fps then: true, else: false
 
   templates/ios/GameTools.xcodeproj/project.pbxproj
     - UGF-APP-BUNDLE = config.bundle
@@ -88,12 +88,18 @@ keys = {
   , "##UGF-ADCOLONY-APP-ID##": config["mediation"]["ios"]["adcolony"]["id"]
   , "##UGF-ADCOLONY-APP-ZONES##": ",".join(config["mediation"]["ios"]["adcolony"]["zones"])
   , "##UGF-FACEBOOK-ID##": config["facebook"]["id"]
+  , "##UGF-DESIGN-WIDTH##": config["design"]["width"]
+  , "##UGF-DESIGN-HEIGHT##": config["design"]["height"]
+  , "##UGF-SHOW-FPS##": "false"
+  , "##UGF-ORIENTATION##": config["orientation"]
 }
 
-files = [
+files = {
     "templates/ios/Info.plist": "frameworks/runtime-src/proj.ios_mac/ios/Info.plist"
   , "templates/ios/Prefix.pch": "frameworks/runtime-src/proj.ios_mac/ios/Prefix.pch"
-]
+  , "templates/ios/GameTools.xcodeproj/project.pbxproj": "frameworks/runtime-src/proj.ios_mac/ios/GameTools.xcodeproj/project.pbxproj"
+  , "templates/config.lua": "frameworks/src/config.lua"
+}
 
 # Replace 'GameTools' w/ UGF-APP-EXECUTABLE IN THIS ORDER!
 # - (GameTools-mobile).app
@@ -103,12 +109,12 @@ files = [
 # templates/ios/Prefix.pch
 # frameworks/runtime-src/proj.ios_mac/ios/Prefix.pch
 # build/ios/Prefix.pch
-for tpl, target in keys(files).iteritems:
+for tpl, target in files.iteritems():
     # Read
     fh = open(CPATH + tpl, "r")
     blob = fh.read()
     for key, val in keys.iteritems():
-        blob = re.sub(key, val, blob)
+        blob = re.sub(key, str(val), blob)
     fh.close()
     # Write
     stagepath = CPATH + "stage/" + os.path.split(tpl)[1]
