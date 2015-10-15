@@ -50,40 +50,21 @@ function cu.getOrigin()
     return cc.Director:getInstance():getVisibleOrigin()
 end
 
-function cu.scheduleScriptEntry(fn, priority, paused)
+--[[ Schedules a function callback to be called every tick.
+
+  @param fn - function to call
+  @param number priority - the priority 1-10 (1 being high prior, 10 being lowest prior.)
+  @param boolean paused - (???)
+
+  @return number - ID of script registration
+
+--]]
+function cu.scheduleFunc(fn, priority, paused)
     return cc.Director:getInstance():getScheduler():scheduleScriptFunc(fn, priority, paused)
 end
 
-function cu.unscheduleScriptEntry(scheduleId)
+function cu.unscheduleFunc(scheduleId)
     cc.Director:getInstance():getScheduler():unscheduleScriptEntry(scheduleId)
-end
-
-function cu.preloadMusic(path)
-    cc.SimpleAudioEngine:getIntance():preloadBackgroundMusic(path)
-end
-
-function cu.playMusic(path, loop)
-    cc.SimpleAudioEngine:getInstance():playBackgroundMusic(path, loop)
-end
-
-function cu.stopMusic(release)
-    cc.SimpleAudioEngine:getInstance():stopBackgroundMusic(release)
-end
-
-function cu.setMusicVolume(to)
-    cc.SimpleAudioEngine:getInstance():setMusicVolume(to)
-end
-
-function cu.preloadEffect(path)
-    cc.SimpleAudioEngine:getInstance():preloadEffect(path)
-end
-
-function cu.playEffect(path, loop, pitch, pan, gain)
-    cc.SimpleAudioEngine:getInstance():playEffect(path, loop, pitch, pan, gain)
-end
-
-function cu.unloadEffect(path)
-    cc.SimpleAudioEngine:getInstance():preloadEffect(path)
 end
 
 function cu.getMidPoint()
@@ -234,7 +215,7 @@ function cu.takeScreenShot()
 end
 
 -- --------------------
--- ----- Objects ------
+-- ----- Director -----
 
 function cu.Director()
     return cc.Director:getInstance()
@@ -243,6 +224,9 @@ end
 function cu.RunningScene()
     return cc.Director:getInstance():getRunningScene()
 end
+
+-- --------------------
+-- ----- Objects ------
 
 function cu.Layer()
     return cc.Layer:create()
@@ -263,10 +247,14 @@ end
 -- --------------------
 -- ----- Utility ------
 
---[[ Convert Cocos2d-x getPosition to Point. ]]--
+-- Returns table{.x, .y} given (x, y)
+cu.p = cc.p
+
+--[[ This belongs on the Node class.
 function cu.p(node)
     return cc.p(node:getPosition())
 end
+ Convert Cocos2d-x getPosition to Point. ]]--
 
 function cu.p3(x, y, z)
     return {x=x, y=y, z=z}
@@ -290,7 +278,6 @@ end
 
 --]]
 
--- @fixme needs testing
 function cu.Sequence(...)
     return cc.Sequence:create(...)
 end
@@ -348,7 +335,7 @@ function cu.FadeTo(t, flt)
 end
 
 function cu.FadeEffectTo(sourceId, dur, dst, stop)
-    return cc.FadeEffectTo:create(sourcIde, dur, dst, stop)
+    return cc.FadeEffectTo:create(sourceId, dur, dst, stop)
 end
 
 function cu.MoveTo(dur, pos)
@@ -381,11 +368,11 @@ end
 
 --[[ Conversions. ]]--
 
-function cu.DegreesToRadians(radians)
+function cu.degToRad(radians)
     return radians * 0.01745329252 -- PI / 180
 end
 
-function cu.RadiansToDegrees(degrees)
+function cu.radToDeg(degrees)
     return degrees * 57.29577951 -- PI * 180
 end
 

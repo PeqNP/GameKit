@@ -4,6 +4,7 @@
 #  select -- selects game
 #  clean -- completely cleans currently selected game from Cocos2d-x environment.
 #     git clean -f -d <path>   -- removes all untracked files
+#  --copy-only-source -- copy only config and src files
 #
 
 from datetime import datetime

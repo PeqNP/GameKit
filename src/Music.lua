@@ -13,7 +13,7 @@ function Music.new()
     local _bgPath
     local isOn = true
 
-    function self.preloadMusic(path)
+    function self.preload(path)
         cc.SimpleAudioEngine:getIntance():preloadMusic(path)
     end
 

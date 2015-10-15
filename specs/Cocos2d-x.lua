@@ -446,3 +446,8 @@ end
 
 function cc.Application:openURL(url)
 end
+
+-- Rather than recreate these, just bring in the Cocos2d-x util scripts.
+function cc.p(x, y)
+    return {x=x, y=y}
+end

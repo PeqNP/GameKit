@@ -1,11 +1,10 @@
+require "specs.Cocos2d-x"
 require "lang.Signal"
 
 require "Common"
 
 require "Logger"
 Log.setLevel(LogLevel.Warning)
-
-require "specs.Cocos2d-x"
 
 require "Music"
 
