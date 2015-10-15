@@ -53,15 +53,17 @@ end
 --[[ Schedules a function callback to be called every tick.
 
   @param fn - function to call
-  @param number priority - the priority 1-10 (1 being high prior, 10 being lowest prior.)
-  @param boolean paused - (???)
+  @param number priority - interal to call method in seconds. If 0, will be called every frame.
+  @param boolean paused - If yes, will not run until it is resumed.
 
   @return number - ID of script registration
 
 --]]
-function cu.scheduleFunc(fn, priority, paused)
-    return cc.Director:getInstance():getScheduler():scheduleScriptFunc(fn, priority, paused)
+function cu.scheduleFunc(fn, interval, paused)
+    return cc.Director:getInstance():getScheduler():scheduleScriptFunc(fn, interval, paused)
 end
+
+-- @todo Find pauseScheduleFunc
 
 function cu.unscheduleFunc(scheduleId)
     cc.Director:getInstance():getScheduler():unscheduleScriptEntry(scheduleId)
