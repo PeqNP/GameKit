@@ -15,13 +15,15 @@ function MediationAdConfig.new(adnetwork, adtype, adimpressiontype, frequency, r
     self.frequency = frequency
     self.reward = reward
 
-    function self.fromDictionary(dict)
-        self.adnetwork = dict["adnetwork"]
-        self.adtype = dict["adtype"]
-        self.adimpressiontype = dict["adimpressiontype"]
-        self.frequency = dict["frequency"]
-        self.reward = dict["reward"]
-    end
-
     return self
+end
+
+function MediationAdConfig.fromDictionary(dict)
+    return MediationAdConfig(
+        dict["adnetwork"]
+      , dict["adtype"]
+      , dict["adimpressiontype"]
+      , dict["frequency"]
+      , dict["reward"]
+    )
 end

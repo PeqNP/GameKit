@@ -12,11 +12,11 @@ require "Logger"
 
 Log.setLevel(LogLevel.Warning)
 
-require "ad.AdConfig"
-require "ad.AdManifestParser"
-require "ad.AdManifest"
-require "ad.AdNetwork"
-require "ad.AdUnit"
+require "royal.AdConfig"
+require "royal.AdManifestParser"
+require "royal.AdManifest"
+require "royal.AdNetwork"
+require "royal.AdUnit"
 
 AdConfig.singleton.setBasePath("/path/")
 

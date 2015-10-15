@@ -40,8 +40,7 @@ function MediationService.new(host, port, path)
                 local ads = {}
                 for _, c in ipairs(dict["ads"]) do
                     -- @fixme Should call MediationAdConfig.fromDictionary() class method from within MediationConfig.fromDictionary
-                    local config = MediationAdConfig()
-                    config.fromDictionary(c)
+                    local config = MediationAdConfig.fromDictionary(c)
                     table.insert(ads, config)
                 end
                 -- @fixme Should call MediationConfig.fromDictionary() class method

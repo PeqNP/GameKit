@@ -6,7 +6,7 @@
 
 --]]
 
-require "ad.AdTier"
+require "royal.AdTier"
 
 AdUnit = Class()
 

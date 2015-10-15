@@ -5,7 +5,7 @@
 
 --]]
 
-require "ad.AdManifest"
+require "royal.AdManifest"
 
 AdManifestV1 = Class()
 

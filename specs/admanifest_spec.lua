@@ -1,7 +1,7 @@
 require "lang.Signal"
 
-require "ad.AdManifest"
-require "ad.AdUnit"
+require "royal.AdManifest"
+require "royal.AdUnit"
 
 describe("AdManifest", function()
     local subject

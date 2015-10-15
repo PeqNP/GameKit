@@ -8,7 +8,7 @@
 
 require "Logger"
 
-require "ad.AdUnit"
+require "royal.AdUnit"
 
 AdManifest = Class()
 

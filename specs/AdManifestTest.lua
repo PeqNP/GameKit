@@ -1,5 +1,5 @@
 
-require "ad.AdManifest"
+require "royal.AdManifest"
 
 AdManifestTest = Class()
 

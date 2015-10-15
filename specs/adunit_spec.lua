@@ -2,9 +2,9 @@ require "lang.Signal"
 require "specs.Cocos2d-x"
 require "Logger"
 
-require "ad.AdConfig"
-require "ad.AdUnit"
-require "ad.AdTier"
+require "royal.AdConfig"
+require "royal.AdUnit"
+require "royal.AdTier"
 
 AdConfig.singleton.setBasePath("/path/")
 

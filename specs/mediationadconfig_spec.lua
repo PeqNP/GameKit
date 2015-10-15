@@ -33,8 +33,7 @@ describe("MediationAdConfig", function()
         local dict
         before_each(function()
             dict = {adnetwork= 1, adtype= 2, adimpressiontype= 3, frequency= 4, reward= 5}
-            subject = MediationAdConfig()
-            subject.fromDictionary(dict)
+            subject = MediationAdConfig.fromDictionary(dict)
         end)
 
         it("should have set all values", function()

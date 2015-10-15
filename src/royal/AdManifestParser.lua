@@ -7,7 +7,7 @@
 
 --]]
 
-require "ad.AdManifest"
+require "royal.AdManifest"
 
 AdManifestParser = Class()
 

@@ -9,8 +9,8 @@
 require "json"
 require "Promise"
 
-require "ad.AdManifestParser"
-require "ad.AdRequestCallback"
+require "royal.AdManifestParser"
+require "royal.AdRequestCallback"
 
 AdNetwork = Class()
 

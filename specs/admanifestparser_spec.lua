@@ -5,7 +5,7 @@ require "Logger"
 Log.setLevel(LogLevel.Info)
 
 require "specs.AdManifestTest"
-require "ad.AdManifestParser"
+require "royal.AdManifestParser"
 
 describe("AdManifestParser", function()
     local subject

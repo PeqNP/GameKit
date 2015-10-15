@@ -5,6 +5,7 @@ require "mediation.Constants"
 
 MediationAdFactory = Class()
 
+-- @param MediationAdConfigs[] configs
 function MediationAdFactory.new(configs)
     local self = {}
 

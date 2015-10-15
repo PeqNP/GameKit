@@ -1,0 +1,2 @@
+Music, Sound, etc should take an instance of a Director in its initializer, rather than having a static global version. Which it currently calls out to the external framework for.
+Possibly make a Director wrapper. Well, definitely do this. The Music and Sound can then take this Director.

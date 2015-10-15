@@ -8,7 +8,7 @@
 
 require "json"
 
-require "ad.AdConfig"
+require "royal.AdConfig"
 
 AdTier = Class()
 

@@ -4,8 +4,6 @@
 
 --]]
 
-require "Logger"
-require "Error"
 require "mediation.Constants"
 
 MediationConfig = Class()
