@@ -14,7 +14,7 @@ require "Logger"
 
 --Log.setLevel(LogLevel.Info)
 
-require "mediation.Constants"
+require "ad.Constants"
 require "mediation.MediationAdConfig"
 require "mediation.MediationAdFactory"
 

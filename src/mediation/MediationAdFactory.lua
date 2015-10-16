@@ -1,7 +1,7 @@
 
 require "Logger"
 require "Error"
-require "mediation.Constants"
+require "ad.Constants"
 
 MediationAdFactory = Class()
 

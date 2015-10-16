@@ -4,8 +4,6 @@
 
 --]]
 
-require "mediation.Constants"
-
 MediationConfig = Class()
 
 function MediationConfig.new(version, ads)

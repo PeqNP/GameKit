@@ -17,3 +17,11 @@ AdImpressionType = enum(1
   , 'Regular'
   , 'Premium'
 )
+
+AdState = enum(1
+  , 'Initial'
+  , 'Loading'
+  , 'Ready'
+  , 'Presenting'
+  , 'Complete'
+)
