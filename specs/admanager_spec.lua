@@ -28,38 +28,85 @@ describe("AdManager", function()
         assert.falsy(subject.isAdAvailable(AdType.Interstitial))
     end)
 
+    it("should not have an error", function()
+        assert.falsy(subject.getError())
+    end)
+
     describe("adding network modules", function()
-        local module
-        local state
+        local modulei
+        local statei
+
+        local modulev
+        local statev
 
         before_each(function()
-            state = AdState.Initial
-            module = {}
-            function module.getState()
-                return state
+            statei = AdState.Initial
+            statev = AdState.Initial
+            modulei = {}
+            modulev = {}
+            function modulei.getState()
+                return statei
             end
-            stub(module, "getAdType").and_return(AdType.Interstitial)
+            function modulev.getState()
+                return statev
+            end
+            stub(modulei, "getAdType").and_return(AdType.Interstitial)
+            stub(modulev, "getAdType").and_return(AdType.Video)
 
-            subject.registerNetworkModule(module)
+            subject.registerNetworkModule(modulei)
+            subject.registerNetworkModule(modulev)
         end)
 
         it("should have added the network module to list of registered modules", function()
             local modules = subject.getRegisteredNetworkModules()
-            assert.equal(1, #modules)
-            assert.equal(module, modules[1])
+            assert.equal(2, #modules)
+            assert.equal(modulei, modules[1])
+            assert.equal(modulev, modules[2])
         end)
 
         it("should not have an available network module", function()
             assert.falsy(subject.isAdAvailable(AdType.Interstitial))
+            assert.falsy(subject.isAdAvailable(AdType.Video))
         end)
 
-        describe("when the ad is ready", function()
+        it("should NOT show the ad", function()
+            assert.falsy(subject.showAd(AdType.Interstitial))
+            assert.falsy(subject.showAd(AdType.Video))
+        end)
+
+        describe("when the interstitial ad is ready", function()
             before_each(function()
-                state = AdState.Ready
+                statei = AdState.Ready
             end)
 
-            it("should have an available network", function()
+            it("should have an available interstitial", function()
                 assert.truthy(subject.isAdAvailable(AdType.Interstitial))
+            end)
+
+            it("should show the interstitial ad", function()
+                assert.truthy(subject.showAd(AdType.Interstitial))
+            end)
+
+            it("should NOT have an available video", function()
+                assert.falsy(subject.isAdAvailable(AdType.Video))
+            end)    
+        end)
+
+        describe("when the video ad is ready", function()
+            before_each(function()
+                statev = AdState.Ready
+            end)
+
+            it("should NOT have an available interstitial", function()
+                assert.falsy(subject.isAdAvailable(AdType.Interstitial))
+            end)
+
+            it("should have an available video", function()
+                assert.truthy(subject.isAdAvailable(AdType.Video))
+            end)    
+
+            it("should show the video ad", function()
+                assert.truthy(subject.showAd(AdType.Video))
             end)
         end)
     end)

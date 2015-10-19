@@ -4,15 +4,26 @@
 
 --]]
 
+require "ad.Constants"
+local adaptor = require "ad.adaptor"
+
 AdManager = Class()
 
-require "ad.Constants"
+--[[ NDK API
+
+ad__configure(dict)
+ad__cache(AdRequest)
+ad__show(AdRequest)
+ad__destroy(AdRequest) -- may be ID
+
+--]]
 
 function AdManager.new(config)
-    self = {}
+    local self = {}
 
     local delegate
     local networkModules = {}
+    local _error
 
     function self.getConfig()
         return config
@@ -28,17 +39,21 @@ function AdManager.new(config)
 
     --
     -- Register a mediation network w/ provided config.
+    -- Starts the process of caching the module.
     -- 
     -- @param AdNetworkModule
     -- 
     function self.registerNetworkModule(module)
         table.insert(networkModules, module)
+        -- @todo Start caching the module.
     end
 
+    -- @return AdNetworkModule[]
     function self.getRegisteredNetworkModules()
         return networkModules
     end
 
+    -- @param AdType
     function self.isAdAvailable(adType)
         for _, module in ipairs(networkModules) do
             if module.getAdType() == adType and module.getState() == AdState.Ready then
@@ -46,6 +61,27 @@ function AdManager.new(config)
             end
         end
         return false
+    end
+
+    function self.showAd(adType)
+        -- @todo Ask the MediationManager to give us the next ad that should be displayed
+        -- for the given type.
+        for _, module in ipairs(networkModules) do
+            if module.getAdType() == adType and module.getState() == AdState.Ready then
+                local promise = adaptor.show(module.generateRequest())
+                promise.fail(function(response)
+                    _error = response.error
+                end)
+                promise.always(function(response)
+                    module.updateState(response.state)
+                end)
+            end
+        end
+        return false
+    end
+
+    function self.getError()
+        return _error
     end
 
     return self

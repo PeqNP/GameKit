@@ -1,4 +1,15 @@
 
+function param(p)
+    p = {"error"}
+end
+
+param()
+
+local pin = {}
+param(pin)
+print("pin", pin[1])
+os.exit(0)
+
 local t = {} == {}
 print(tostring(t))
 local t = {}
