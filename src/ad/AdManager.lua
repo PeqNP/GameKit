@@ -8,9 +8,7 @@ require "ad.Constants"
 
 AdManager = Class()
 
-function AdManager.new(adaptor, config)
-    local self = {}
-
+function AdManager.new(self, adaptor, config)
     local delegate
     local networkModules = {}
     local _error
@@ -73,6 +71,4 @@ function AdManager.new(adaptor, config)
     function self.getError()
         return _error
     end
-
-    return self
 end

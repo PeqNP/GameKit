@@ -170,13 +170,11 @@ function God.new(self, a, b)
     end
 end
 
-Parent = Class()
-Parent.extends(God)
+Parent = Class(God)
 function Parent.new(self)
 end
 
-Child = Class()
-Child.extends(Parent)
+Child = Class(Parent)
 function Child.new(self)
 end
 

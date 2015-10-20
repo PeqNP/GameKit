@@ -7,7 +7,7 @@ require "lang.Protocol"
 --
 -- Factory method for creating new classes.
 --
-function Class()
+function Class(extends)
     local class = {}
     class.__index = class
 
@@ -27,18 +27,6 @@ function Class()
     end
 
     -- Subclassing --
-    local extends
-
-    function class.extends(e)
-        if extends then
-            assert(false, string.format("Can not extend class (%s) more than once", class.__info()))
-        end
-        if e == class then
-            assert(false, string.format("A class can not extend itself (%s)", class.__info()))
-        end
-        extends = e
-    end
-
     function class.kindOf(kind)
         if kind == class then
             return true
@@ -53,10 +41,7 @@ function Class()
     local protocols = {}
 
     function class.implements(...)
-        local arg = {...}
-        for _, protocol in ipairs(arg) do
-            table.insert(protocols, protocol)
-        end
+        protocols = {...}
     end
 
     function class.conformsTo(protocol)

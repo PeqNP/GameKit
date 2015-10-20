@@ -2,24 +2,17 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights resevered.
 --
 
-require "ad.AdRequest"
-
 AdModule = Class()
 
-function AdModule.new()
-    local self = {}
+function AdModule.new(self)
 
-    function self.getAdType()
-        assert(false, "AdModule.getAdType() MUST be over-ridden!")
+    local devices
+
+    function self.setDevices(d)
+        devices = d
     end
 
-    function self.getNetworkId()
-        assert(false, "AdModule.getAdType() MUST be over-ridden!")
+    function self.getDevices()
+        return devices
     end
-
-    function self.generateAdRequest()
-        return AdRequest()
-    end
-
-    return self
 end
