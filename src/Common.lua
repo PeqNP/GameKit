@@ -59,8 +59,8 @@ end
   @return number - ID of script registration
 
 --]]
-function cu.scheduleFunc(fn, interval, paused)
-    return cc.Director:getInstance():getScheduler():scheduleScriptFunc(fn, interval, paused)
+function cu.scheduleFunc(fn, priority, paused)
+    return cc.Director:getInstance():getScheduler():scheduleScriptFunc(fn, priority, paused)
 end
 
 -- @todo Find pauseScheduleFunc
@@ -73,6 +73,14 @@ function cu.getMidPoint()
     local size = cu.getVisibleSize()
     local origin = cu.getOrigin()
     return cc.p(origin.x + (size.width / 2), origin.y + (size.height / 2))
+end
+
+--
+-- Delay N seconds before executing call.
+--
+function cu.delayCall(fn, delay)
+    local sequence = cu.Sequence(cu.Delay(delay), cu.Call(fn))
+    cu.runAction(action)
 end
 
 --[[ Returns a point which represents the position of a heading.

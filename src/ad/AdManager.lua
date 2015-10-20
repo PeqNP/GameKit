@@ -9,6 +9,9 @@ require("ad.Constants")
 
 AdManager = Class()
 
+-- Graduated timeout intervals.
+local TIMEOUT = {15, 30, 60, 120, 240, 600}
+
 function AdManager.new(self, adaptor, config)
     local delegate
     local networkModules = {}
@@ -27,6 +30,7 @@ function AdManager.new(self, adaptor, config)
         promise.fail(function(response)
             request.setState(AdState.Complete)
             _error = response.getError()
+            cu.delayCall(TIMEOUT[2], cache)
         end)
     end
 

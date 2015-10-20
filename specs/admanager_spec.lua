@@ -1,6 +1,8 @@
 require "specs.busted"
+require "specs.Cocos2d-x"
 require "lang.Signal"
 
+require "Common"
 require "ad.Constants"
 require "ad.AdManager"
 require "ad.AdResponse"
@@ -145,6 +147,8 @@ describe("AdManager", function()
 
         context("when the ad fails to be cached", function()
             before_each(function()
+                stub(cu, "delayCall")
+
                 requesti = requests[1]
                 promisei.reject(AdResponse(requesti.getId(), false, "Cache failure"))
             end)
@@ -157,7 +161,8 @@ describe("AdManager", function()
                 assert.equal("Cache failure", subject.getError())
             end)
 
-            xit("should have scheduled the request to be performed at a later time", function()
+            it("should have scheduled the request to be performed at a later time", function()
+                assert.stub(cu.delayCall).was.called()
             end)
         end)
 
