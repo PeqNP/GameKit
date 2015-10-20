@@ -15,4 +15,8 @@ function AdModule.new(self)
     function self.getDevices()
         return devices
     end
+
+    function self.generateAdRequest()
+        return AdRequest(self.getNetworkId(), self.getAdType(), self.getZone(), self.getReward())
+    end
 end

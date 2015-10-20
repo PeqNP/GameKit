@@ -33,8 +33,4 @@ function AdMobInterstitial.new(self, zone, reward)
     function self.getReward()
         return reward
     end
-
-    function self.generateAdRequest()
-        return AdRequest(self.getNetworkId(), self.getAdType(), self.getZone(), self.getReward())
-    end
 end
