@@ -160,7 +160,14 @@ function Satan.new(self)
 end
 
 God = Class()
-function God.new(self)
+function God.new(self, a, b)
+    function self.getA()
+        return a
+    end
+
+    function self.getB()
+        return b
+    end
 end
 
 Parent = Class()
@@ -177,7 +184,12 @@ describe("Classes", function()
     local god
 
     before_each(function()
-        god = God()
+        god = God(1, 2)
+    end)
+
+    it("should have passed through the parameters", function()
+        assert.equal(1, god.getA())
+        assert.equal(2, god.getB())
     end)
 
     it("should not conform to any protocols", function()
@@ -190,6 +202,10 @@ describe("Classes", function()
 
     it("should return the class name; the name of this file w/o the extension", function()
         assert.equal("signal_spec", god.getClassName())
+    end)
+
+    it("should be kind of self", function()
+        assert.truthy(god.kindOf(God))
     end)
 end)
 
@@ -212,18 +228,6 @@ describe("Subclassing", function()
 
         it("should be kind of self", function()
             assert.truthy(child.kindOf(Child))
-        end)
-    end)
-
-    describe("God", function()
-        local god
-
-        before_each(function()
-            god = God()
-        end)
-
-        it("should be kind of self", function()
-            assert.truthy(god.kindOf(God))
         end)
     end)
 end)
