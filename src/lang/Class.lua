@@ -31,7 +31,10 @@ function Class()
 
     function class.extends(e)
         if extends then
-            assert(false, string.format("Can not extend class (%s) more than once!", class.__info()))
+            assert(false, string.format("Can not extend class (%s) more than once", class.__info()))
+        end
+        if e == class then
+            assert(false, string.format("A class can not extend itself (%s)", class.__info()))
         end
         extends = e
     end
@@ -70,7 +73,7 @@ function Class()
     end
 
     local validated = false
-    function validate(instance)
+    local function validate(instance)
         if #protocols == 0 then
             validated = true
             return
@@ -88,7 +91,7 @@ function Class()
                 assert(false, string.format("(%s).new must be implemented", className))
             end
 
-            local self = extends and extends or {}
+            local self = extends and extends() or {}
             cls.new(self, ...)
 
             function self.getClass()

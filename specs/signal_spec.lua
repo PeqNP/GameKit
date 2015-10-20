@@ -180,11 +180,15 @@ describe("Classes", function()
         god = God()
     end)
 
-    it("should return the correct class name", function()
+    it("should not conform to any protocols", function()
+        assert.equal(0, #God.getProtocols())
+    end)
+
+    it("should return the correct class", function()
         assert.equal(God, god.getClass())
     end)
 
-    it("should return the class name; the name of the file", function()
+    it("should return the class name; the name of this file w/o the extension", function()
         assert.equal("signal_spec", god.getClassName())
     end)
 end)
