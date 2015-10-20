@@ -5,20 +5,10 @@
 --]]
 
 require "ad.Constants"
-local adaptor = require "ad.adaptor"
 
 AdManager = Class()
 
---[[ NDK API
-
-ad__configure(dict)
-ad__cache(AdRequest)
-ad__show(AdRequest)
-ad__destroy(AdRequest) -- may be ID
-
---]]
-
-function AdManager.new(config)
+function AdManager.new(adaptor, config)
     local self = {}
 
     local delegate
@@ -70,10 +60,10 @@ function AdManager.new(config)
             if module.getAdType() == adType and module.getState() == AdState.Ready then
                 local promise = adaptor.show(module.generateRequest())
                 promise.fail(function(response)
-                    _error = response.error
+                    --_error = response.error
                 end)
                 promise.always(function(response)
-                    module.updateState(response.state)
+                    --module.updateState(response.state)
                 end)
             end
         end

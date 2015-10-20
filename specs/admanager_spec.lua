@@ -2,17 +2,21 @@ require "lang.Signal"
 
 require "ad.Constants"
 require "ad.AdManager"
+require "ad.AdModule"
+require "ndk.AdAdaptor"
 
 describe("AdManager", function()
     local subject
     local config
     local delegate
+    local adaptor
 
     before_each(function()
         delegate = {}
         config = {}
+        adaptor = mock(AdAdaptor(), true)
 
-        subject = AdManager(config)
+        subject = AdManager(adaptor, config)
         subject.setDelegate(delegate)
     end)
 
@@ -42,8 +46,8 @@ describe("AdManager", function()
         before_each(function()
             statei = AdState.Initial
             statev = AdState.Initial
-            modulei = {}
-            modulev = {}
+            modulei = AdModule()
+            modulev = AdModule()
             function modulei.getState()
                 return statei
             end

@@ -1,4 +1,3 @@
-
 require "lang.Signal"
 
 describe("Signal", function()
@@ -93,6 +92,134 @@ describe("Signal", function()
 
         it("should be 5", function()
             assert.equals(25, table.euclid({25, 75}))
+        end)
+    end)
+end)
+
+describe("Protocol", function()
+    local TestProtocol
+    local DummyProtocol
+    local testMethod
+    local dummyMethod
+    local definition
+
+    before_each(function()
+        testMethod = Method("testMethod", true)
+        TestProtocol = Protocol(testMethod)
+        dummyMethod = Method("dummyMethod", false)
+        DummyProtocol = Protocol(dummyMethod)
+    end)
+
+    it("should return the methods", function()
+        local methods = TestProtocol.getMethods()
+        assert.equal(1, #methods)
+        assert.equal(testMethod, methods[1]) -- sanity
+    end)
+
+    describe("implementing the TestProtocol", function()
+        local instance
+
+        before_each(function()
+            MyClass = Class()
+            MyClass.implements(TestProtocol, DummyProtocol)
+
+            function MyClass.new(self)
+                function self.testMethod()
+                end
+
+                function self.dummyMethod()
+                end
+            end
+
+            instance = MyClass()
+        end)
+
+        it("should have two protocol", function()
+            local protocols = MyClass.getProtocols()
+            assert.equal(2, #protocols)
+            assert.equal(TestProtocol, protocols[1])
+            assert.equal(DummyProtocol, protocols[2])
+        end)
+
+        it("should conform to the TestProtocol", function()
+            assert.truthy(instance.conformsTo(TestProtocol))
+        end)
+
+        it("should conform to the DummyProtocol", function()
+            assert.truthy(instance.conformsTo(DummyProtocol))
+        end)
+
+        it("should not conform to a protocol it does not implement", function()
+            assert.falsy(instance.conformsTo({}))
+        end)
+    end)
+end)
+
+Satan = Class()
+function Satan.new(self)
+end
+
+God = Class()
+function God.new(self)
+end
+
+Parent = Class()
+Parent.extends(God)
+function Parent.new(self)
+end
+
+Child = Class()
+Child.extends(Parent)
+function Child.new(self)
+end
+
+describe("Classes", function()
+    local god
+
+    before_each(function()
+        god = God()
+    end)
+
+    it("should return the correct class name", function()
+        assert.equal(God, god.getClass())
+    end)
+
+    it("should return the class name; the name of the file", function()
+        assert.equal("signal_spec", god.getClassName())
+    end)
+end)
+
+describe("Subclassing", function()
+    describe("Child", function()
+        local child
+
+        before_each(function()
+            child = Child()
+        end)
+
+        it("should be kind of God and Parent class", function()
+            assert.truthy(child.kindOf(Parent))
+            assert.truthy(child.kindOf(God))
+        end)
+
+        it("should not be kind of Satan", function()
+            assert.falsy(child.kindOf(Satan))
+        end)
+
+        it("should be kind of self", function()
+            assert.truthy(child.kindOf(Child))
+        end)
+    end)
+
+    describe("God", function()
+        local god
+
+        before_each(function()
+            god = God()
+        end)
+
+        it("should be kind of self", function()
+            assert.truthy(god.kindOf(God))
         end)
     end)
 end)

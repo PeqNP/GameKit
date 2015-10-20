@@ -1,4 +1,23 @@
 
+function fn2(self, ...)
+    print(self)
+    local arg = {...}
+    for _, val in ipairs(arg) do
+        print("fn2", val)
+    end
+end
+
+function fn(...)
+    local arg = {...}
+    for _, val in ipairs(arg) do
+        print("val", _, val)
+    end
+    fn2("you", ...)
+end
+
+fn("Here", "There")
+os.exit(0)
+
 function param(p)
     p = {"error"}
 end
