@@ -29,4 +29,16 @@ function AdRequest.new(self, adNetwork, adType, zone, reward, _state)
     function self.getState()
         return state
     end
+
+    function self.getAdNetwork()
+        return adNetwork
+    end
+
+    function self.getAdType()
+        return adType
+    end
+
+    function self.getZone()
+        return zone
+    end
 end

@@ -13,6 +13,22 @@ function AdManager.new(self, adaptor, config)
     local delegate
     local networkModules = {}
     local _error
+    local requests = {}
+
+    local function cache(module)
+        local request = module.generateAdRequest()
+        table.insert(requests, request)
+        request.setState(AdState.Loading)
+
+        local promise = adaptor.cache(request)
+        promise.done(function(response)
+            request.setState(AdState.Ready)
+        end)
+        promise.fail(function(response)
+            request.setState(AdState.Complete)
+            _error = response.getError()
+        end)
+    end
 
     function self.getConfig()
         return config
@@ -26,6 +42,10 @@ function AdManager.new(self, adaptor, config)
         return delegate
     end
 
+    function self.getRequests()
+        return requests
+    end
+
     --
     -- Register a mediation network w/ provided config.
     -- Starts the process of caching the module.
@@ -34,7 +54,7 @@ function AdManager.new(self, adaptor, config)
     -- 
     function self.registerNetworkModule(module)
         table.insert(networkModules, module)
-        -- @todo Start caching the module.
+        cache(module)
     end
 
     -- @return AdNetworkModule[]
@@ -42,32 +62,43 @@ function AdManager.new(self, adaptor, config)
         return networkModules
     end
 
+    --
     -- @param AdType
+    --
+    -- @return boolean - true when an ad type is ready for presenting.
+    --
     function self.isAdAvailable(adType)
-        for _, module in ipairs(networkModules) do
-            if module.getAdType() == adType and module.getState() == AdState.Ready then
+        for _, request in ipairs(requests) do
+            if request.getAdType() == adType and request.getState() == AdState.Ready then
                 return true
             end
         end
         return false
     end
 
+    --
+    -- Show an ad type.
+    --
+    -- @param AdType
+    --
+    -- @return boolean - true when a message is sent to native land to show the ad.
+    --
     function self.showAd(adType)
         -- @todo Ask the MediationManager to give us the next ad that should be displayed
         -- for the given type.
-        for _, module in ipairs(networkModules) do
-            if module.getAdType() == adType and module.getState() == AdState.Ready then
-                local promise = adaptor.show(module.generateAdRequest())
-                promise.fail(function(response)
-                    --_error = response.error
+        for _, request in ipairs(requests) do
+            if request.getAdType() == adType and request.getState() == AdState.Ready then
+                local promise = adaptor.show(request)
+                promise.done(function(response)
+                    request.setState(AdState.Presenting)
                 end)
-                promise.always(function(response)
-                    --module.updateState(response.state)
+                promise.fail(function(response)
+                    request.setState(AdState.Complete)
+                    _error = response.getError()
                 end)
                 return true
             end
         end
-        -- @todo No modules are ready for this type.
         return false
     end
 
