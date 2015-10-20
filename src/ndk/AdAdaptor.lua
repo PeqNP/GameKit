@@ -6,13 +6,11 @@ AdAdaptor = Class()
 
 local ndk
 
-function AdAdaptor.setNDK(n)
-    ndk = n
+function AdAdaptor.setNDK(_ndk)
+    ndk = _ndk
 end
 
-function AdAdaptor.new()
-    local self = {}
-
+function AdAdaptor.new(self)
     function self.configure(config)
         return ndk.send("ad__configure", config)
     end
@@ -28,8 +26,6 @@ function AdAdaptor.new()
     function self.destroy(request)
         return ndk.send("ad__destroy", request)
     end
-
-    return self
 end
 
 function ad__callback_cached(response)

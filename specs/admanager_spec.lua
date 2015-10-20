@@ -2,7 +2,8 @@ require "lang.Signal"
 
 require "ad.Constants"
 require "ad.AdManager"
-require "ad.AdModule"
+require "ad.modules.AdMobInterstitial"
+require "ad.modules.AdColonyVideo"
 require "ndk.AdAdaptor"
 
 describe("AdManager", function()
@@ -46,8 +47,8 @@ describe("AdManager", function()
         before_each(function()
             statei = AdState.Initial
             statev = AdState.Initial
-            modulei = AdModule()
-            modulev = AdModule()
+            modulei = AdMobInterstitial()
+            modulev = AdColonyVideo()
             function modulei.getState()
                 return statei
             end
@@ -87,13 +88,25 @@ describe("AdManager", function()
                 assert.truthy(subject.isAdAvailable(AdType.Interstitial))
             end)
 
-            it("should show the interstitial ad", function()
-                assert.truthy(subject.showAd(AdType.Interstitial))
-            end)
-
             it("should NOT have an available video", function()
                 assert.falsy(subject.isAdAvailable(AdType.Video))
             end)    
+
+            describe("show the ad", function()
+                local promise
+
+                before_each(function()
+                    promise = Promise()
+                    stub(adaptor, "show").and_return(promise)
+
+                    assert.falsy(subject.showAd(AdType.Video))
+                    assert.truthy(subject.showAd(AdType.Interstitial))
+                end)
+
+                it("should show the video ad", function()
+                    assert.stub(adaptor.show).was.called()
+                end)
+            end)
         end)
 
         describe("when the video ad is ready", function()
@@ -109,8 +122,20 @@ describe("AdManager", function()
                 assert.truthy(subject.isAdAvailable(AdType.Video))
             end)    
 
-            it("should show the video ad", function()
-                assert.truthy(subject.showAd(AdType.Video))
+            describe("show the ad", function()
+                local promise
+
+                before_each(function()
+                    promise = Promise()
+                    stub(adaptor, "show").and_return(promise)
+
+                    assert.falsy(subject.showAd(AdType.Interstitial))
+                    assert.truthy(subject.showAd(AdType.Video))
+                end)
+
+                it("should show the video ad", function()
+                    assert.stub(adaptor.show).was.called()
+                end)
             end)
         end)
     end)

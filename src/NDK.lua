@@ -18,9 +18,7 @@ elseif device.platform == "android" then
 end
 --]]
 
-function NDK.new(bridge)
-    local self = {}
-
+function NDK.new(self, bridge)
     local delegate
 
     -- @return Promise
@@ -41,6 +39,4 @@ function NDK.new(bridge)
             delegate["method"](...)
         end
     end
-
-    return self
 end

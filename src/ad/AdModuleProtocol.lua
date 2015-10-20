@@ -5,12 +5,12 @@
 AdModuleProtocol = Protocol(
     -- Return config used to initialize network module.
     Method("getConfig", true)
-    -- Returns the AdType
-  , Method("getAdType", true)
     -- Returns the ad network ID used by this module.
   , Method("getNetworkId", true)
     -- Returns the name of the ad network used by this module.
   , Method("getNetworkName", true)
+    -- Returns the AdType
+  , Method("getAdType", true)
     -- Generates a request struct that can be marshalled between Lua and native land.
   , Method("generateAdRequest", true)
 )

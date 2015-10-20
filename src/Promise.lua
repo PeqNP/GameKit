@@ -9,9 +9,7 @@ local function null_or_unpack(val)
     end
 end
 
-function Promise.new()
-    local self = {}
-
+function Promise.new(self)
     local _state = "pending"
     local _callbacks = {}
     local _value = false
@@ -105,8 +103,6 @@ function Promise.new()
     function self.state(self)
         return _state
     end
-
-    return self
 end
 
 function Promise.when(...)

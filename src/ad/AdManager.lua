@@ -4,7 +4,8 @@
 
 --]]
 
-require "ad.Constants"
+require("Promise")
+require("ad.Constants")
 
 AdManager = Class()
 
@@ -56,15 +57,17 @@ function AdManager.new(self, adaptor, config)
         -- for the given type.
         for _, module in ipairs(networkModules) do
             if module.getAdType() == adType and module.getState() == AdState.Ready then
-                local promise = adaptor.show(module.generateRequest())
+                local promise = adaptor.show(module.generateAdRequest())
                 promise.fail(function(response)
                     --_error = response.error
                 end)
                 promise.always(function(response)
                     --module.updateState(response.state)
                 end)
+                return true
             end
         end
+        -- @todo No modules are ready for this type.
         return false
     end
 
