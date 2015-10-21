@@ -22,7 +22,7 @@ function Class(extends)
     end
 
     -- Prints detailed information about the class.
-    function class.__info()
+    function class.__tostring()
         return string.format("Instantiated in file (%s) on line (%d)", info.source, info.currentline)
     end
 

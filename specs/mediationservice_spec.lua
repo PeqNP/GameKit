@@ -66,7 +66,7 @@ describe("MediationService", function()
         end)
 
         it("should have returned a Promise", function()
-            assert.equals("Promise", promise.getClass())
+            assert.truthy(promise.kindOf(Promise))
         end)
 
         it("should have made request for json manifest", function()
@@ -105,11 +105,11 @@ describe("MediationService", function()
                 end)
 
                 it("should have returned one ad config", function()
-                    assert.equals("MediationConfig", payload.getClass())
+                    assert.truthy(payload.kindOf(MediationConfig))
                     assert.equals(1, payload.getVersion())
                     local ads = payload.getAds()
                     assert.equals(1, #ads)
-                    assert.equals("MediationAdConfig", ads[1].getClass())
+                    assert.truthy(ads[1].kindOf(MediationAdConfig))
                 end)
             end)
 

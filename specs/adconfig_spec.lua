@@ -7,7 +7,7 @@ require "royal.AdConfig"
 describe("singleton", function()
     it("should have created a singleton", function()
         assert.truthy(AdConfig.singleton)
-        assert.equal("AdConfig", AdConfig.singleton.getClass())
+        assert.truthy(AdConfig.singleton.kindOf(AdConfig))
     end)
 end)
 

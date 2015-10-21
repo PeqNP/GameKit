@@ -112,7 +112,7 @@ describe("AdNetwork", function()
         end)
 
         it("should have returned a Promise", function()
-            assert.equals("Promise", promise.getClass())
+            assert.truthy(promise.kindOf(Promise))
         end)
 
         it("should have made request for json manifest", function()

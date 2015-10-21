@@ -49,7 +49,7 @@ describe("AdUnit", function()
             local tiers = subject.getTiers()
             assert.equals(1, #tiers)
             for _, tier in ipairs(tiers) do
-                assert.equal("AdTier", tier.getClass())
+                assert.truthy(tier.kindOf(AdTier))
             end
         end)
     end)
@@ -82,7 +82,7 @@ describe("AdUnit", function()
             local tiers = subject.getTiers()
             assert.equals(3, #tiers)
             for _, tier in ipairs(tiers) do
-                assert.equal("AdTier", tier.getClass())
+                assert.truthy(tier.kindOf(AdTier))
             end
         end)
 
@@ -216,7 +216,7 @@ describe("AdUnit", function()
                     local tiers = subject.getTiers()
                     assert.equal(1, #tiers)
                     local tier = tiers[1]
-                    assert.equal("AdTier", tier.getClass())
+                    assert.truthy(tier.kindOf(AdTier))
                     assert.equal(2, tier.id)
                     assert.equal("http://www.example.com/ad2", tier.url)
                     assert.equal(20, tier.reward)
