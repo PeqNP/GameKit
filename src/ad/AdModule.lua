@@ -17,6 +17,6 @@ function AdModule.new(self)
     end
 
     function self.generateAdRequest()
-        return AdRequest(self.getNetworkId(), self.getAdType(), self.getZone(), self.getReward())
+        return AdRequest(self.getAdNetwork(), self.getAdType(), self.getZone(), self.getReward())
     end
 end

@@ -44,17 +44,13 @@ describe("AdManager", function()
     describe("adding network modules", function()
         local requests
         local modulei
-        local statei
         local requesti
         local promisei
         local modulev
-        local statev
         local requestv
         local promisev
 
         before_each(function()
-            statei = AdState.Initial
-            statev = AdState.Initial
             modulei = AdMobInterstitial()
             modulev = AdColonyVideo()
 
@@ -113,7 +109,7 @@ describe("AdManager", function()
             before_each(function()
                 requesti = requests[1]
                 requestv = requests[2]
-                promisei.resolve(AdResponse(requesti.getId(), true))
+                promisei.resolve(AdResponse(requesti.getId(), AdState.Ready))
             end)
 
             it("should have an available interstitial", function()
@@ -146,11 +142,17 @@ describe("AdManager", function()
         end)
 
         context("when the ad fails to be cached", function()
+            local delayfn
+
             before_each(function()
-                stub(cu, "delayCall")
+                function cu.delayCall(fn, delay)
+                    delayfn = fn
+                end
+
+                spy.on(cu, "delayCall")
 
                 requesti = requests[1]
-                promisei.reject(AdResponse(requesti.getId(), false, "Cache failure"))
+                promisei.reject(AdResponse(requesti.getId(), AdState.Complete, "Cache failure"))
             end)
 
             it("should have completed request", function()
@@ -161,8 +163,31 @@ describe("AdManager", function()
                 assert.equal("Cache failure", subject.getError())
             end)
 
+            it("should not be available", function()
+                assert.falsy(subject.isAdAvailable(AdType.Interstitial))
+            end)
+
             it("should have scheduled the request to be performed at a later time", function()
                 assert.stub(cu.delayCall).was.called()
+            end)
+
+            describe("caching the module that failed", function()
+                before_each(function()
+                    delayfn()
+
+                    requests = subject.getRequests()
+                end)
+
+                it("should have rescheduled the module", function()
+                    assert.equal(2, #requests)
+                end)
+
+                it("should have an interstitial pending", function()
+                    local request = requests[2]
+                    assert.equal(AdNetwork.AdMob, request.getAdNetwork())
+                    assert.equal(AdType.Interstitial, request.getAdType())
+                    assert.equal(AdState.Loading, request.getState())
+                end)
             end)
         end)
 
@@ -170,8 +195,7 @@ describe("AdManager", function()
             before_each(function()
                 requesti = requests[1]
                 requestv = requests[2]
-                promisev.resolve(AdResponse(requestv.getId(), true))
-                statev = AdState.Ready
+                promisev.resolve(AdResponse(requestv.getId(), AdState.Ready))
             end)
 
             it("should NOT have an available interstitial", function()
@@ -199,7 +223,7 @@ describe("AdManager", function()
 
                 describe("when the request succeeds", function()
                     before_each(function()
-                        promise.resolve(AdResponse(requestv.getId(), true))
+                        promise.resolve(AdResponse(requestv.getId(), AdState.Presenting))
                     end)
 
                     it("should have updated the state of the ad request", function()
@@ -209,7 +233,7 @@ describe("AdManager", function()
 
                 describe("when the request fails", function()
                     before_each(function()
-                        promise.reject(AdResponse(requestv.getId(), false, "Failure"))
+                        promise.reject(AdResponse(requestv.getId(), AdState.Complete, "Failure"))
                     end)
 
                     it("should have updated the state of the ad request", function()
@@ -218,6 +242,10 @@ describe("AdManager", function()
 
                     it("should have an error", function()
                         assert.equal("Failure", subject.getError())
+                    end)
+
+                    it("should attempt to cache module", function()
+                        assert.stub(cu.delayCall).was.called()
                     end)
                 end)
             end)

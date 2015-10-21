@@ -41,4 +41,8 @@ function AdRequest.new(self, adNetwork, adType, zone, reward, _state)
     function self.getZone()
         return zone
     end
+
+    function self.isComplete()
+        return table.contains({AdState.Complete, AdState.Clicked}, state)
+    end
 end

@@ -23,5 +23,6 @@ AdState = enum(1
   , 'Loading'
   , 'Ready'
   , 'Presenting'
+  , 'Clicked'
   , 'Complete'
 )

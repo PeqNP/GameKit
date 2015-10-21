@@ -4,13 +4,13 @@
 
 AdResponse = Class()
 
-function AdResponse.new(self, id, succes, _error)
+function AdResponse.new(self, id, state, _error)
     function self.getId()
         return id
     end
 
-    function self.getSuccess()
-        return success
+    function self.getState()
+        return state
     end
 
     function self.getError()

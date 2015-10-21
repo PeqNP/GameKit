@@ -14,11 +14,11 @@ function AdColonyVideo.new(self, zone, reward)
         return nil
     end
 
-    function self.getNetworkId()
+    function self.getAdNetwork()
         return AdNetwork.AdColony
     end
 
-    function self.getNetworkName()
+    function self.getAdNetworkName()
         return "AdColony"
     end
 

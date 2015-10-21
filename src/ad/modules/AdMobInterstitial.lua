@@ -14,11 +14,11 @@ function AdMobInterstitial.new(self, zone, reward)
         return nil
     end
 
-    function self.getNetworkId()
+    function self.getAdNetwork()
         return AdNetwork.AdMob
     end
 
-    function self.getNetworkName()
+    function self.getAdNetworkName()
         return "AdMob"
     end
 

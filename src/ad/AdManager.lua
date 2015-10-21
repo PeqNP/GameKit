@@ -4,6 +4,7 @@
 
 --]]
 
+require("Logger")
 require("Promise")
 require("ad.Constants")
 
@@ -17,20 +18,55 @@ function AdManager.new(self, adaptor, config)
     local networkModules = {}
     local _error
     local requests = {}
+    local private = {}
 
-    local function cache(module)
+    local function getNetworkModule(adNetwork, adType)
+        for _, module in ipairs(networkModules) do
+            if module.getAdNetwork() == adNetwork and module.getAdType() == adType then
+                return module
+            end
+        end
+        return nil
+    end
+
+    function private.cacheModules()
+        local completed = {}
+        local incomplete = {}
+        for pos, request in ipairs(requests) do
+            if request.isComplete() then
+                table.insert(completed, request)
+            else
+                table.insert(incomplete, request)
+            end
+        end
+
+        requests = incomplete
+
+        for _, request in ipairs(completed) do
+            local adNetwork = request.getAdNetwork() 
+            local adType = request.getAdType()
+            local module = getNetworkModule(adNetwork, adType)
+            if module then
+                private.cacheModule(module)
+            else
+                Log.e("Could not find module for ad network (%s) ad type (%s)", adNetwork, adType)
+            end
+        end
+    end
+
+    function private.cacheModule(module)
         local request = module.generateAdRequest()
         table.insert(requests, request)
         request.setState(AdState.Loading)
 
         local promise = adaptor.cache(request)
         promise.done(function(response)
-            request.setState(AdState.Ready)
+            request.setState(response.getState())
         end)
         promise.fail(function(response)
-            request.setState(AdState.Complete)
+            request.setState(response.getState())
             _error = response.getError()
-            cu.delayCall(TIMEOUT[2], cache)
+            cu.delayCall(private.cacheModules, TIMEOUT[2])
         end)
     end
 
@@ -58,7 +94,7 @@ function AdManager.new(self, adaptor, config)
     -- 
     function self.registerNetworkModule(module)
         table.insert(networkModules, module)
-        cache(module)
+        private.cacheModule(module)
     end
 
     -- @return AdNetworkModule[]
@@ -93,17 +129,19 @@ function AdManager.new(self, adaptor, config)
         for _, request in ipairs(requests) do
             if request.getAdType() == adType and request.getState() == AdState.Ready then
                 local promise = adaptor.show(request)
+                request.setState(AdState.Presenting)
                 promise.done(function(response)
-                    request.setState(AdState.Presenting)
+                    request.setState(response.getState())
                 end)
                 promise.fail(function(response)
                     request.setState(AdState.Complete)
                     _error = response.getError()
+                    cu.delayCall(private.cacheModules, TIMEOUT[2])
                 end)
-                return true
+                return promise
             end
         end
-        return false
+        return nil
     end
 
     function self.getError()
