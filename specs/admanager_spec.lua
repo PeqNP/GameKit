@@ -9,24 +9,27 @@ require "ad.AdResponse"
 require "ad.modules.AdMobInterstitial"
 require "ad.modules.AdColonyVideo"
 require "ndk.AdAdaptor"
+require "mediation.MediationAdFactory"
+require "mediation.MediationAdConfig"
 
 describe("AdManager", function()
     local subject
     local config
     local delegate
     local adaptor
+    local adFactory
 
     before_each(function()
         delegate = {}
-        config = {}
         adaptor = mock(AdAdaptor(), true)
+        adFactory = mock(MediationAdFactory({}), true)
 
-        subject = AdManager(adaptor, config)
+        subject = AdManager(adaptor, adFactory)
         subject.setDelegate(delegate)
     end)
 
-    it("should set the config", function()
-        assert.equal(config, subject.getConfig())
+    it("should set the ad factory", function()
+        assert.equal(adFactory, subject.getAdFactory())
     end)
 
     it("should have set the delegate", function()
@@ -120,23 +123,65 @@ describe("AdManager", function()
                 assert.falsy(subject.isAdAvailable(AdType.Video))
             end)    
 
-            describe("show the ad", function()
-                local promise
+            context("when there is no config", function()
+                before_each(function()
+                    stub(adFactory, "nextAd").and_return(nil)
+                end)
+
+                describe("show the ad", function()
+                    before_each(function()
+                        local promise = Promise()
+                        stub(adaptor, "show").and_return(promise)
+
+                        assert.falsy(subject.showAd(AdType.Video))
+                        assert.truthy(subject.showAd(AdType.Interstitial))
+                    end)
+
+                    it("should show an AdMob ad", function()
+                        assert.equal(AdNetwork.AdMob, requesti.getAdNetwork())
+                    end)
+
+                    it("should show the interstitial ad", function()
+                        assert.stub(adaptor.show).was.called_with(requesti)
+                    end)
+
+                    it("should NOT have shown the video ad", function()
+                        assert.stub(adaptor.show).was_not.called_with(requestv)
+                    end)
+                end)
+            end)
+
+            context("when AdMob is configured to be shown", function()
+                local config
 
                 before_each(function()
-                    promise = Promise()
+                    local promise = Promise()
                     stub(adaptor, "show").and_return(promise)
 
-                    assert.falsy(subject.showAd(AdType.Video))
+                    config = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
+                    stub(adFactory, "nextAd").and_return(config)
                     assert.truthy(subject.showAd(AdType.Interstitial))
                 end)
 
-                it("should show the interstitial ad", function()
+                it("should have shown an AdMob ad", function()
                     assert.stub(adaptor.show).was.called_with(requesti)
                 end)
+            end)
 
-                it("should NOT have shown the video ad", function()
-                    assert.stub(adaptor.show).was_not.called_with(requestv)
+            context("when Leadbolt is configured to be shown but module is not registered", function()
+                local config
+
+                before_each(function()
+                    local promise = Promise()
+                    stub(adaptor, "show").and_return(promise)
+
+                    config = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
+                    stub(adFactory, "nextAd").and_return(config)
+                    assert.truthy(subject.showAd(AdType.Interstitial))
+                end)
+
+                it("should show the next available ad type, AdMob #f", function()
+                    assert.stub(adaptor.show).was.called_with(requesti)
                 end)
             end)
         end)
@@ -191,7 +236,7 @@ describe("AdManager", function()
             end)
         end)
 
-        describe("when the video ad is ready", function()
+        context("when the video ad is ready", function()
             before_each(function()
                 requesti = requests[1]
                 requestv = requests[2]
@@ -206,69 +251,72 @@ describe("AdManager", function()
                 assert.truthy(subject.isAdAvailable(AdType.Video))
             end)    
 
-            describe("show the ad", function()
-                local promise
+            context("when there is no config for the video", function()
+                describe("show the ad", function()
+                    local promise
 
-                before_each(function()
-                    promise = Promise()
-                    stub(adaptor, "show").and_return(promise)
-                    stub(cu, "delayCall")
-
-                    assert.falsy(subject.showAd(AdType.Interstitial))
-                    assert.truthy(subject.showAd(AdType.Video))
-                end)
-
-                it("should show the video ad", function()
-                    assert.stub(adaptor.show).was.called_with(requestv)
-                end)
-
-                it("should be presenting the request", function()
-                    assert.equal(AdState.Presenting, requestv.getState())
-                end)
-
-                describe("when the ad is closed", function()
                     before_each(function()
-                        promise.resolve(AdResponse(requestv.getId(), AdState.Complete))
+                        promise = Promise()
+                        stub(adFactor, nextAd).and_return(nil)
+                        stub(adaptor, "show").and_return(promise)
+                        stub(cu, "delayCall")
+
+                        assert.falsy(subject.showAd(AdType.Interstitial))
+                        assert.truthy(subject.showAd(AdType.Video))
                     end)
 
-                    it("should have updated the state of the ad request", function()
-                        assert.equal(AdState.Complete, requestv.getState())
+                    it("should show the video ad", function()
+                        assert.stub(adaptor.show).was.called_with(requestv)
                     end)
 
-                    it("should cache module", function()
-                        assert.stub(cu.delayCall).was.called()
-                    end)
-                end)
-
-                describe("when the ad is clicked", function()
-                    before_each(function()
-                        promise.resolve(AdResponse(requestv.getId(), AdState.Clicked))
+                    it("should be presenting the request", function()
+                        assert.equal(AdState.Presenting, requestv.getState())
                     end)
 
-                    it("should have updated the state of the ad request", function()
-                        assert.equal(AdState.Clicked, requestv.getState())
+                    describe("when the ad is closed", function()
+                        before_each(function()
+                            promise.resolve(AdResponse(requestv.getId(), AdState.Complete))
+                        end)
+
+                        it("should have updated the state of the ad request", function()
+                            assert.equal(AdState.Complete, requestv.getState())
+                        end)
+
+                        it("should cache module", function()
+                            assert.stub(cu.delayCall).was.called()
+                        end)
                     end)
 
-                    it("should cache module", function()
-                        assert.stub(cu.delayCall).was.called()
-                    end)
-                end)
+                    describe("when the ad is clicked", function()
+                        before_each(function()
+                            promise.resolve(AdResponse(requestv.getId(), AdState.Clicked))
+                        end)
 
-                describe("when the request fails", function()
-                    before_each(function()
-                        promise.reject(AdResponse(requestv.getId(), AdState.Complete, "Failure"))
-                    end)
+                        it("should have updated the state of the ad request", function()
+                            assert.equal(AdState.Clicked, requestv.getState())
+                        end)
 
-                    it("should have updated the state of the ad request", function()
-                        assert.equal(AdState.Complete, requestv.getState())
-                    end)
-
-                    it("should have an error", function()
-                        assert.equal("Failure", subject.getError())
+                        it("should cache module", function()
+                            assert.stub(cu.delayCall).was.called()
+                        end)
                     end)
 
-                    it("should attempt to cache module", function()
-                        assert.stub(cu.delayCall).was.called()
+                    describe("when the request fails", function()
+                        before_each(function()
+                            promise.reject(AdResponse(requestv.getId(), AdState.Complete, "Failure"))
+                        end)
+
+                        it("should have updated the state of the ad request", function()
+                            assert.equal(AdState.Complete, requestv.getState())
+                        end)
+
+                        it("should have an error", function()
+                            assert.equal("Failure", subject.getError())
+                        end)
+
+                        it("should attempt to cache module", function()
+                            assert.stub(cu.delayCall).was.called()
+                        end)
                     end)
                 end)
             end)

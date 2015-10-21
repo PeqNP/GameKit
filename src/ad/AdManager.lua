@@ -13,7 +13,7 @@ AdManager = Class()
 -- Graduated timeout intervals.
 local TIMEOUT = {15, 30, 60, 120, 240, 600}
 
-function AdManager.new(self, adaptor, config)
+function AdManager.new(self, adaptor, adFactory)
     local delegate
     local networkModules = {}
     local _error
@@ -76,8 +76,8 @@ function AdManager.new(self, adaptor, config)
         end)
     end
 
-    function self.getConfig()
-        return config
+    function self.getAdFactory()
+        return adFactory
     end
 
     function self.setDelegate(d)
@@ -93,7 +93,7 @@ function AdManager.new(self, adaptor, config)
     end
 
     --
-    -- Register a mediation network w/ provided config.
+    -- Register a network service module.
     -- Starts the process of caching the module.
     -- 
     -- @param AdNetworkModule
@@ -122,6 +122,32 @@ function AdManager.new(self, adaptor, config)
         return false
     end
 
+    function private.getRequestsForType(adType)
+        local _requests = {}
+        for _, request in ipairs(requests) do
+            if request.getAdType() == adType then
+                table.insert(_requests, request)
+            end
+        end
+        return _requests
+    end
+
+    function private.showAdForRequest(request)
+        local promise = adaptor.show(request)
+        request.setState(AdState.Presenting)
+        promise.done(function(response)
+            request.setState(response.getState())
+        end)
+        promise.fail(function(response)
+            request.setState(AdState.Complete)
+            _error = response.getError()
+        end)
+        promise.always(function(response)
+            cu.delayCall(private.rebuildRequests, TIMEOUT[2])
+        end)
+        return promise
+    end
+
     --
     -- Show an ad type.
     --
@@ -130,23 +156,21 @@ function AdManager.new(self, adaptor, config)
     -- @return boolean - true when a message is sent to native land to show the ad.
     --
     function self.showAd(adType)
-        -- @todo Ask the MediationManager to give us the next ad that should be displayed
-        -- for the given type.
-        for _, request in ipairs(requests) do
-            if request.getAdType() == adType and request.getState() == AdState.Ready then
-                local promise = adaptor.show(request)
-                request.setState(AdState.Presenting)
-                promise.done(function(response)
-                    request.setState(response.getState())
-                end)
-                promise.fail(function(response)
-                    request.setState(AdState.Complete)
-                    _error = response.getError()
-                end)
-                promise.always(function(response)
-                    cu.delayCall(private.rebuildRequests, TIMEOUT[2])
-                end)
-                return promise
+        local _requests = private.getRequestsForType(adType)
+        local nextAd = adFactory.nextAd(adType)
+        if nextAd then
+            -- Show the request for this specific network.
+            for _, request in ipairs(_requests) do
+                if request.getAdNetwork() == nextAd.getAdNetwork() and request.getState() == AdState.Ready then
+                    return private.showAdForRequest(request)
+                end
+            end
+        end
+        -- The ad network is not available or this type of ad is not configured.
+        -- Show the first available ad for this type.
+        for _, request in ipairs(_requests) do
+            if request.getState() == AdState.Ready then
+                return private.showAdForRequest(request)
             end
         end
         return nil
