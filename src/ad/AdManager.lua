@@ -20,7 +20,7 @@ function AdManager.new(self, adaptor, config)
     local requests = {}
     local private = {}
 
-    local function getNetworkModule(adNetwork, adType)
+    function private.getNetworkModule(adNetwork, adType)
         for _, module in ipairs(networkModules) do
             if module.getAdNetwork() == adNetwork and module.getAdType() == adType then
                 return module
@@ -29,12 +29,27 @@ function AdManager.new(self, adaptor, config)
         return nil
     end
 
-    function private.cacheModules()
-        local completed = {}
+    function private.cacheModules(modules)
+        for _, module in ipairs(modules) do
+            private.cacheModule(module)
+        end
+    end
+
+    function private.rebuildRequests()
+        local modules = {}
         local incomplete = {}
         for pos, request in ipairs(requests) do
             if request.isComplete() then
-                table.insert(completed, request)
+                -- @fixme Hmm... should the request have a reference to its respective AdModule?
+                -- Should the module maintain its current request?
+                local adNetwork = request.getAdNetwork() 
+                local adType = request.getAdType()
+                local module = private.getNetworkModule(adNetwork, adType)
+                if module then
+                    table.insert(modules, module)
+                else
+                    Log.e("Could not find module for ad network (%s) ad type (%s)", adNetwork, adType)
+                end
             else
                 table.insert(incomplete, request)
             end
@@ -42,16 +57,7 @@ function AdManager.new(self, adaptor, config)
 
         requests = incomplete
 
-        for _, request in ipairs(completed) do
-            local adNetwork = request.getAdNetwork() 
-            local adType = request.getAdType()
-            local module = getNetworkModule(adNetwork, adType)
-            if module then
-                private.cacheModule(module)
-            else
-                Log.e("Could not find module for ad network (%s) ad type (%s)", adNetwork, adType)
-            end
-        end
+        private.cacheModules(modules)
     end
 
     function private.cacheModule(module)
@@ -66,7 +72,7 @@ function AdManager.new(self, adaptor, config)
         promise.fail(function(response)
             request.setState(response.getState())
             _error = response.getError()
-            cu.delayCall(private.cacheModules, TIMEOUT[2])
+            cu.delayCall(private.rebuildRequests, TIMEOUT[2])
         end)
     end
 
@@ -136,7 +142,9 @@ function AdManager.new(self, adaptor, config)
                 promise.fail(function(response)
                     request.setState(AdState.Complete)
                     _error = response.getError()
-                    cu.delayCall(private.cacheModules, TIMEOUT[2])
+                end)
+                promise.always(function(response)
+                    cu.delayCall(private.rebuildRequests, TIMEOUT[2])
                 end)
                 return promise
             end

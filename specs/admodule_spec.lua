@@ -1,12 +1,12 @@
 require "lang.Signal"
 
-require "ad.AdModule"
+require "ad.modules.AdMobInterstitial"
 
 describe("AdModule", function()
     local subject
 
     before_each(function()
-        subject = AdModule()
+        subject = AdMobInterstitial()
     end)
 
     describe("generate a request", function()
@@ -21,7 +21,7 @@ describe("AdModule", function()
         end)
 
         it("should have created a new ad request", function()
-            assert.equal("AdRequest", request.getClass())
+            assert.truthy(request.kindOf(AdRequest))
         end)
     end)
 end)

@@ -212,6 +212,7 @@ describe("AdManager", function()
                 before_each(function()
                     promise = Promise()
                     stub(adaptor, "show").and_return(promise)
+                    stub(cu, "delayCall")
 
                     assert.falsy(subject.showAd(AdType.Interstitial))
                     assert.truthy(subject.showAd(AdType.Video))
@@ -221,13 +222,35 @@ describe("AdManager", function()
                     assert.stub(adaptor.show).was.called_with(requestv)
                 end)
 
-                describe("when the request succeeds", function()
+                it("should be presenting the request", function()
+                    assert.equal(AdState.Presenting, requestv.getState())
+                end)
+
+                describe("when the ad is closed", function()
                     before_each(function()
-                        promise.resolve(AdResponse(requestv.getId(), AdState.Presenting))
+                        promise.resolve(AdResponse(requestv.getId(), AdState.Complete))
                     end)
 
                     it("should have updated the state of the ad request", function()
-                        assert.equal(AdState.Presenting, requestv.getState())
+                        assert.equal(AdState.Complete, requestv.getState())
+                    end)
+
+                    it("should cache module", function()
+                        assert.stub(cu.delayCall).was.called()
+                    end)
+                end)
+
+                describe("when the ad is clicked", function()
+                    before_each(function()
+                        promise.resolve(AdResponse(requestv.getId(), AdState.Clicked))
+                    end)
+
+                    it("should have updated the state of the ad request", function()
+                        assert.equal(AdState.Clicked, requestv.getState())
+                    end)
+
+                    it("should cache module", function()
+                        assert.stub(cu.delayCall).was.called()
                     end)
                 end)
 
