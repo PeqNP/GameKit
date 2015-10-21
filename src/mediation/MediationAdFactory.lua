@@ -21,13 +21,13 @@ function MediationAdFactory.new(self, configs)
         local intervals = {}
         local highestInterval = 0
         for _, config in ipairs(configs) do
-            if config.adimpressiontype == AdImpressionType.Regular then
-                totalFrequency = totalFrequency + config.frequency
+            if config.getAdImpressionType() == AdImpressionType.Regular then
+                totalFrequency = totalFrequency + config.getFrequency()
                 table.insert(frequencies, config)
-                table.insert(frequencyNums, config.frequency)
+                table.insert(frequencyNums, config.getFrequency())
             else
-                if config.frequency > highestInterval then
-                    highestInterval = config.frequency
+                if config.getFrequency() > highestInterval then
+                    highestInterval = config.getFrequency()
                 end
                 table.insert(intervals, config)
             end
@@ -58,7 +58,7 @@ function MediationAdFactory.new(self, configs)
         --Log.d("divisor %d", divisor)
         for r= 1, numRevolutions do
             for _, config in ipairs(frequencies) do
-                local numTimes = config.frequency / divisor
+                local numTimes = config.getFrequency() / divisor
                 for i= 1, numTimes do
                     table.insert(queue, config)
                 end
@@ -67,7 +67,7 @@ function MediationAdFactory.new(self, configs)
 
         -- Inject config in respective spot within the array.
         for _, config in ipairs(intervals) do
-            table.insert(queue, config.frequency, config)
+            table.insert(queue, config.getFrequency(), config)
         end
     end
 
