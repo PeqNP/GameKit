@@ -14,9 +14,7 @@ require "royal.AdRequestCallback"
 
 AdNetwork = Class()
 
-function AdNetwork.new(host, port, path, maxVersions)
-    local self = {}
-
+function AdNetwork.new(self, host, port, path, maxVersions)
     self.host = host
     self.port = port
     self.path = path
@@ -199,6 +197,4 @@ function AdNetwork.new(host, port, path, maxVersions)
         sendRequests()
         return promise
     end
-
-    return self
 end

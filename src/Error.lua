@@ -1,3 +1,5 @@
+--
+-- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 
 ErrorCode = enum(1
   , 'ValueError'
@@ -12,13 +14,10 @@ end
 Error.mt = {}
 Error.mt.__tostring = Error.tostring
 
-function Error.new(code, message, info)
-    local self = {}
+function Error.new(self, code, message, info)
     self.code = code
     self.message = message
     self.info = info
 
     setmetatable(self, Error.mt)
-
-    return self
 end

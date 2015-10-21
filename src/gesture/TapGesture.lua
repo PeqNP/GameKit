@@ -1,7 +1,6 @@
 TapGesture = Class()
 
-function TapGesture.new(point)
-    local self = {}
+function TapGesture.new(self, point)
     self.point = point
 
     function self.toWorldSpace(node)
@@ -11,6 +10,4 @@ function TapGesture.new(point)
     function self.toNodeSpace(node)
         return TapGesture(node:convertToNodeSpace(self.point))
     end
-
-    return self
 end

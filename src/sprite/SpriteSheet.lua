@@ -23,9 +23,7 @@ function SpriteSheet.clean(name)
     end
 end
 
-function SpriteSheet.new(_texture, _frames, _cols, _rows)
-    local self = {}
-
+function SpriteSheet.new(self, _texture, _frames, _cols, _rows)
     -- Computed width/height of each frame. These will be set only after
     -- getFrames() is called.
     self.width = false
@@ -105,6 +103,4 @@ function SpriteSheet.new(_texture, _frames, _cols, _rows)
     end
 
     SpriteSheet.register(_texture, self)
-
-    return self
 end

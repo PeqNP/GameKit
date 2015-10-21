@@ -6,9 +6,7 @@
 
 AdConfig = Class()
 
-function AdConfig.new()
-    local self = {}
-
+function AdConfig.new(self)
     local path
     local appId
     local appToken
@@ -33,8 +31,6 @@ function AdConfig.new()
     function self.getImageVariant()
         return imageVariant
     end
-
-    return self
 end
 
 Singleton(AdConfig)

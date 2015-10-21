@@ -12,9 +12,7 @@ require "royal.AdConfig"
 
 AdTier = Class()
 
-function AdTier.new(id, url, reward, title, waitsecs, maxclicks, config)
-    local self = {}
-
+function AdTier.new(self, id, url, reward, title, waitsecs, maxclicks, config)
     self.id = id
     self.url = url
     self.reward = reward
@@ -94,6 +92,4 @@ function AdTier.new(id, url, reward, title, waitsecs, maxclicks, config)
     end
 
     init()
-
-    return self
 end

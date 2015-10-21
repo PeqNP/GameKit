@@ -1,6 +1,8 @@
---[[ Provides logging mechansim.
-
---]]
+--
+-- Provides logging mechansim.
+--
+-- @copyright 2015 Upstart Illustration LLC. All rights reserved.
+--
 
 Logger = Class()
 
@@ -15,8 +17,7 @@ LogLevel = enum(0
 -- By default, print to stdout using the built-in Lua 'print' method.
 Logger.pipe = print
 
-function Logger.new(tag, _level)
-    local self = {}
+function Logger.new(self, tag, _level)
     local level = _level and _level or LogLevel.Debug
 
     function self.setLevel(_level)
@@ -75,8 +76,6 @@ function Logger.new(tag, _level)
             Log.e("%s: OpenGL error (%s)", tag, err)
         end
     end
-
-    return self
 end
 
 Log = Logger()

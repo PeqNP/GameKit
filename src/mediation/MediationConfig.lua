@@ -6,9 +6,7 @@
 
 MediationConfig = Class()
 
-function MediationConfig.new(version, ads)
-    local self = {}
-
+function MediationConfig.new(self, version, ads)
     function self.getVersion()
         return version
     end
@@ -16,6 +14,4 @@ function MediationConfig.new(version, ads)
     function self.getAds()
         return ads
     end
-
-    return self
 end

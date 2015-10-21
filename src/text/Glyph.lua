@@ -7,12 +7,8 @@
 
 Glyph = Class()
 
-function Glyph.new(_char, _width, _frame)
-    local self = {}
-
+function Glyph.new(self, _char, _width, _frame)
     self.char = _char
     self.width = _width
     self.frame = _frame
-    
-    return self
 end

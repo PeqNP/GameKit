@@ -6,16 +6,12 @@
 
 MediationAdConfig = Class()
 
-function MediationAdConfig.new(adnetwork, adtype, adimpressiontype, frequency, reward)
-    local self = {}
-
+function MediationAdConfig.new(self, adnetwork, adtype, adimpressiontype, frequency, reward)
     self.adnetwork = adnetwork
     self.adtype = adtype
     self.adimpressiontype = adimpressiontype
     self.frequency = frequency
     self.reward = reward
-
-    return self
 end
 
 function MediationAdConfig.fromDictionary(dict)

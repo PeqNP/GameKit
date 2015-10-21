@@ -9,9 +9,7 @@ Sound = Class()
 
 local engine = cc.SimpleAudioEngine:getInstance()
 
-function Sound.new()
-    local self = {}
-
+function Sound.new(self)
     local isOn = true
 
     function self.setOn(on)
@@ -67,8 +65,6 @@ function Sound.new()
     function self.getLengthInSeconds(fxId)
         return engine:getEffectLengthInSeconds(fxId)
     end
-
-    return self
 end
 
 function Sound.getEngine()

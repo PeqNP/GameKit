@@ -15,9 +15,7 @@ AdUnit = Class()
   @param id - id of the AdUnit
   @param tiers - the individual tiers that provide reward/config info, for a given state within the app.
 --]]
-function AdUnit.new(id, startdate, enddate, waitsecs, maxclicks, tiers)
-    local self = {}
-
+function AdUnit.new(self, id, startdate, enddate, waitsecs, maxclicks, tiers)
     self.id = id
     self.startdate = startdate
     self.enddate = enddate
@@ -68,6 +66,4 @@ function AdUnit.new(id, startdate, enddate, waitsecs, maxclicks, tiers)
     end
 
     self.setTiers(tiers)
-
-    return self
 end

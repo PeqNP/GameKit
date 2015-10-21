@@ -1,7 +1,6 @@
 LongPressGesture = Class()
 
-function LongPressGesture.new(point, prevPoint, touch)
-    local self = {}
+function LongPressGesture.new(self, point, prevPoint, touch)
     self.point = point
     self.prevPoint = prevPoint
     self.touch = touch
@@ -28,6 +27,4 @@ function LongPressGesture.new(point, prevPoint, touch)
     function self.toWorldSpace(node)
         return LongPressGesture(node:convertToWorldSpace(self.point), node:convertToWorldSpace(self.prevPoint), self.direction)
     end
-
-    return self
 end

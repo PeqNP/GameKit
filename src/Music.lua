@@ -7,8 +7,7 @@ require("Logger")
 
 Music = Class()
 
-function Music.new()
-    local self = {}
+function Music.new(self)
     local tweenId
     local _bgPath
     local isOn = true
@@ -101,6 +100,4 @@ function Music.new()
         tweenId = cu.scheduleScriptEntry(tweenTick, 0, false)
         return p
     end
-
-    return self
 end

@@ -8,8 +8,7 @@
 
 Frame = Class()
 
-function Frame.new(_frameNum, _bbox)
-    local self = {}
+function Frame.new(self, _frameNum, _bbox)
     self.number = _frameNum
     if _bbox then
         self.bbox = {x = _bbox[1], y = _bbox[2], width = _bbox[3], height = _bbox[4]}
@@ -17,5 +16,4 @@ function Frame.new(_frameNum, _bbox)
         self.bbox = false
     end
     self.sprite = false
-    return self
 end

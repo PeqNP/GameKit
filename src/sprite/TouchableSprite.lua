@@ -13,9 +13,7 @@ setmetatable(TouchableSprite, {
     end,
 })
 
-function TouchableSprite.new(_layer, _imgName, _onTouch)
-    local self = {}
-
+function TouchableSprite.new(self, _layer, _imgName, _onTouch)
     self.sprite = cc.Sprite:create(_imgName)
     _layer:addChild(self.sprite)
     self.enabled = true
@@ -45,6 +43,4 @@ function TouchableSprite.new(_layer, _imgName, _onTouch)
     listener:setSwallowTouches(true)
     listener:registerScriptHandler(onTouchBegan, cc.Handler.EVENT_TOUCH_BEGAN)
     eventDispatcher:addEventListenerWithSceneGraphPriority(listener, self.sprite)
-
-    return self
 end

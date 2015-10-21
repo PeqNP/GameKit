@@ -11,9 +11,7 @@ require "royal.AdManifest"
 
 AdManifestParser = Class()
 
-function AdManifestParser.new(classes)
-    local self = {}
-
+function AdManifestParser.new(self, classes)
     if not classes or #classes == 0 then
         --Log.w("AdManifest: No classes specified! Falling back to base class AdManifest")
         classes = {AdManifest}
@@ -36,8 +34,6 @@ function AdManifestParser.new(classes)
         end
         return class.new(ver, dict["created"], dict["ttl"], dict["units"])
     end
-
-    return self
 end
 
 Singleton(AdManifestParser)

@@ -6,12 +6,8 @@
 
 AdRequestCallback = Class()
 
-function AdRequestCallback.new(callback, file, request)
-    local self = {}
-
+function AdRequestCallback.new(self, callback, file, request)
     function self.execute()
         callback(file, request)
     end
-    
-    return self
 end

@@ -14,9 +14,7 @@ require "mediation.MediationAdConfig"
 
 MediationService = Class()
 
-function MediationService.new(host, port, path)
-    local self = {}
-
+function MediationService.new(self, host, port, path)
     self.host = host
     self.port = port
     self.path = path
@@ -54,6 +52,4 @@ function MediationService.new(host, port, path)
         request:send()
         return promise
     end
-
-    return self
 end

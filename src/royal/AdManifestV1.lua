@@ -7,21 +7,17 @@
 
 require "royal.AdManifest"
 
-AdManifestV1 = Class()
+AdManifestV1 = Class(AdManifest)
 
 --[[ Create a new AdManifest.
 
   @param version - version of the manifest
   @param ttl - the length of time this manifest will locally before the manifest is queried again.
 --]]
-function AdManifestV1.new()
-    local self = AdManifest()
-
+function AdManifestV1.new(self)
     local _parseJson = self.parseJson
     function self.parseJson(json)
         local dict = _parseJson(json)
         -- @todo
     end
-
-    return self
 end

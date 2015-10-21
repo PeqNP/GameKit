@@ -12,9 +12,7 @@ require "Glyph"
 
 TypeSetter = Class()
 
-function TypeSetter.new(_sheet, _data, _kerning)
-    local self = {}
-
+function TypeSetter.new(self, _sheet, _data, _kerning)
     local _glyphs = {}
 
     local function initialize()
@@ -55,6 +53,4 @@ function TypeSetter.new(_sheet, _data, _kerning)
     end
 
     initialize()
-
-    return self
 end

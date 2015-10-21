@@ -22,9 +22,7 @@ end
 NotificationCenter = Class()
 Singleton(NotificationCenter)
 
-function NotificationCenter.new()
-    local self = {}
-
+function NotificationCenter.new(self)
     local _observers = {}
     
     --[[ Add observer for given event. ]]--
@@ -88,6 +86,4 @@ function NotificationCenter.new()
             obs.callback(obj)
         end
     end
-
-    return self
 end

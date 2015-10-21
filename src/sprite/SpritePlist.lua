@@ -27,9 +27,7 @@ function SpritePlist.clean(name)
     end
 end
 
-function SpritePlist.new(textureName, frames, scale)
-    local self = {}
-
+function SpritePlist.new(self, textureName, frames, scale)
     self.scale = scale
     local imageName = textureName..".png"
     local plistName = textureName..".plist"
@@ -113,6 +111,4 @@ function SpritePlist.new(textureName, frames, scale)
     end
 
     SpritePlist.register(textureName, self)
-
-    return self
 end

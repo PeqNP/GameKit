@@ -1,8 +1,6 @@
 SwipeGesture = Class()
 
-function SwipeGesture.new(start, stop, direction)
-    local self = {}
-
+function SwipeGesture.new(self, start, stop, direction)
     self.start = start
     self.stop = stop
     self.direction = direction
@@ -12,6 +10,4 @@ function SwipeGesture.new(start, stop, direction)
     self.angle = cc.pGetAngle(start, stop)
     -- local slideMulitplier = self.magnitude / 200;
     -- local slideFactor = 0.1 * slideMultiplier
-
-    return self
 end

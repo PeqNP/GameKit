@@ -6,9 +6,7 @@ require "ad.Constants"
 MediationAdFactory = Class()
 
 -- @param MediationAdConfigs[] configs
-function MediationAdFactory.new(configs)
-    local self = {}
-
+function MediationAdFactory.new(self, configs)
     local queue = {}
     local lastError = false
 
@@ -95,6 +93,4 @@ function MediationAdFactory.new(configs)
     end
 
     init()
-
-    return self
 end
