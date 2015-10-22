@@ -26,6 +26,17 @@ function Class(extends)
         return string.format("Instantiated in file (%s) on line (%d)", info.source, info.currentline)
     end
 
+    -- Abstract --
+    local abstract
+    function class.abstract(a)
+        abstract = a
+    end
+
+    -- Returns the protocol that every subclass of this class must conform to.
+    function class.protocol()
+        return abstract
+    end
+
     -- Subclassing --
     function class.kindOf(kind)
         if kind == class then
@@ -41,7 +52,8 @@ function Class(extends)
     local protocols = {}
 
     function class.implements(...)
-        protocols = {...}
+        local args = {...}
+        table.extend(protocols, args)
     end
 
     function class.conformsTo(protocol)
@@ -67,6 +79,13 @@ function Class(extends)
             protocol.validate(instance)
         end
         validated = true
+    end
+
+    if extends then
+        local protocol = extends.protocol()
+        if protocol then
+            class.implements(protocol)
+        end
     end
 
     -- Factory --
@@ -114,7 +133,7 @@ end
 --
 function Singleton(class, ...)
     if class.singleton then
-        assert(false, string.format("Can not redefine the singleton instance of class (%s)", class.__info()))
+        assert(false, string.format("Can not redefine the singleton instance of class (%s)", class.__tostring()))
     end
     class.singleton = class(...)
 end
