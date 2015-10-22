@@ -20,6 +20,9 @@ function AdManager.new(self, adaptor, adFactory)
     local requests = {}
     local private = {}
 
+    -- @edge Ensure network modules have unique network/ad type combination. It make no sense
+    -- to have a module of the same type.
+
     function private.getNetworkModule(adNetwork, adType)
         for _, module in ipairs(networkModules) do
             if module.getAdNetwork() == adNetwork and module.getAdType() == adType then
@@ -40,9 +43,9 @@ function AdManager.new(self, adaptor, adFactory)
         local incomplete = {}
         for pos, request in ipairs(requests) do
             if request.isComplete() then
-                -- @fixme Hmm... should the request have a reference to its respective AdModule?
-                -- Should the module maintain its current request?
-                local adNetwork = request.getAdNetwork() 
+                -- @fixme To make this more simple, does it make sense of the AdRequest to
+                -- have a reference to its respective module?
+                local adNetwork = request.getAdNetwork()
                 local adType = request.getAdType()
                 local module = private.getNetworkModule(adNetwork, adType)
                 if module then
@@ -148,6 +151,15 @@ function AdManager.new(self, adaptor, adFactory)
         return promise
     end
 
+    function private.showFirstAvailableAd(adType, _requests)
+        for _, request in ipairs(_requests) do
+            if request.getState() == AdState.Ready then
+                return private.showAdForRequest(request)
+            end
+        end
+        return nil
+    end
+
     --
     -- Show an ad type.
     --
@@ -157,6 +169,9 @@ function AdManager.new(self, adaptor, adFactory)
     --
     function self.showAd(adType)
         local _requests = private.getRequestsForType(adType)
+        if not adFactory then
+            return private.showFirstAvailableAd(adType, _requests)
+        end
         local nextAd = adFactory.nextAd(adType)
         if nextAd then
             -- Show the request for this specific network.
@@ -166,14 +181,7 @@ function AdManager.new(self, adaptor, adFactory)
                 end
             end
         end
-        -- The ad network is not available or this type of ad is not configured.
-        -- Show the first available ad for this type.
-        for _, request in ipairs(_requests) do
-            if request.getState() == AdState.Ready then
-                return private.showAdForRequest(request)
-            end
-        end
-        return nil
+        return private.showFirstAvailableAd(adType, _requests)
     end
 
     function self.getError()

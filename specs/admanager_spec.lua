@@ -323,3 +323,37 @@ describe("AdManager", function()
         end)
     end)
 end)
+
+describe("AdManager when no ad factory", function()
+    local subject
+    local adFactory
+    local module
+    local request
+    local promisec
+    local promises
+
+    before_each(function()
+        promisec = Promise()
+        promises = Promise()
+
+        adaptor = mock(AdAdaptor(), true)
+        stub(adaptor, "cache").and_return(promisec)
+        stub(adaptor, "show").and_return(promises)
+
+        subject = AdManager(adaptor)
+
+        module = AdMobInterstitial()
+        subject.registerNetworkModule(module)
+
+        request = subject.getRequests()[1]
+        assert.truthy(request) -- should have created a request
+
+        assert.truthy(promisec) -- should have called cache method
+        promisec.resolve(AdResponse(request.getId(), AdState.Ready))
+    end)
+
+    it("should have displayed an ad mob ad", function()
+        assert.truthy(subject.showAd(AdType.Interstitial))
+        assert.stub(adaptor.show).was.called_with(request)
+    end)
+end)
