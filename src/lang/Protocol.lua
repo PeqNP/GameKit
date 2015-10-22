@@ -5,8 +5,17 @@
 function Method(name, required)
     local self = {}
 
-    self.name = name
-    self.required = required
+    if required == nil then
+        required = true
+    end
+
+    function self.getName()
+        return name
+    end
+
+    function self.isRequired()
+        return required
+    end
 
     return self
 end
@@ -23,8 +32,8 @@ function Protocol(...)
     function self.validate(instance)
         if #methods == 0 then return end
         for _, method in ipairs(methods) do
-            if method.required and type(instance[method.name]) ~= "function" then
-                assert(false, string.format("Class instance (%s) must implement protocol method (%s). %s", instance.getClassName(), method.name, instance.getClass().__tostring()))
+            if method.isRequired() and type(instance[method.getName()]) ~= "function" then
+                assert(false, string.format("Class instance (%s) must implement protocol method (%s). %s", instance.getClassName(), method.getName(), instance.getClass().__tostring()))
             end
         end
     end

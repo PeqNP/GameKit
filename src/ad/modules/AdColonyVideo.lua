@@ -3,11 +3,9 @@
 --
 
 require("ad.AdModule")
-require("ad.AdModuleProtocol")
 require("ad.AdRequest")
 
 AdColonyVideo = Class(AdModule)
-AdColonyVideo.implements(AdModuleProtocol)
 
 function AdColonyVideo.new(self, zone, reward)
     function self.getConfig()

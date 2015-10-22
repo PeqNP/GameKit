@@ -3,9 +3,20 @@
 --
 
 AdModule = Class()
+AdModule.abstract(Protocol(
+    -- Return config used to initialize network module.
+    Method("getConfig")
+    -- Returns the ad network ID used by this module.
+  , Method("getAdNetwork")
+    -- Returns the name of the ad network used by this module.
+  , Method("getAdNetworkName")
+    -- Returns the AdType
+  , Method("getAdType")
+    -- Generates a request struct that can be marshalled between Lua and native land.
+  , Method("generateAdRequest")
+))
 
 function AdModule.new(self)
-
     local devices
 
     function self.setDevices(d)

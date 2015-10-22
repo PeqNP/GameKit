@@ -3,11 +3,9 @@
 --
 
 require("ad.AdModule")
-require("ad.AdModuleProtocol")
 require("ad.AdRequest")
 
 AdMobInterstitial = Class(AdModule)
-AdMobInterstitial.implements(AdModuleProtocol)
 
 function AdMobInterstitial.new(self, zone, reward)
     function self.getConfig()
