@@ -68,3 +68,78 @@ describe("Class", function()
         end)
     end)
 end)
+
+Satan = Class()
+function Satan.new(self)
+end
+
+God = Class()
+function God.new(self, a, b)
+    function self.getA()
+        return a
+    end
+
+    function self.getB()
+        return b
+    end
+end
+
+Parent = Class(God)
+function Parent.new(self)
+end
+
+Child = Class(Parent)
+function Child.new(self)
+end
+
+describe("Class methods", function()
+    local god
+
+    before_each(function()
+        god = God(1, 2)
+    end)
+
+    it("should have passed through the parameters", function()
+        assert.equal(1, god.getA())
+        assert.equal(2, god.getB())
+    end)
+
+    it("should not conform to any protocols", function()
+        assert.equal(0, #God.getProtocols())
+    end)
+
+    it("should return the correct class", function()
+        assert.equal(God, god.getClass())
+    end)
+
+    it("should return the class name; the name of this file w/o the extension", function()
+        assert.equal("class_spec", god.getClassName())
+    end)
+
+    it("should be kind of self", function()
+        assert.truthy(god.kindOf(God))
+    end)
+end)
+
+describe("Subclassing", function()
+    describe("Child", function()
+        local child
+
+        before_each(function()
+            child = Child()
+        end)
+
+        it("should be kind of God and Parent class", function()
+            assert.truthy(child.kindOf(Parent))
+            assert.truthy(child.kindOf(God))
+        end)
+
+        it("should not be kind of Satan", function()
+            assert.falsy(child.kindOf(Satan))
+        end)
+
+        it("should be kind of self", function()
+            assert.truthy(child.kindOf(Child))
+        end)
+    end)
+end)
