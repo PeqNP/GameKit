@@ -4,13 +4,7 @@
 
 AdAdaptor = Class()
 
-local ndk
-
-function AdAdaptor.setNDK(_ndk)
-    ndk = _ndk
-end
-
-function AdAdaptor.new(self)
+function AdAdaptor.new(self, ndk)
     function self.configure(config)
         return ndk.send("ad__configure", config)
     end

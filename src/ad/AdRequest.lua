@@ -2,9 +2,11 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
+require "ndk.NDKRequestProtocol"
 require "ad.Constants"
 
 AdRequest = Class()
+AdRequest.implements(NDKRequestProtocol)
 
 -- ID used to track new ad requests.
 local _id = 0
@@ -52,5 +54,10 @@ function AdRequest.new(self, adModule, _state)
 
     function self.isComplete()
         return table.contains({AdState.Complete, AdState.Clicked}, state)
+    end
+
+    -- NDKRequestProtocol
+
+    function self.getMessage()
     end
 end
