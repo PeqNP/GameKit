@@ -6,18 +6,6 @@
 
 NDK = Class()
 
---[[ bridge
-if device.platform == "ios" then
-    ndk = require "cocos.cocos2d.luaoc"
-    controller = "GameController"
-    pfunc = iosparams
-elseif device.platform == "android" then
-    ndk = require "cocos.cocos2d.luaj"
-    controller = "org/cocos2dx/lua/AppActivity"
-    pfunc = androidparams
-end
---]]
-
 function NDK.new(self, bridge)
     local delegate
 
