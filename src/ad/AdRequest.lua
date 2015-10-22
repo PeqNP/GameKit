@@ -14,7 +14,7 @@ function get_next_id()
     return _id
 end
 
-function AdRequest.new(self, adNetwork, adType, zone, reward, _state)
+function AdRequest.new(self, adModule, _state)
     local id = get_next_id()
     local state = _state and _state or AdState.Initial
 
@@ -30,16 +30,24 @@ function AdRequest.new(self, adNetwork, adType, zone, reward, _state)
         return state
     end
 
+    function self.getAdModule()
+        return adModule
+    end
+
     function self.getAdNetwork()
-        return adNetwork
+        return adModule.getAdNetwork()
     end
 
     function self.getAdType()
-        return adType
+        return adModule.getAdType()
     end
 
     function self.getZone()
-        return zone
+        return adModule.getZone()
+    end
+
+    function self.getReward()
+        return adModule.getReward()
     end
 
     function self.isComplete()

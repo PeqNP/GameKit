@@ -2,12 +2,15 @@ require "lang.Signal"
 
 require "ad.Constants"
 require "ad.AdRequest"
+require "ad.modules.AdMobInterstitial"
 
 describe("AdRequest", function()
     local subject
+    local module
 
     before_each(function()
-        subject = AdRequest()
+        module = AdMobInterstitial("zone", 25)
+        subject = AdRequest(module)
     end)
 
     -- Start: These MUST be the first two tests! --
@@ -24,7 +27,29 @@ describe("AdRequest", function()
         assert.equal(AdState.Initial, subject.getState())
     end)
 
-    describe("setState", function()
+    it("should return correct module", function()
+        assert.equal(module, subject.getAdModule())
+    end)
+
+    it("should return correct ad network", function()
+        assert.equal(AdNetwork.AdMob, subject.getAdNetwork())
+    end)
+
+    it("should return correct ad type", function()
+        assert.equal(AdType.Interstitial, subject.getAdType())
+    end)
+
+    it("should return the correct zone", function()
+        assert.truthy(subject.getZone()) -- sanity. Make sure it is a value and not nil.
+        assert.equal("zone", subject.getZone())
+    end)
+
+    it("should return the correct reward", function()
+        assert.truthy(subject.getReward()) -- sanity. Make sure it is a value and not nil.
+        assert.equal(25, subject.getReward())
+    end)
+
+    describe("state", function()
         before_each(function()
             subject.setState(AdState.Ready)
         end)

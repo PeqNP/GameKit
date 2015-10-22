@@ -7,6 +7,7 @@
 require("Logger")
 require("Promise")
 require("ad.Constants")
+require("ad.AdRequest")
 
 AdManager = Class()
 
@@ -43,16 +44,8 @@ function AdManager.new(self, adaptor, adFactory)
         local incomplete = {}
         for pos, request in ipairs(requests) do
             if request.isComplete() then
-                -- @fixme To make this more simple, does it make sense of the AdRequest to
-                -- have a reference to its respective module?
-                local adNetwork = request.getAdNetwork()
-                local adType = request.getAdType()
-                local module = private.getNetworkModule(adNetwork, adType)
-                if module then
-                    table.insert(modules, module)
-                else
-                    Log.e("Could not find module for ad network (%s) ad type (%s)", adNetwork, adType)
-                end
+                local module = request.getAdModule()
+                table.insert(modules, module)
             else
                 table.insert(incomplete, request)
             end
@@ -64,7 +57,7 @@ function AdManager.new(self, adaptor, adFactory)
     end
 
     function private.cacheModule(module)
-        local request = module.generateAdRequest()
+        local request = AdRequest(module)
         table.insert(requests, request)
         request.setState(AdState.Loading)
 

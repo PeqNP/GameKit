@@ -12,8 +12,6 @@ AdModule.abstract(Protocol(
   , Method("getAdNetworkName")
     -- Returns the AdType
   , Method("getAdType")
-    -- Generates a request struct that can be marshalled between Lua and native land.
-  , Method("generateAdRequest")
 ))
 
 function AdModule.new(self)
@@ -25,9 +23,5 @@ function AdModule.new(self)
 
     function self.getDevices()
         return devices
-    end
-
-    function self.generateAdRequest()
-        return AdRequest(self.getAdNetwork(), self.getAdType(), self.getZone(), self.getReward())
     end
 end

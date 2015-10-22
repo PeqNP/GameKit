@@ -9,19 +9,17 @@ describe("AdModule", function()
         subject = AdMobInterstitial()
     end)
 
-    describe("generate a request", function()
-        local request
+    describe("devices", function()
+        local devices
 
         before_each(function()
-            request = subject.generateAdRequest()
+            devices = {}
+            subject.setDevices(devices)
         end)
 
-        it("should not have changed the state of the request", function()
-            assert.equal(AdState.Initial, request.getState())
-        end)
-
-        it("should have created a new ad request", function()
-            assert.truthy(request.kindOf(AdRequest))
+        it("should return our devices", function()
+            assert.equal(devices, subject.getDevices())
         end)
     end)
+
 end)
