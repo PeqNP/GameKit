@@ -7,13 +7,52 @@ MediationAdFactory = Class()
 
 -- @param MediationAdConfigs[] configs
 function MediationAdFactory.new(self, configs)
-    local queue = {}
+    local queues = {}
     local lastError = false
+    local private = {}
 
-    self.configs = configs
+    --
+    -- Returns array of configs for a given ad type.
+    --
+    -- @param AdType
+    --
+    -- @return MediationAdConfig[]
+    --
+    function private.getConfigsForType(adType)
+        local cfg = {}
+        for _, config in ipairs(configs) do
+            if config.getAdType() == adType then
+                table.insert(cfg, config)
+            end
+        end
+        return cfg
+    end
 
-    local function init()
-        lastError = false
+    --
+    -- Returns array of configs grouped by their respective ad type.
+    --
+    -- @return {AdType:MediationAdConfig}
+    --
+    function private.getGroupedConfigs()
+        local groups = {}
+        for adType=AdType['MIN'], AdType['MAX'] do
+            groups[adType] = private.getConfigsForType(adType)
+        end
+        return groups
+    end
+
+    --
+    -- Computes and returns the frequency, and order, in which ad configs
+    -- should be displayed.
+    -- 
+    -- @param MediationAdConfig[]
+    --
+    -- @return MediationAdConfig[]
+    --
+    function private.getQueueForConfigs(configs)
+        if #configs < 1 then
+            return {}
+        end
 
         local totalFrequency = 0.0
         local frequencies = {}
@@ -48,6 +87,8 @@ function MediationAdFactory.new(self, configs)
         -- @todo What happens when totalFrequency < 100?
         -- @todo What happens when only premium?
 
+        local queue = {}
+
         -- Create queue containing the frequency in which the ads should be displayed.
         local currentInterval = 1
         local numRevolutions = math.floor(highestInterval / #frequencies)
@@ -69,6 +110,21 @@ function MediationAdFactory.new(self, configs)
         for _, config in ipairs(intervals) do
             table.insert(queue, config.getFrequency(), config)
         end
+
+        return queue
+    end
+
+    local function init()
+        lastError = false
+
+        local groups = private.getGroupedConfigs()
+        for adType, configs in ipairs(groups) do
+            queues[adType] = private.getQueueForConfigs(configs)
+        end
+    end
+
+    function self.getConfigs()
+        return configs
     end
 
     function self.getLastError()
@@ -76,11 +132,12 @@ function MediationAdFactory.new(self, configs)
     end
     
     function self.getQueue(adType)
-        return queue
+        return queues[adType]
     end
 
     local interval = 0
     function self.nextAd(adType)
+        local queue = queues[adType]
         if #queue < 1 then
             return nil
         end

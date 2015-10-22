@@ -25,21 +25,23 @@ describe("MediationAdFactory", function()
     local admobAd
     local regularAd
     local premiumAd
+    local videoAd
 
     describe("Intersitial 50/50, show premium every 5 ads", function()
         before_each(function()
             admobAd = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
             regularAd = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
             premiumAd = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Premium, 5, 20)
-            configs = {admobAd, regularAd, premiumAd}
+            videoAd = MediationAdConfig(AdNetwork.AdColony, AdType.Video, AdImpressionType.Regular, 100, 20)
+            configs = {admobAd, regularAd, premiumAd, videoAd}
             subject = MediationAdFactory(configs)
         end)
 
         it("should have set the set configs", function()
-            assert.equals(configs, subject.configs)
+            assert.equals(configs, subject.getConfigs())
         end)
 
-        it("should produce the correct queue", function()
+        it("should produce the correct queue for interstitial ads", function()
             local queue = subject.getQueue(AdType.Interstitial)
             assert.equals(5, #queue)
 
@@ -50,7 +52,13 @@ describe("MediationAdFactory", function()
             assert.equals(premiumAd, queue[5])
         end)
 
-        describe("next", function()
+        it("should produce the correct queue for video ads", function()
+            local queue = subject.getQueue(AdType.Video)
+            assert.equals(1, #queue)
+            assert.equals(videoAd, queue[1])
+        end)
+
+        describe("next interstitial", function()
             it("should return correct values", function()
                 assert.equals(admobAd, subject.nextAd(AdType.Interstitial))
                 assert.equals(regularAd, subject.nextAd(AdType.Interstitial))
@@ -59,6 +67,13 @@ describe("MediationAdFactory", function()
                 assert.equals(premiumAd, subject.nextAd(AdType.Interstitial))
                 -- should restart
                 assert.equals(admobAd, subject.nextAd(AdType.Interstitial))
+            end)
+        end)
+
+        describe("next video", function()
+            it("should return correct ads", function()
+                assert.equal(videoAd, subject.nextAd(AdType.Video))
+                assert.equal(videoAd, subject.nextAd(AdType.Video))
             end)
         end)
     end)
@@ -190,7 +205,7 @@ describe("MediationAdFactory", function()
         end)
     end)
 
-    describe("when there is no frequency in the ad configurations #force", function()
+    describe("when there is no frequency in the ad configurations", function()
         before_each(function()
             admobAd = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 0, 5)
             regularAd = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 0, 5)
