@@ -4,9 +4,9 @@
 
 --]]
 
-NDK = Class()
+Bridge = Class()
 
-function NDK.new(self, bridge)
+function Bridge.new(self, bridge)
     local delegate
 
     -- @return Promise

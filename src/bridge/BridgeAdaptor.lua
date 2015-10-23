@@ -2,9 +2,11 @@
 -- @since 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-NDKBridge = Class()
+require "Logger"
 
-function NDKBridge(self, platform, controller, paramFn)
+BridgeAdaptor = Class()
+
+function BridgeAdaptor(self, platform, controller, paramFn)
     function self.send(method, args, sig)
         local ok, ret = platform.callStaticMethod(controller, method, paramFn(args), sig)
         if ret == nil then
@@ -16,7 +18,8 @@ end
 
 -- @fixme The 'controller' needs to be pulled from the configuration.
 -- Not statically set here.
-function NDK.getBridge()
+-- @fixme 'platform' should be an enumeration. Not a string.
+function BridgeAdaptor.getAdaptor(platform)
     local function iosparams(params)
         if type(params) ~= "table" then
             Log.d("iosparams -> Not a table")
@@ -39,15 +42,15 @@ function NDK.getBridge()
     end
 
     local platform
-    if device.platform == "ios" then
+    if platform == "ios" then
         platform = require("cocos.cocos2d.luaoc")
         controller = "GameController"
         pfunc = iosparams
-    elseif device.platform == "android" then
+    elseif platform == "android" then
         platform = require("cocos.cocos2d.luaj")
         controller = "org/cocos2dx/lua/AppActivity"
         pfunc = androidparams
     end
 
-    return NDKBridge(platform, controller, paramFn)
+    return BridgeAdaptor(platform, controller, paramFn)
 end
