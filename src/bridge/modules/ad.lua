@@ -2,6 +2,8 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
+require "ad.AdResponse"
+
 local ad = {}
 
 local bridge
@@ -30,7 +32,7 @@ end
 -- Receive
 
 function ad__callback(response)
-    bridge.receive(response)
+    bridge.receive(AdResponse(response["id"], response["state"], response["error"]))
 end
 
 return ad

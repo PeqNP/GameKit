@@ -4,8 +4,11 @@
 
 require "Promise"
 
-BridgeRequest = Class()
-function BridgeRequest.new(self, request, promise)
+BridgeCall = Class()
+function BridgeCall.new(self, request, promise)
+    function self.getId()
+        return request.getId()
+    end
     function self.getRequest()
         return request
     end
@@ -17,6 +20,7 @@ end
 Bridge = Class()
 
 function Bridge.new(self, adaptor)
+    local private = {}
     local requests = {}
     local modules = {}
     local registeredModules = {}
@@ -25,7 +29,11 @@ function Bridge.new(self, adaptor)
         return adaptor
     end
 
-    function self.isModuleRegistered(module)
+    function self.getRequests()
+        return requests
+    end
+
+    function private.isModuleRegistered(module)
         for _, registered in ipairs(registeredModules) do
             if module == registered then
                 return true
@@ -40,7 +48,7 @@ function Bridge.new(self, adaptor)
     -- @param string - The name of the module path to load. Ex: 'bridge.modules.ad'
     --
     function self.registerModule(moduleName)
-        if self.isModuleRegistered(moduleName) then
+        if private.isModuleRegistered(moduleName) then
             return
         end
         local module = require(moduleName)
@@ -56,9 +64,9 @@ function Bridge.new(self, adaptor)
     -- @return Promise
     function self.send(method, request, sig)
         local promise = Promise()
-        local ok = adaptor.send(method, request.getMessage())
+        local ok = adaptor.send(method, request.getMessage(), sig)
         if ok then
-            local req = BridgeRequest(request, promise)
+            local req = BridgeCall(request, promise)
             table.insert(requests, req)
         else
             promise.reject(string.format("Failed to call method (%s)", method))
@@ -66,6 +74,23 @@ function Bridge.new(self, adaptor)
         return promise
     end
 
+    function private.getRequestForResponse(response)
+        for idx, request in ipairs(requests) do
+            if request.getId() == response.getId() then
+                return idx, request
+            end
+        end
+        return nil, nil
+    end
+
+    -- @param id<BridgeResponseProtocol>
     function self.receive(response)
+        local idx, request = private.getRequestForResponse(response)
+        if not request then
+            Log.e("Response (%s) no longer has corresponding request!", response.getId())
+            return
+        end
+        request.getPromise().resolve(response)
+        table.remove(requests, idx)
     end
 end
