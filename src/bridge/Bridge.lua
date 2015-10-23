@@ -18,9 +18,39 @@ Bridge = Class()
 
 function Bridge.new(self, adaptor)
     local requests = {}
+    local modules = {}
+    local registeredModules = {}
 
     function self.getAdaptor()
         return adaptor
+    end
+
+    function self.isModuleRegistered(module)
+        for _, registered in ipairs(registeredModules) do
+            if module == registered then
+                return true
+            end
+        end
+        return false
+    end
+
+    --
+    -- Load and register a module with the Bridge.
+    --
+    -- @param string - The name of the module path to load. Ex: 'bridge.modules.ad'
+    --
+    function self.registerModule(moduleName)
+        if self.isModuleRegistered(moduleName) then
+            return
+        end
+        local module = require(moduleName)
+        module.init(self)
+        table.insert(modules, module)
+        table.insert(registeredModules, moduleName)
+    end
+
+    function self.getModules()
+        return modules
     end
 
     -- @return Promise
