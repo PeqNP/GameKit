@@ -8,7 +8,6 @@ require "ad.AdManager"
 require "ad.AdResponse"
 require "ad.modules.AdMobInterstitial"
 require "ad.modules.AdColonyVideo"
-require "ndk.AdAdaptor"
 require "mediation.MediationAdFactory"
 require "mediation.MediationAdConfig"
 
@@ -16,15 +15,15 @@ describe("AdManager", function()
     local subject
     local config
     local delegate
-    local adaptor
+    local bridge
     local adFactory
 
     before_each(function()
         delegate = {}
-        adaptor = mock(AdAdaptor(), true)
+        bridge = require("ndk.modules.ad")
         adFactory = mock(MediationAdFactory({}), true)
 
-        subject = AdManager(adaptor, adFactory)
+        subject = AdManager(bridge, adFactory)
         subject.setDelegate(delegate)
     end)
 
@@ -57,7 +56,7 @@ describe("AdManager", function()
             modulei = AdMobInterstitial()
             modulev = AdColonyVideo()
 
-            function adaptor.cache(request)
+            function bridge.cache(request)
                 if request.getAdNetwork() == AdNetwork.AdMob then
                     promisei = Promise()
                     return promisei
@@ -131,7 +130,7 @@ describe("AdManager", function()
                 describe("show the ad", function()
                     before_each(function()
                         local promise = Promise()
-                        stub(adaptor, "show").and_return(promise)
+                        stub(bridge, "show").and_return(promise)
 
                         assert.falsy(subject.showAd(AdType.Video))
                         assert.truthy(subject.showAd(AdType.Interstitial))
@@ -142,11 +141,11 @@ describe("AdManager", function()
                     end)
 
                     it("should show the interstitial ad", function()
-                        assert.stub(adaptor.show).was.called_with(requesti)
+                        assert.stub(bridge.show).was.called_with(requesti)
                     end)
 
                     it("should NOT have shown the video ad", function()
-                        assert.stub(adaptor.show).was_not.called_with(requestv)
+                        assert.stub(bridge.show).was_not.called_with(requestv)
                     end)
                 end)
             end)
@@ -156,7 +155,7 @@ describe("AdManager", function()
 
                 before_each(function()
                     local promise = Promise()
-                    stub(adaptor, "show").and_return(promise)
+                    stub(bridge, "show").and_return(promise)
 
                     config = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
                     stub(adFactory, "nextAd").and_return(config)
@@ -164,7 +163,7 @@ describe("AdManager", function()
                 end)
 
                 it("should have shown an AdMob ad", function()
-                    assert.stub(adaptor.show).was.called_with(requesti)
+                    assert.stub(bridge.show).was.called_with(requesti)
                 end)
             end)
 
@@ -173,7 +172,7 @@ describe("AdManager", function()
 
                 before_each(function()
                     local promise = Promise()
-                    stub(adaptor, "show").and_return(promise)
+                    stub(bridge, "show").and_return(promise)
 
                     config = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
                     stub(adFactory, "nextAd").and_return(config)
@@ -181,7 +180,7 @@ describe("AdManager", function()
                 end)
 
                 it("should show the next available ad type, AdMob #f", function()
-                    assert.stub(adaptor.show).was.called_with(requesti)
+                    assert.stub(bridge.show).was.called_with(requesti)
                 end)
             end)
         end)
@@ -258,7 +257,7 @@ describe("AdManager", function()
                     before_each(function()
                         promise = Promise()
                         stub(adFactor, nextAd).and_return(nil)
-                        stub(adaptor, "show").and_return(promise)
+                        stub(bridge, "show").and_return(promise)
                         stub(cu, "delayCall")
 
                         assert.falsy(subject.showAd(AdType.Interstitial))
@@ -266,7 +265,7 @@ describe("AdManager", function()
                     end)
 
                     it("should show the video ad", function()
-                        assert.stub(adaptor.show).was.called_with(requestv)
+                        assert.stub(bridge.show).was.called_with(requestv)
                     end)
 
                     it("should be presenting the request", function()
@@ -336,11 +335,11 @@ describe("AdManager when no ad factory", function()
         promisec = Promise()
         promises = Promise()
 
-        adaptor = mock(AdAdaptor(), true)
-        stub(adaptor, "cache").and_return(promisec)
-        stub(adaptor, "show").and_return(promises)
+        bridge = require("ndk.modules.ad")
+        stub(bridge, "cache").and_return(promisec)
+        stub(bridge, "show").and_return(promises)
 
-        subject = AdManager(adaptor)
+        subject = AdManager(bridge)
 
         module = AdMobInterstitial()
         subject.registerNetworkModule(module)
@@ -354,6 +353,6 @@ describe("AdManager when no ad factory", function()
 
     it("should have displayed an ad mob ad", function()
         assert.truthy(subject.showAd(AdType.Interstitial))
-        assert.stub(adaptor.show).was.called_with(request)
+        assert.stub(bridge.show).was.called_with(request)
     end)
 end)
