@@ -1,4 +1,9 @@
 
+local c = {}
+c["method"] = function() print("hi") end
+c.method()
+os.exit(0)
+
 local d = {eric= "me"}
 print(d["eric"])
 os.exit(0)
