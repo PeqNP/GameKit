@@ -1,4 +1,8 @@
 
+local d = {eric= "me"}
+print(d["eric"])
+os.exit(0)
+
 function fn2(self, ...)
     print(self)
     local arg = {...}

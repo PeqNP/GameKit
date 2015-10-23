@@ -5,7 +5,7 @@
 local ad = {}
 
 local ndk
-function ad.set_ndk(ndk)
+function ad.init(ndk)
     ndk = ndk
 end
 
@@ -29,24 +29,8 @@ end
 
 -- Receive
 
-function ad__callback_cached(response)
+function ad__callback(response)
     ndk.receive(response)
-end
-
-function ad__callback_presented(response)
-    ndk.receive(response)
-end
-
-function ad__callback_clicked(response)
-    ndk.receive(response)
-end
-
-function ad__callback_closed(response)
-    ndk.receive(response)
-end
-
-function ad__callback_failed(response, err)
-    ndk.receive(response, err)
 end
 
 return ad

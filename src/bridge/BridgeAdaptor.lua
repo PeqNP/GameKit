@@ -6,9 +6,11 @@ require "Logger"
 
 BridgeAdaptor = Class()
 
-function BridgeAdaptor(self, platform, controller, paramFn)
+function BridgeAdaptor.new(self, platform, controller, paramFn)
     function self.send(method, args, sig)
         local ok, ret = platform.callStaticMethod(controller, method, paramFn(args), sig)
+        -- @fixme This needs more definition. The variables returned have no meaning as
+        -- to what they do. Apparently, they are also different for every platform.
         if ret == nil then
             return ok
         end
@@ -42,14 +44,16 @@ function BridgeAdaptor.getAdaptor(platform)
     end
 
     local platform
+    local controller
+    local paramFn
     if platform == "ios" then
         platform = require("cocos.cocos2d.luaoc")
         controller = "GameController"
-        pfunc = iosparams
+        paramFn = iosparams
     elseif platform == "android" then
         platform = require("cocos.cocos2d.luaj")
         controller = "org/cocos2dx/lua/AppActivity"
-        pfunc = androidparams
+        paramFn = androidparams
     end
 
     return BridgeAdaptor(platform, controller, paramFn)

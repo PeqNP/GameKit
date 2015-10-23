@@ -2,27 +2,13 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeRequestProtocol"
+require "bridge.BridgeRequest"
 require "ad.Constants"
 
-AdRequest = Class()
-AdRequest.implements(BridgeRequestProtocol)
-
--- ID used to track new ad requests.
-local _id = 0
-
-function get_next_id()
-    _id = _id + 1
-    return _id
-end
+AdRequest = Class(BridgeRequest)
 
 function AdRequest.new(self, adModule, _state)
-    local id = get_next_id()
     local state = _state and _state or AdState.Initial
-
-    function self.getId()
-        return id
-    end
 
     function self.setState(s)
         state = s
@@ -56,7 +42,7 @@ function AdRequest.new(self, adModule, _state)
         return table.contains({AdState.Complete, AdState.Clicked}, state)
     end
 
-    -- BridgeRequestProtocol
+    -- BridgeRequest
 
     function self.getMessage()
     end
