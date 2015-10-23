@@ -20,7 +20,7 @@ describe("AdManager", function()
 
     before_each(function()
         delegate = {}
-        bridge = require("ndk.modules.ad")
+        bridge = require("bridge.modules.ad")
         adFactory = mock(MediationAdFactory({}), true)
 
         subject = AdManager(bridge, adFactory)
@@ -335,7 +335,7 @@ describe("AdManager when no ad factory", function()
         promisec = Promise()
         promises = Promise()
 
-        bridge = require("ndk.modules.ad")
+        bridge = require("bridge.modules.ad")
         stub(bridge, "cache").and_return(promisec)
         stub(bridge, "show").and_return(promises)
 
