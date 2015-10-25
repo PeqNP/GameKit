@@ -99,9 +99,12 @@ keys = {
 # The pbxproj does not need to be a template.
 shutil.copyfile(CPATH + "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj", CPATH + "stage/project.pbxproj")
 
+iOS_plist = "templates/ios/Info.plist"
+iOS_Prefix = "templates/ios/Prefix.pch"
+
 files = {
-    "templates/ios/Info.plist": "frameworks/runtime-src/proj.ios_mac/ios/Info.plist"
-  , "templates/ios/Prefix.pch": "frameworks/runtime-src/proj.ios_mac/ios/Prefix.pch"
+    iOS_plist: "frameworks/runtime-src/proj.ios_mac/ios/Info.plist"
+  , iOS_Prefix: "frameworks/runtime-src/proj.ios_mac/ios/Prefix.pch"
   , "stage/project.pbxproj": "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj"
   , "templates/config.lua": "src/config.lua"
 }
@@ -112,19 +115,28 @@ for tpl, target in files.iteritems():
     blob = fh.read()
     for key, val in keys.iteritems():
         blob = re.sub(key, str(val), blob)
-    # @note These replacements MUST be done in order.
-    blob = re.sub("productName = GameTools;", "productName = {};".format(config["executable"]), blob)
-    blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = {};".format(config["bundle"]), blob)
+    if iOS_plist:
+        # @note These replacements MUST be done in order.
+        blob = re.sub("productName = GameTools;", "productName = {};".format(config["executable"]), blob)
+        blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = {};".format(config["bundle"]), blob)
 
-    blob = re.sub("GameTools-mobile.app", "{}-mobile.app".format(config["executable"]), blob)
-    blob = re.sub("\/\* GameTools-mobile \*\/", "/* {}-mobile */".format(config["executable"]), blob)
-    blob = re.sub('"GameTools-mobile"', '"{}-mobile"'.format(config["executable"]), blob)
+        blob = re.sub("GameTools-mobile.app", "{}-mobile.app".format(config["executable"]), blob)
+        blob = re.sub("\/\* GameTools-mobile \*\/", "/* {}-mobile */".format(config["executable"]), blob)
+        blob = re.sub('"GameTools-mobile"', '"{}-mobile"'.format(config["executable"]), blob)
 
-    blob = re.sub("GameTools-desktop.app", "{}-desktop.app".format(config["executable"]), blob)
-    blob = re.sub("\/\* GameTools-desktop \*\/", "/* {}-desktop */".format(config["executable"]), blob)
-    blob = re.sub('"GameTools-desktop"', '"{}-desktop"'.format(config["executable"]), blob)
+        blob = re.sub("GameTools-desktop.app", "{}-desktop.app".format(config["executable"]), blob)
+        blob = re.sub("\/\* GameTools-desktop \*\/", "/* {}-desktop */".format(config["executable"]), blob)
+        blob = re.sub('"GameTools-desktop"', '"{}-desktop"'.format(config["executable"]), blob)
 
-    blob = re.sub('"GameTools"', '"{}"'.format(config["executable"]), blob)
+        blob = re.sub('"GameTools"', '"{}"'.format(config["executable"]), blob)
+    elif tpl == iOS_Prefix:
+        c = None
+        if config["orientation"] == "landscape":
+            c = """<string>UIInterfaceOrientationLandscapeRight</string>
+            <string>UIInterfaceOrientationLandscapeLeft</string>"""
+        else:
+            c = """<string>UIInterfaceOrientationPortrait</string>"""
+        blob = re.sub("##UGF-ORIENTATION-IOS##", c)
     fh.close()
     # Write
     stagepath = CPATH + "stage/" + os.path.split(tpl)[1]
