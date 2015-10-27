@@ -1,11 +1,11 @@
---[[ Provides base class for presenting downloaded ads to the end-user.
-
- @todo Filter adunits and tiers to have the highest paid tiers displayed first.
-
- @since 2015.06.05
- @copyright Upstart Illustration LLC
-
---]]
+--
+-- Provides base class for presenting downloaded ads to the end-user.
+--
+-- @todo Filter adunits and tiers to have the highest paid tiers displayed first.
+-- @todo Add a 'stylize' parameter that is used to style the button being presented.
+--
+-- @copyright Upstart Illustration LLC. All rights reserved.
+--
 
 AdPresenter = Class()
 
@@ -67,18 +67,11 @@ function AdPresenter.new(self, manifest, fn__configMatches)
         return ret
     end
 
-    -- @todo Over-ride this method if the sprite is to be stylized!
-    -- This should actually be composition. Pass in a class/fn that performs the
-    -- stylizing of the sprite.
-    function self.stylizeSprite(sprite)
-        return sprite
-    end
-
     function self.getNextTierButtons(amount, fn__callback)
         local buttons = {}
         local tiers = self.getNextTiers(amount)
         for _, tier in ipairs(tiers) do
-            local sprite = self.stylizeSprite(tier.getButtonSprite())
+            local sprite = tier.getButtonSprite() -- @todo Call 'stylize' fn here.
             local button = cu.SpriteButton(sprite, sprite)
             local function fn__clicked()
                 fn__callback(tier)
