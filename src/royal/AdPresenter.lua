@@ -67,7 +67,9 @@ function AdPresenter.new(self, manifest, fn__configMatches)
         return ret
     end
 
-    --[[ Over-ride this method if the sprite is to be stylized! ]]--
+    -- @todo Over-ride this method if the sprite is to be stylized!
+    -- This should actually be composition. Pass in a class/fn that performs the
+    -- stylizing of the sprite.
     function self.stylizeSprite(sprite)
         return sprite
     end
@@ -77,10 +79,11 @@ function AdPresenter.new(self, manifest, fn__configMatches)
         local tiers = self.getNextTiers(amount)
         for _, tier in ipairs(tiers) do
             local sprite = self.stylizeSprite(tier.getButtonSprite())
-            local button = cc.MenuItemSprite:create(sprite, sprite)
+            local button = cu.SpriteButton(sprite, sprite)
             local function fn__clicked()
                 fn__callback(tier)
             end
+            -- @fixme Calling a Cocos2d-x specific method!
             button:registerScriptTapHandler(fn__clicked)
             table.insert(buttons, button)
         end

@@ -1,6 +1,7 @@
 require "lang.Signal"
 require "specs.Cocos2d-x"
 require "Logger"
+require "Common"
 
 Log.setLevel(LogLevel.Info)
 
@@ -79,6 +80,8 @@ describe("AdPresenter", function()
 
     describe("getNextTiers", function()
         before_each(function()
+            spy.on(cu, "SpriteButton")
+
             evolutions = {3, 6, 9}
         end)
 
@@ -95,6 +98,10 @@ describe("AdPresenter", function()
 
             it("should have returned/clicked the second tier", function()
                 assert.equals(1001, tier.id)
+            end)
+
+            it("should have made call to create a button sprite", function()
+                assert.stub(cu.SpriteButton).was.called()
             end)
         end)
 
@@ -239,7 +246,7 @@ describe("AdPresenter", function()
 
     describe("getNextTierButtons", function()
         local buttons
-
+        
         describe("when the evolution is 3", function()
             before_each(function()
                 evolutions = {3}

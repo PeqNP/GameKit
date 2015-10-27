@@ -254,6 +254,10 @@ function cu.Sprite(...)
     return cc.Sprite:create(...)
 end
 
+function cu.SpriteButton(...)
+    return cc.MenuItemSprite:create(...)
+end
+
 -- --------------------
 -- ----- Utility ------
 
