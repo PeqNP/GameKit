@@ -45,5 +45,6 @@ function AdRequest.new(self, adModule, _state)
     -- BridgeRequest
 
     function self.getMessage()
+        -- @todo
     end
 end

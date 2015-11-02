@@ -27,8 +27,7 @@ function AdPresenter.new(self, manifest, fn__configMatches)
             return nil
         end
         local units = manifest.getAdUnits()
-        -- @fixme untested
-        if #units == 0 then
+        if #units == 0 then -- @fixme untested
             return nil
         end
         local ret = {} -- Add units to return.

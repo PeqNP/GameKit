@@ -158,8 +158,7 @@ for tpl, target in files.iteritems():
 call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/AppIcon.appiconset"])
 call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/LaunchImage.launchimage"])
 
-call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/platform/ios/resources/AppIcon.appiconset", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/AppIcon.appiconset"])
-call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/platform/ios/resources/LaunchImage.launchimage", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/LaunchImage.launchimage"])
+call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/platform/ios/res/Images.xcassets", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/"])
 
 # Copy Android assets
 
