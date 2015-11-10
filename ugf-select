@@ -1,11 +1,45 @@
 #!/usr/bin/env python
-
+#
 #  Options:
+#  set -- set the base path where git projects are located
 #  select -- selects game
 #  clean -- completely cleans currently selected game from Cocos2d-x environment.
 #     git clean -f -d <path>   -- removes all untracked files
 #  --copy-only-source -- copy only config and src files
 #
+"""
+      templates/config.lua (src/config.lua)
+        - UGF-DESIGN-WIDTH = config.design.width
+        - UGF-DESIGN-HEIGHT = config.design.height
+        - GF-SHOW-FPS = (CLI Switch) --show-fps then: true, else: false
+
+      templates/ios/GameTools.xcodeproj/project.pbxproj
+        - UGF-APP-BUNDLE = config.bundle
+        - UGF-APP-NAME = config.name
+        - UGF-APP-VERSION = config.version
+        - UGF-APP-BUILD = config.build
+        - UGF-DEVICE = config.device
+        - UGF-ORIENTATION.* = config.orientation
+        - UGF-FACEBOOK-ID = config.facebook.id
+      templates/ios/*.plist
+        - UGF-APP-NAME = config.name (bundle display name)
+      templates/ios/Prefix.pch
+        - UGF-HOCKEY-APP-ID = config.hockey.id
+        - UGF-ADCOLONY-APP-ID = config.ios.adcolony.id
+        - UGF-ADCOLONY-ZONES = config.ios.adcolony.zones
+
+      Special cases:
+        - UGF-IOS-ORIENTATION-LANDSCAPE = config.design.orientation (landscape)
+        - UGF-IOS-ORIENTATION-LANDSCAPE = config.design.orientation (landscape)
+        - UGF-IOS-ORIENTATION-PORTRAIT = config.design.orientation (portrait)
+        - UGF-ANDROID-ORIENTATION-LANDSCAPE
+        - UGF-ANDROID-ORIENTATION-PORTRAIT
+
+      Possible. For now, just comment out.:
+        - UGF-FACEBOOK-IOS = config.facebook.enabled
+        - UGF-FACEBOOK-ANDROID = ?
+        - UGF-ADCOLONY-IOS = config.adcolony.ios.enabled, writes: configureAdColony method
+"""
 
 from datetime import datetime
 from subprocess import call
@@ -16,165 +50,231 @@ import re
 import shutil
 import sys
 
-CPATH = "/Users/eric/git/Cocos2d-x_v3.8.1/"
-JSON = "/Users/eric/git/LittleGhostBoy/config.json"
+def gethomedir():
+    from os.path import expanduser
+    return expanduser("~")
 
-fh = open(JSON, "r")
-json_blob = fh.read()
-fh.close()
+class Config (object):
+    @staticmethod
+    def load(path):
+        fh = open(path, "r")
+        json_blob = fh.read()
+        fh.close()
+        config = Config.configFromJson(json.loads(json_blob))
+        return config
 
-config = json.loads(json_blob)
+    @staticmethod
+    def configFromJson(json):
+        return Config(basepath=json["basepath"])
 
-print("ugf-select v1.0.0, Time: {}".format(str(datetime.now())))
-print("Project: {} v{} b{}".format(config["name"], config["version"], config["build"]))
+    def __init__(self, basepath=None):
+        self.basepath = basepath
 
-# Load and save any changes made to the project to the current project
-# NOTE: I'm not sure this is necessary.
+class SelectOptions (object):
+    def __init__(self, resource=None):
+        self.resource = resource
 
-# Load the target project - config.json
+# Project configuration structure.
+class ProjectConfig (object):
+    @staticmethod
+    def load(path):
+        fh = open(path, "r")
+        json_blob = fh.read()
+        fh.close()
+        config = json.loads(json_blob)
+        return ProjectConfig(path, **config)
 
-# Save the target project as the current project
-# NOTE: I'm not sure this is necessary.
+    def __init__(self, path, **entries):
+        self.__dict__.update(entries)
+        self.checkvals()
 
-# If the project does not exist, take the template for the given version of Cocos2d-x and replace all
-# instances of the template name 'GameTools' with the target app's name.
+    def checkvals(self):
+        for val in self.requiredvals():
+            if val not in self.__dict__ or len(str(self.__dict__[val])) < 1:
+                print("Project configuration {} must have value '{}'".format(path, val))
+                sys.exit(1)
+        for val in self.optionalvals():
+            if val not in self.__dict__:
+                print("Project configuration {} must contain key '{}'".format(path, val))
 
-# Interpolate template files: (The app will raise an exception if the files below do not contain the tags)
-"""
-  templates/config.lua (src/config.lua)
-    - UGF-DESIGN-WIDTH = config.design.width
-    - UGF-DESIGN-HEIGHT = config.design.height
-    - GF-SHOW-FPS = (CLI Switch) --show-fps then: true, else: false
+    def requiredvals(self):
+        return ["cocos", "bundle", "name", "executable", "version", "build", "device", "orientation", "design"]
 
-  templates/ios/GameTools.xcodeproj/project.pbxproj
-    - UGF-APP-BUNDLE = config.bundle
-    - UGF-APP-NAME = config.name
-    - UGF-APP-VERSION = config.version
-    - UGF-APP-BUILD = config.build
-    - UGF-DEVICE = config.device
-    - UGF-ORIENTATION.* = config.orientation
-    - UGF-FACEBOOK-ID = config.facebook.id
-  templates/ios/*.plist
-    - UGF-APP-NAME = config.name (bundle display name)
-  templates/ios/Prefix.pch
-    - UGF-HOCKEY-APP-ID = config.hockey.id
-    - UGF-ADCOLONY-APP-ID = config.ios.adcolony.id
-    - UGF-ADCOLONY-ZONES = config.ios.adcolony.zones
+    def optionalvals(self):
+        return ["hockeyappid"]
 
-  Special cases:
-    - UGF-IOS-ORIENTATION-LANDSCAPE = config.design.orientation (landscape)
-    - UGF-IOS-ORIENTATION-LANDSCAPE = config.design.orientation (landscape)
-    - UGF-IOS-ORIENTATION-PORTRAIT = config.design.orientation (portrait)
-    - UGF-ANDROID-ORIENTATION-LANDSCAPE
-    - UGF-ANDROID-ORIENTATION-PORTRAIT
 
-  Possible. For now, just comment out.:
-    - UGF-FACEBOOK-IOS = config.facebook.enabled
-    - UGF-FACEBOOK-ANDROID = ?
-    - UGF-ADCOLONY-IOS = config.adcolony.ios.enabled, writes: configureAdColony method
-"""
+# Builds Cocos2d-x realted paths.
+class CocosPathBuilder (object):
+    # @param Config
+    # @param ProjectConfig
+    # @param SelectOptions
+    def __init__(self, config, project, options):
+        self.config = config
+        self.project = project
+        self.options = options
 
-TPL_PATH = CPATH + "stage/"
+    def basepath(self):
+        return self.config.basepath
 
-if not os.path.exists(TPL_PATH):
-    os.makedirs(TPL_PATH)
+    def cocospath(self):
+        return os.path.join(self.basepath(), "Cocos2d-x_v{}".format(self.project.cocos))
 
-# , "##UGF-ADCOLONY-APP-ZONES##": '", @"'.join(config["mediation"]["ios"]["adcolony"]["zones"])
-keys = {
-    "##UGF-APP-BUNDLE##": config["bundle"]
-  , "##UGF-APP-NAME##": config["name"]
-  , "##UGF-APP-VERSION##": config["version"]
-  , "##UGF-APP-BUILD##": config["build"]
-  , "##UGF-EXECUTABLE##": config["executable"]
-  , "##UGF-HOCKEY-APP-ID##": config["hockey"]["id"]
-  , "##UGF-ADCOLONY-APP-ID##": config["mediation"]["ios"]["adcolony"]["id"]
-  , "##UGF-ADCOLONY-APP-ZONES##": ",".join(config["mediation"]["ios"]["adcolony"]["zones"])
-  , "##UGF-FACEBOOK-ID##": config["facebook"]["id"]
-  , "##UGF-DESIGN-WIDTH##": config["design"]["width"]
-  , "##UGF-DESIGN-HEIGHT##": config["design"]["height"]
-  , "##UGF-SHOW-FPS##": "false"
-  , "##UGF-ORIENTATION##": config["orientation"]
-}
+    def iosproject(self):
+        return os.path.join(self.cocospath(), "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj")
 
-# The pbxproj does not need to be a template.
-shutil.copyfile(CPATH + "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj", CPATH + "stage/project.pbxproj")
+# Builds project related paths.
+class PathBuilder (object):
+    # @param Config
+    # @param str - project name
+    # @param SelectOptions
+    def __init__(self, config, projectname, options):
+        self.config = config
+        self.projectname = projectname
+        self.options = options
 
-iOS_plist = "templates/ios/Info.plist"
-iOS_Prefix = "templates/ios/Prefix.pch"
+    def basepath(self):
+        return self.config.basepath
 
-files = {
-    iOS_plist: "frameworks/runtime-src/proj.ios_mac/ios/Info.plist"
-  , iOS_Prefix: "frameworks/runtime-src/proj.ios_mac/ios/Prefix.pch"
-  , "stage/project.pbxproj": "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj"
-  , "templates/config.lua": "src/config.lua"
-}
+    def projectpath(self):
+        return os.path.join(self.basepath(), self.projectname)
+    
+    def configpath(self):
+        return os.path.join(self.basepath(), self.projectname, "config.json")
 
-for tpl, target in files.iteritems():
-    # Read
-    fh = open(CPATH + tpl, "r")
-    blob = fh.read()
-    for key, val in keys.iteritems():
-        blob = re.sub(key, str(val), blob)
-    if iOS_plist:
-        # @note These replacements MUST be done in order.
-        blob = re.sub("productName = GameTools;", "productName = {};".format(config["executable"]), blob)
-        blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = {};".format(config["bundle"]), blob)
+    def resdir(self):
+        return self.options.resource and len(self.options.resource) > 0 and self.options.resource+"/" or ""
 
-        blob = re.sub("GameTools-mobile.app", "{}-mobile.app".format(config["executable"]), blob)
-        blob = re.sub("\/\* GameTools-mobile \*\/", "/* {}-mobile */".format(config["executable"]), blob)
-        blob = re.sub('"GameTools-mobile"', '"{}-mobile"'.format(config["executable"]), blob)
+    def resourcepath(self):
+        return os.path.join(self.projectpath(), "platform/ios/{}res/Images.xcassets".format(self.resdir()))
 
-        blob = re.sub("GameTools-desktop.app", "{}-desktop.app".format(config["executable"]), blob)
-        blob = re.sub("\/\* GameTools-desktop \*\/", "/* {}-desktop */".format(config["executable"]), blob)
-        blob = re.sub('"GameTools-desktop"', '"{}-desktop"'.format(config["executable"]), blob)
+# Select and make 'project' the active project.
+def select(project, source, target, options):
 
-        blob = re.sub('"GameTools"', '"{}"'.format(config["executable"]), blob)
-    elif tpl == iOS_Prefix:
-        c = None
-        if config["orientation"] == "landscape":
-            c = """<string>UIInterfaceOrientationLandscapeRight</string>
-            <string>UIInterfaceOrientationLandscapeLeft</string>"""
-        else:
-            c = """<string>UIInterfaceOrientationPortrait</string>"""
-        blob = re.sub("##UGF-ORIENTATION-IOS##", c)
-    fh.close()
-    # Write
-    stagepath = CPATH + "stage/" + os.path.split(tpl)[1]
-    fh = open(stagepath, "w")
-    fh.write(blob)
-    fh.close()
-    # Copy to target location.
-    shutil.copyfile(stagepath, CPATH + target)
+    print("ugf-select v1.0.0, Time: {}".format(str(datetime.now())))
+    print("Project: {} v{} b{}".format(project.name, project.version, project.build))
+    if len(options.resource) > 0:
+        print("Resource: {}".format(options.resource))
+    sys.exit(0)
 
-# @todo Cleanup stage directory
+    # Load and save any changes made to the project to the current project
+    # NOTE: I'm not sure this is necessary.
 
-# The orientation config may need to be specific to files so that operations are checked correctly, but also that
-# some options are removed!
+    # Load the target project - config.json
 
-# Copy interpolated file to correct location.
-# NOTE: Make it so all of the config for the app lives in this file, including AdMob interstitial info, etc.
+    # Save the target project as the current project
+    # NOTE: I'm not sure this is necessary.
 
-# Copy Xcode assets
-call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/AppIcon.appiconset"])
-call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/Images.xcassets/LaunchImage.launchimage"])
+    # If the project does not exist, take the template for the given version of Cocos2d-x and replace all
+    # instances of the template name 'GameTools' with the target app's name.
 
-call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/platform/ios/res/Images.xcassets", "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/"])
+    # Interpolate template files: (The app will raise an exception if the files below do not contain the tags)
+    stagepath = cocos.basepath() + "stage/"
 
-# Copy Android assets
+    if not os.path.exists(stagepath):
+        os.makedirs(stagepath)
 
-# Copy GameTools
-call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
-call(["cp", "-r", "/Users/eric/git/GameTools/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
+    # , "##UGF-ADCOLONY-APP-ZONES##": '", @"'.join(config["mediation"]["ios"]["adcolony"]["zones"])
+    keys = {
+        "##UGF-APP-BUNDLE##": config["bundle"]
+      , "##UGF-APP-NAME##": config["name"]
+      , "##UGF-APP-VERSION##": config["version"]
+      , "##UGF-APP-BUILD##": config["build"]
+      , "##UGF-EXECUTABLE##": config["executable"]
+      , "##UGF-HOCKEY-APP-ID##": config["hockey"]["id"]
+      , "##UGF-ADCOLONY-APP-ID##": config["mediation"]["ios"]["adcolony"]["id"]
+      , "##UGF-ADCOLONY-APP-ZONES##": ",".join(config["mediation"]["ios"]["adcolony"]["zones"])
+      , "##UGF-FACEBOOK-ID##": config["facebook"]["id"]
+      , "##UGF-DESIGN-WIDTH##": config["design"]["width"]
+      , "##UGF-DESIGN-HEIGHT##": config["design"]["height"]
+      , "##UGF-SHOW-FPS##": "false"
+      , "##UGF-ORIENTATION##": config["orientation"]
+    }
 
-# Copy game source and assets
-call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
-call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
+    # The pbxproj does not need to be a template.
+    shutil.copyfile(cocos.iosprojectpath(), path.cocospath() + "stage/project.pbxproj")
 
-call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/res"])
-call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/res", "/Users/eric/git/Cocos2d-x_v3.8.1/res"])
+    iOS_plist = "templates/ios/Info.plist"
+    iOS_Prefix = "templates/ios/Prefix.pch"
 
-# Update a compile time script that will call this script with the currently selected project before build
-# so that all of the latest code is copied.
+    files = {
+        iOS_plist: "frameworks/runtime-src/proj.ios_mac/ios/Info.plist"
+      , iOS_Prefix: "frameworks/runtime-src/proj.ios_mac/ios/Prefix.pch"
+      , "stage/project.pbxproj": "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj"
+      , "templates/config.lua": "src/config.lua"
+    }
 
-#call(["git", "clean", "-f", "-d", CPATH])
-#call(["git", "checkout", CPATH])
+    for tpl, target in files.iteritems():
+        # Read
+        fh = open(path.cocospath() + tpl, "r")
+        blob = fh.read()
+        for key, val in keys.iteritems():
+            blob = re.sub(key, str(val), blob)
+        if iOS_plist:
+            # @note These replacements MUST be done in order.
+            blob = re.sub("productName = GameTools;", "productName = {};".format(config["executable"]), blob)
+            blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = {};".format(config["bundle"]), blob)
+
+            blob = re.sub("GameTools-mobile.app", "{}-mobile.app".format(config["executable"]), blob)
+            blob = re.sub("\/\* GameTools-mobile \*\/", "/* {}-mobile */".format(config["executable"]), blob)
+            blob = re.sub('"GameTools-mobile"', '"{}-mobile"'.format(config["executable"]), blob)
+
+            blob = re.sub("GameTools-desktop.app", "{}-desktop.app".format(config["executable"]), blob)
+            blob = re.sub("\/\* GameTools-desktop \*\/", "/* {}-desktop */".format(config["executable"]), blob)
+            blob = re.sub('"GameTools-desktop"', '"{}-desktop"'.format(config["executable"]), blob)
+
+            blob = re.sub('"GameTools"', '"{}"'.format(config["executable"]), blob)
+        elif tpl == iOS_Prefix:
+            c = None
+            if config["orientation"] == "landscape":
+                c = """<string>UIInterfaceOrientationLandscapeRight</string>
+                <string>UIInterfaceOrientationLandscapeLeft</string>"""
+            else:
+                c = """<string>UIInterfaceOrientationPortrait</string>"""
+            blob = re.sub("##UGF-ORIENTATION-IOS##", c)
+        fh.close()
+        # Write
+        stagepath = path.cocospath() + "stage/" + os.path.split(tpl)[1]
+        fh = open(stagepath, "w")
+        fh.write(blob)
+        fh.close()
+        # Copy to target location.
+        shutil.copyfile(stagepath, path.cocospath() + target)
+
+    # @todo Cleanup stage directory
+
+    # The orientation config may need to be specific to files so that operations are checked correctly, but also that
+    # some options are removed!
+
+    # Copy interpolated file to correct location.
+    # NOTE: Make it so all of the config for the app lives in this file, including AdMob interstitial info, etc.
+
+    # Copy Xcode assets
+    call(["cp", "-r", path.resourcepath(), "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/"])
+
+    # Copy Android assets
+
+    # Copy GameTools
+    call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
+    call(["cp", "-r", "/Users/eric/git/GameTools/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
+
+    # Copy game source and assets
+    call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
+    call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
+
+    call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/res"])
+    call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/res", "/Users/eric/git/Cocos2d-x_v3.8.1/res"])
+
+    # Update a compile time script that will call this script with the currently selected project before build
+    # so that all of the latest code is copied.
+
+    #call(["git", "clean", "-f", "-d", path.cocospath()])
+    #call(["git", "checkout", path.cocospath()])
+
+if __name__ == "__main__":
+    config = Config.load(os.path.join(gethomedir(), ".ugf"))
+    options = SelectOptions("premium")
+    project = PathBuilder(config, "LittleGhostBoy", options)
+    prjconfig = ProjectConfig.load(project.configpath())
+    cocos = CocosPathBuilder(config, prjconfig, options)
+    select(prjconfig, project, cocos, options)
