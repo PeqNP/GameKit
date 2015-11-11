@@ -133,5 +133,5 @@ if __name__ == "__main__":
     options = SelectOptions(args.resource and args.resource or "")
     source = ProjectPathBuilder(config, args.project, options)
     project = ProjectConfig.load(source.configpath())
-    cocos = CocosPathBuilder(config, project.cocos, options)
+    cocos = CocosPathBuilder(config, project.cocos)
     main(project, source, cocos, options)

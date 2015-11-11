@@ -9,9 +9,9 @@ from ugf.config import Config
 
 def main(cocos):
     # Removes all untracked files
-    call(["git", "clean", "-f", "-d", cocos.basepath()])
+    call(["git", "clean", "-f", "-d", cocos.basepath()+"/"])
     # Removes all unstaged files
-    call(["git", "checkout", cocos.basepath()])
+    call(["git", "checkout", cocos.basepath()+"/"])
 
 if __name__ == "__main__":
     import argparse
@@ -21,5 +21,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     config = Config.load(os.path.join(gethomedir(), ".ugf"))
-    cocos = CocosPathBuilder(config, args.version, options)
+    cocos = CocosPathBuilder(config, args.version)
     main(cocos)

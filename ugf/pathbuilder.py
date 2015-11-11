@@ -9,10 +9,9 @@ class CocosPathBuilder (object):
     # @param Config
     # @param str - Version of Cocos
     # @param SelectOptions
-    def __init__(self, config, version, options):
+    def __init__(self, config, version):
         self.config = config
         self.version = version
-        self.options = options
 
     def basepath(self):
         return os.path.join(self.config.basepath, "Cocos2d-x_v{}".format(self.version))
