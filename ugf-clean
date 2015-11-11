@@ -15,7 +15,6 @@ from ugf.pathbuilder import CocosPathBuilder
 
 def main(cocos):
     os.chdir(cocos.basepath())
-    return
     # Removes all untracked files
     call(["git", "clean", "-f", "-d"])
     # Removes all unstaged files
