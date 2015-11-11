@@ -150,28 +150,36 @@ def interpolate_iosprefix(project, blob):
     blob = re.sub("##UGF-ORIENTATION-IOS##", c)
     return blob
 
-# @param CocosPathBuilder
-# @param StagePathBuilder
-# @param dict - contains key/values to interpolate within template
-# @param template - template file that will be interpolated
-# @param target - target path where template will be copied to after interpolation
-# @param func - Function that provides additional interpolation rules
-def interpolate(project, cocos, stage, keys, template, target, interpolator):
-    # Read
-    fh = open(cocos.path(template), "r")
-    blob = fh.read()
-    for key, val in keys.iteritems():
-        blob = re.sub(key, str(val), blob)
-    if interpolator:
-        blob = interpolator(blob)
-    fh.close()
-    # Write
-    stagepath = stage.path(os.path.split(template)[1])
-    fh = open(stagepath, "w")
-    fh.write(blob)
-    fh.close()
-    # Copy to target location.
-    shutil.copyfile(stagepath, cocos.path(target))
+class Interpolator (object):
+    # @param PathBuilder
+    # @param CocosPathBuilder
+    # @param StagePathBuilder
+    # @param dict - contains key/values to interpolate within template
+    def __init__(self, project, cocos, stage, keys):
+        self.project = project
+        self.cocos = cocos
+        self.stage = stage
+        self.keys = keys
+
+    # @param template - template file that will be interpolated
+    # @param target - target path where template will be copied to after interpolation
+    # @param func - Function that provides additional interpolation rules
+    def interpolate(self, template, target, interpolator):
+        # Read
+        fh = open(self.cocos.path(template), "r")
+        blob = fh.read()
+        for key, val in keys.iteritems():
+            blob = re.sub(key, str(val), blob)
+        if interpolator:
+            blob = interpolator(self.project, blob)
+        fh.close()
+        # Write
+        stagepath = self.stage.path(os.path.split(template)[1])
+        fh = open(stagepath, "w")
+        fh.write(blob)
+        fh.close()
+        # Copy to target location.
+        shutil.copyfile(stagepath, self.cocos.path(target))
 
 # Select and make 'project' the active project.
 def select(project, source, cocos, options):
@@ -211,16 +219,15 @@ def select(project, source, cocos, options):
       , "##UGF-SHOW-FPS##": "false"
       , "##UGF-ORIENTATION##": project.orientation
     }
-    print("keys", keys)
-    sys.exit(0)
 
     # The pbxproj does not need to be a template.
     shutil.copyfile(cocos.iosprojectpath(), stage.path("project.pbxproj"))
 
-    interpolate(project, cocos, stage, keys, "templates/ios/Info.plist", "frameworks/runtime-src/proj.ios_mac/ios/Info.plist", interpolate_iosplist)
-    interpolate(project, cocos, stage, keys, "templates/ios/Prefix.pch", "templates/ios/Prefix.pch", interpolate_iosprefix)
-    interpolate(project, cocos, stage, keys, "templates/config.lua", "src/config.lua")
-    interpolate(project, cocos, stage, keys, "stage/project.pbxproj", "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj")
+    interpolator = Interpolator(project, cocos, stage, keys)
+    interpolator.interpolate("templates/ios/Info.plist", "frameworks/runtime-src/proj.ios_mac/ios/Info.plist", interpolate_iosplist)
+    interpolator.interpolate("templates/ios/Prefix.pch", "templates/ios/Prefix.pch", interpolate_iosprefix)
+    interpolator.interpolate("templates/config.lua", "src/config.lua")
+    interpolator.interpolate("stage/project.pbxproj", "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj")
 
     # @todo Cleanup stage directory
 
