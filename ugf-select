@@ -124,7 +124,7 @@ class ProjectPathBuilder (object):
     def resourcepath(self):
         return os.path.join(self.basepath(), "platform/ios/{}res/Images.xcassets".format(self.resdir()))
 
-def interpolate_iosplist(project, blob):
+def interpolate_iospbxproj(project, blob):
     # Global
     blob = re.sub("productName = GameTools;", "productName = {};".format(project.executable), blob)
     blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = {};".format(project.bundle), blob)
@@ -140,7 +140,7 @@ def interpolate_iosplist(project, blob):
     blob = re.sub('"GameTools"', '"{}"'.format(project.executable), blob)
     return blob
 
-def interpolate_iosprefix(project, blob):
+def interpolate_iosplist(project, blob):
     c = None
     # Orientation
     if project.orientation == "landscape":
@@ -226,9 +226,9 @@ def select(project, source, cocos, options):
 
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/ios/Info.plist", "frameworks/runtime-src/proj.ios_mac/ios/Info.plist", interpolate_iosplist)
-    interpolator.interpolate("templates/ios/Prefix.pch", "templates/ios/Prefix.pch", interpolate_iosprefix)
+    interpolator.interpolate("templates/ios/AppConfig.h", "frameworks/runtime-src/proj.ios_mac/ios/AppConfig.h")
     interpolator.interpolate("templates/config.lua", "src/config.lua")
-    interpolator.interpolate("stage/project.pbxproj", "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj")
+    interpolator.interpolate("stage/project.pbxproj", "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj", interpolate_iospbxproj)
 
     # @todo Cleanup stage directory
 
@@ -257,7 +257,9 @@ def select(project, source, cocos, options):
     # Update a compile time script that will call this script with the currently selected project before build
     # so that all of the latest code is copied. (???)
 
+    # Removes all untracked files
     #call(["git", "clean", "-f", "-d", cocos.basepath()])
+    # Removes all unstaged files
     #call(["git", "checkout", cocos.basepath()])
 
 if __name__ == "__main__":
