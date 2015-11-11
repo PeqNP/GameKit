@@ -7,39 +7,6 @@
 #     git clean -f -d <path>   -- removes all untracked files
 #  --copy-only-source -- copy only config and src files
 #
-"""
-      templates/config.lua (src/config.lua)
-        - UGF-DESIGN-WIDTH = config.design.width
-        - UGF-DESIGN-HEIGHT = config.design.height
-        - GF-SHOW-FPS = (CLI Switch) --show-fps then: true, else: false
-
-      templates/ios/GameTools.xcodeproj/project.pbxproj
-        - UGF-APP-BUNDLE = config.bundle
-        - UGF-APP-NAME = config.name
-        - UGF-APP-VERSION = config.version
-        - UGF-APP-BUILD = config.build
-        - UGF-DEVICE = config.device
-        - UGF-ORIENTATION.* = config.orientation
-        - UGF-FACEBOOK-ID = config.facebook.id
-      templates/ios/*.plist
-        - UGF-APP-NAME = config.name (bundle display name)
-      templates/ios/Prefix.pch
-        - UGF-HOCKEY-APP-ID = config.hockey.id
-        - UGF-ADCOLONY-APP-ID = config.ios.adcolony.id
-        - UGF-ADCOLONY-ZONES = config.ios.adcolony.zones
-
-      Special cases:
-        - UGF-IOS-ORIENTATION-LANDSCAPE = config.design.orientation (landscape)
-        - UGF-IOS-ORIENTATION-LANDSCAPE = config.design.orientation (landscape)
-        - UGF-IOS-ORIENTATION-PORTRAIT = config.design.orientation (portrait)
-        - UGF-ANDROID-ORIENTATION-LANDSCAPE
-        - UGF-ANDROID-ORIENTATION-PORTRAIT
-
-      Possible. For now, just comment out.:
-        - UGF-FACEBOOK-IOS = config.facebook.enabled
-        - UGF-FACEBOOK-ANDROID = ?
-        - UGF-ADCOLONY-IOS = config.adcolony.ios.enabled, writes: configureAdColony method
-"""
 
 from datetime import datetime
 from subprocess import call
@@ -101,8 +68,7 @@ class ProjectConfig (object):
         return ["cocos", "bundle", "name", "executable", "version", "build", "device", "orientation", "design"]
 
     def optionalvals(self):
-        return ["hockeyappid"]
-
+        return ["hockeyappid", "facebookid"]
 
 # Builds Cocos2d-x realted paths.
 class CocosPathBuilder (object):
@@ -117,7 +83,10 @@ class CocosPathBuilder (object):
     def basepath(self):
         return os.path.join(self.config.basepath, "Cocos2d-x_v{}".format(self.project.cocos))
 
-    def iosproject(self):
+    def path(self, path):
+        return os.path.join(self.basepath(), path)
+
+    def iosprojectpath(self):
         return os.path.join(self.basepath(), "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj")
 
 class StagePathBuilder (object):
@@ -155,15 +124,63 @@ class PathBuilder (object):
     def resourcepath(self):
         return os.path.join(self.projectpath(), "platform/ios/{}res/Images.xcassets".format(self.resdir()))
 
+def interpolate_iosplist(project, blob):
+    # Global
+    blob = re.sub("productName = GameTools;", "productName = {};".format(project.executable), blob)
+    blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = {};".format(project.bundle), blob)
+    # Mobile
+    blob = re.sub("GameTools-mobile.app", "{}-mobile.app".format(project.executable), blob)
+    blob = re.sub("\/\* GameTools-mobile \*\/", "/* {}-mobile */".format(project.executable), blob)
+    blob = re.sub('"GameTools-mobile"', '"{}-mobile"'.format(project.executable), blob)
+    # Desktop
+    blob = re.sub("GameTools-desktop.app", "{}-desktop.app".format(project.executable), blob)
+    blob = re.sub("\/\* GameTools-desktop \*\/", "/* {}-desktop */".format(project.executable), blob)
+    blob = re.sub('"GameTools-desktop"', '"{}-desktop"'.format(project.executable), blob)
+    # Final global (order matters...)
+    blob = re.sub('"GameTools"', '"{}"'.format(project.executable), blob)
+    return blob
+
+def interpolate_iosprefix(project, blob):
+    c = None
+    if project.orientation == "landscape":
+        c = """<string>UIInterfaceOrientationLandscapeRight</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>"""
+    else:
+        c = """<string>UIInterfaceOrientationPortrait</string>"""
+    blob = re.sub("##UGF-ORIENTATION-IOS##", c)
+    return blob
+
+# @param CocosPathBuilder
+# @param StagePathBuilder
+# @param dict - contains key/values to interpolate within template
+# @param template - template file that will be interpolated
+# @param target - target path where template will be copied to after interpolation
+# @param func - Function that provides additional interpolation rules
+def interpolate(project, cocos, stage, keys, template, target, interpolator):
+    # Read
+    fh = open(cocos.path(template), "r")
+    blob = fh.read()
+    for key, val in keys.iteritems():
+        blob = re.sub(key, str(val), blob)
+    if interpolator:
+        blob = interpolator(blob)
+    fh.close()
+    # Write
+    stagepath = stage.path(os.path.split(template)[1])
+    fh = open(stagepath, "w")
+    fh.write(blob)
+    fh.close()
+    # Copy to target location.
+    shutil.copyfile(stagepath, cocos.path(target))
+
 # Select and make 'project' the active project.
-def select(project, source, target, options):
+def select(project, source, cocos, options):
     print("ugf-select v1.0.0, Time: {}".format(str(datetime.now())))
     print("Project: {} v{} b{}".format(project.name, project.version, project.build))
     if len(options.resource) > 0:
         print("Resource: {}".format(options.resource))
 
-    stage = StagePathBuilder(target.basepath())
-    sys.exit(1)
+    stage = StagePathBuilder(cocos.basepath())
 
     # Load and save any changes made to the project to the current project
     # NOTE: I'm not sure this is necessary.
@@ -188,69 +205,29 @@ def select(project, source, target, options):
       , "##UGF-APP-BUILD##": project.build
       , "##UGF-EXECUTABLE##": project.executable
       , "##UGF-HOCKEY-APP-ID##": project.hockeyappid
+      , "##UGF-FACEBOOK-ID##": project.facebookid
       , "##UGF-DESIGN-WIDTH##": project.design["width"]
       , "##UGF-DESIGN-HEIGHT##": project.design["height"]
       , "##UGF-SHOW-FPS##": "false"
       , "##UGF-ORIENTATION##": project.orientation
     }
+    print("keys", keys)
+    sys.exit(0)
 
     # The pbxproj does not need to be a template.
-    shutil.copyfile(cocos.iosprojectpath(), path.cocospath() + stage.path("project.pbxproj"))
+    shutil.copyfile(cocos.iosprojectpath(), stage.path("project.pbxproj"))
 
-    iOS_plist = "templates/ios/Info.plist"
-    iOS_Prefix = "templates/ios/Prefix.pch"
-
-    files = {
-        iOS_plist: "frameworks/runtime-src/proj.ios_mac/ios/Info.plist"
-      , iOS_Prefix: "frameworks/runtime-src/proj.ios_mac/ios/Prefix.pch"
-      , "stage/project.pbxproj": "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj"
-      , "templates/config.lua": "src/config.lua"
-    }
-
-    for tpl, target in files.iteritems():
-        # Read
-        fh = open(path.cocospath() + tpl, "r")
-        blob = fh.read()
-        for key, val in keys.iteritems():
-            blob = re.sub(key, str(val), blob)
-        if iOS_plist:
-            # @note These replacements MUST be done in order.
-            blob = re.sub("productName = GameTools;", "productName = {};".format(config["executable"]), blob)
-            blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = {};".format(config["bundle"]), blob)
-
-            blob = re.sub("GameTools-mobile.app", "{}-mobile.app".format(config["executable"]), blob)
-            blob = re.sub("\/\* GameTools-mobile \*\/", "/* {}-mobile */".format(config["executable"]), blob)
-            blob = re.sub('"GameTools-mobile"', '"{}-mobile"'.format(config["executable"]), blob)
-
-            blob = re.sub("GameTools-desktop.app", "{}-desktop.app".format(config["executable"]), blob)
-            blob = re.sub("\/\* GameTools-desktop \*\/", "/* {}-desktop */".format(config["executable"]), blob)
-            blob = re.sub('"GameTools-desktop"', '"{}-desktop"'.format(config["executable"]), blob)
-
-            blob = re.sub('"GameTools"', '"{}"'.format(config["executable"]), blob)
-        elif tpl == iOS_Prefix:
-            c = None
-            if config["orientation"] == "landscape":
-                c = """<string>UIInterfaceOrientationLandscapeRight</string>
-                <string>UIInterfaceOrientationLandscapeLeft</string>"""
-            else:
-                c = """<string>UIInterfaceOrientationPortrait</string>"""
-            blob = re.sub("##UGF-ORIENTATION-IOS##", c)
-        fh.close()
-        # Write
-        stagepath = path.cocospath() + "stage/" + os.path.split(tpl)[1]
-        fh = open(stagepath, "w")
-        fh.write(blob)
-        fh.close()
-        # Copy to target location.
-        shutil.copyfile(stagepath, path.cocospath() + target)
+    interpolate(project, cocos, stage, keys, "templates/ios/Info.plist", "frameworks/runtime-src/proj.ios_mac/ios/Info.plist", interpolate_iosplist)
+    interpolate(project, cocos, stage, keys, "templates/ios/Prefix.pch", "templates/ios/Prefix.pch", interpolate_iosprefix)
+    interpolate(project, cocos, stage, keys, "templates/config.lua", "src/config.lua")
+    interpolate(project, cocos, stage, keys, "stage/project.pbxproj", "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj")
 
     # @todo Cleanup stage directory
 
-    # The orientation config may need to be specific to files so that operations are checked correctly, but also that
-    # some options are removed!
+    # @todo The orientation config may need to be specific to files so that
+    # operations are checked correctly, but also that some options are removed!
 
     # Copy interpolated file to correct location.
-    # NOTE: Make it so all of the config for the app lives in this file, including AdMob interstitial info, etc.
 
     # Copy Xcode assets
     call(["cp", "-r", path.resourcepath(), "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/"])
@@ -269,7 +246,7 @@ def select(project, source, target, options):
     call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/res", "/Users/eric/git/Cocos2d-x_v3.8.1/res"])
 
     # Update a compile time script that will call this script with the currently selected project before build
-    # so that all of the latest code is copied.
+    # so that all of the latest code is copied. (???)
 
     #call(["git", "clean", "-f", "-d", path.cocospath()])
     #call(["git", "checkout", path.cocospath()])
