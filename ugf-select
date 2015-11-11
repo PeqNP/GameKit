@@ -112,6 +112,9 @@ class PathBuilder (object):
     def basepath(self):
         return self.config.basepath
 
+    def path(self, path):
+        return os.path.join(self.basepath(), path)
+
     def projectpath(self):
         return os.path.join(self.basepath(), self.projectname)
     
@@ -142,12 +145,13 @@ def interpolate_iosplist(project, blob):
 
 def interpolate_iosprefix(project, blob):
     c = None
+    # Orientation
     if project.orientation == "landscape":
         c = """<string>UIInterfaceOrientationLandscapeRight</string>
         <string>UIInterfaceOrientationLandscapeLeft</string>"""
     else:
         c = """<string>UIInterfaceOrientationPortrait</string>"""
-    blob = re.sub("##UGF-ORIENTATION-IOS##", c)
+    blob = re.sub("##UGF-ORIENTATION-IOS##", c, blob)
     return blob
 
 class Interpolator (object):
@@ -164,7 +168,7 @@ class Interpolator (object):
     # @param template - template file that will be interpolated
     # @param target - target path where template will be copied to after interpolation
     # @param func - Function that provides additional interpolation rules
-    def interpolate(self, template, target, interpolator):
+    def interpolate(self, template, target, interpolator=None):
         # Read
         fh = open(self.cocos.path(template), "r")
         blob = fh.read()
@@ -237,26 +241,27 @@ def select(project, source, cocos, options):
     # Copy interpolated file to correct location.
 
     # Copy Xcode assets
-    call(["cp", "-r", path.resourcepath(), "/Users/eric/git/Cocos2d-x_v3.8.1/frameworks/runtime-src/proj.ios_mac/GameTools-mobile/"])
+    call(["rm", "-rf", cocos.path("frameworks/runtime-src/proj.ios_mac/GameTools-mobile/*")])
+    call(["cp", "-r", source.resourcepath(), cocos.path("frameworks/runtime-src/proj.ios_mac/GameTools-mobile/")])
 
     # Copy Android assets
 
     # Copy GameTools
-    call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
-    call(["cp", "-r", "/Users/eric/git/GameTools/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/ugf"])
+    call(["rm", "-rf", cocos.path("src/ugf")])
+    call(["cp", "-r", "/Users/eric/git/GameTools/src/", cocos.path("src/ugf")])
 
     # Copy game source and assets
-    call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
-    call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/src/", "/Users/eric/git/Cocos2d-x_v3.8.1/src/game"])
+    call(["rm", "-rf", cocos.path("src/game")])
+    call(["cp", "-r", source.path("src"), cocos.path("src/game")])
 
-    call(["rm", "-rf", "/Users/eric/git/Cocos2d-x_v3.8.1/res"])
-    call(["cp", "-r", "/Users/eric/git/LittleGhostBoy/res", "/Users/eric/git/Cocos2d-x_v3.8.1/res"])
+    call(["rm", "-rf", cocos.path("res"])
+    call(["cp", "-r", source.path("res"), cocos.path("res")])
 
     # Update a compile time script that will call this script with the currently selected project before build
     # so that all of the latest code is copied. (???)
 
-    #call(["git", "clean", "-f", "-d", path.cocospath()])
-    #call(["git", "checkout", path.cocospath()])
+    #call(["git", "clean", "-f", "-d", cocos.basepath()])
+    #call(["git", "checkout", cocos.basepath()])
 
 if __name__ == "__main__":
     config = Config.load(os.path.join(gethomedir(), ".ugf"))
