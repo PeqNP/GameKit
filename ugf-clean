@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+#
+# Cleans a Cocos2d-x project.
+#
+# @copyright 2015 Upstart Illustration LLC. All rights reserved.
+#
+
+from ugf.config import Config
+
+def main(cocos):
+    # Removes all untracked files
+    call(["git", "clean", "-f", "-d", cocos.basepath()])
+    # Removes all unstaged files
+    call(["git", "checkout", cocos.basepath()])
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Upstart Game Framework - Clean a Cocos2d-x project")
+    parser.add_argument('version', help="The version of cocos to clean. Version must be in the format of #.#.# (e.g. 1.0.4)")
+    args = parser.parse_args()
+
+    config = Config.load(os.path.join(gethomedir(), ".ugf"))
+    cocos = CocosPathBuilder(config, args.version, options)
+    main(cocos)

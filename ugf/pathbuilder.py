@@ -7,15 +7,15 @@ import os
 # Builds Cocos2d-x realted paths.
 class CocosPathBuilder (object):
     # @param Config
-    # @param ProjectConfig
+    # @param str - Version of Cocos
     # @param SelectOptions
-    def __init__(self, config, project, options):
+    def __init__(self, config, version, options):
         self.config = config
-        self.project = project
+        self.version = version
         self.options = options
 
     def basepath(self):
-        return os.path.join(self.config.basepath, "Cocos2d-x_v{}".format(self.project.cocos))
+        return os.path.join(self.config.basepath, "Cocos2d-x_v{}".format(self.version))
 
     def path(self, path):
         return os.path.join(self.basepath(), path)
