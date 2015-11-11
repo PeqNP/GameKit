@@ -263,10 +263,16 @@ def select(project, source, cocos, options):
     #call(["git", "checkout", cocos.basepath()])
 
 if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Upstart Game Framework - Configure a project to build for specific version of Cocos2d-x")
+    parser.add_argument('project', help="The project name to configure")
+    parser.add_argument('--resource', help="Select the resource to use for project's icons and launch images (i.e. free, premium)", default=None)
+    args = parser.parse_args()
+
     config = Config.load(os.path.join(gethomedir(), ".ugf"))
-    #options = SelectOptions("premium")
-    options = SelectOptions("")
-    source = ProjectPathBuilder(config, "LittleGhostBoy", options)
+    options = SelectOptions(args.resource and args.resource or "")
+    source = ProjectPathBuilder(config, args.project, options)
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project, options)
     select(project, source, cocos, options)
