@@ -100,7 +100,7 @@ class StagePathBuilder (object):
         return os.path.join(self.basepath(), path)
 
 # Builds project related paths.
-class PathBuilder (object):
+class ProjectPathBuilder (object):
     # @param Config
     # @param str - project name
     # @param SelectOptions
@@ -110,22 +110,19 @@ class PathBuilder (object):
         self.options = options
 
     def basepath(self):
-        return self.config.basepath
+        return os.path.join(self.config.basepath, self.projectname)
 
     def path(self, path):
         return os.path.join(self.basepath(), path)
 
-    def projectpath(self):
-        return os.path.join(self.basepath(), self.projectname)
-    
     def configpath(self):
-        return os.path.join(self.basepath(), self.projectname, "config.json")
+        return os.path.join(self.basepath(), "config.json")
 
     def resdir(self):
         return self.options.resource and len(self.options.resource) > 0 and self.options.resource+"/" or ""
 
     def resourcepath(self):
-        return os.path.join(self.projectpath(), "platform/ios/{}res/Images.xcassets".format(self.resdir()))
+        return os.path.join(self.basepath(), "platform/ios/{}res/Images.xcassets".format(self.resdir()))
 
 def interpolate_iosplist(project, blob):
     # Global
@@ -248,13 +245,13 @@ def select(project, source, cocos, options):
 
     # Copy GameTools
     call(["rm", "-rf", cocos.path("src/ugf")])
-    call(["cp", "-r", "/Users/eric/git/GameTools/src/", cocos.path("src/ugf")])
+    call(["cp", "-r", "/Users/eric/git/GameTools/src", cocos.path("src/ugf")])
 
     # Copy game source and assets
     call(["rm", "-rf", cocos.path("src/game")])
     call(["cp", "-r", source.path("src"), cocos.path("src/game")])
 
-    call(["rm", "-rf", cocos.path("res"])
+    call(["rm", "-rf", cocos.path("res")])
     call(["cp", "-r", source.path("res"), cocos.path("res")])
 
     # Update a compile time script that will call this script with the currently selected project before build
@@ -265,8 +262,9 @@ def select(project, source, cocos, options):
 
 if __name__ == "__main__":
     config = Config.load(os.path.join(gethomedir(), ".ugf"))
-    options = SelectOptions("premium")
-    project = PathBuilder(config, "LittleGhostBoy", options)
-    prjconfig = ProjectConfig.load(project.configpath())
-    cocos = CocosPathBuilder(config, prjconfig, options)
-    select(prjconfig, project, cocos, options)
+    #options = SelectOptions("premium")
+    options = SelectOptions("")
+    source = ProjectPathBuilder(config, "LittleGhostBoy", options)
+    project = ProjectConfig.load(source.configpath())
+    cocos = CocosPathBuilder(config, project, options)
+    select(project, source, cocos, options)
