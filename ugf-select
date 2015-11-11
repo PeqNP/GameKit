@@ -168,7 +168,7 @@ class Interpolator (object):
         # Read
         fh = open(self.cocos.path(template), "r")
         blob = fh.read()
-        for key, val in keys.iteritems():
+        for key, val in self.keys.iteritems():
             blob = re.sub(key, str(val), blob)
         if interpolator:
             blob = interpolator(self.project, blob)
