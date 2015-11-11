@@ -38,6 +38,10 @@ describe("Class", function()
             end
         end)
 
+        it("should return the name of the class", function()
+            assert.equals("class_spec", Test.getClassName())
+        end)
+
         it("should return information about the class", function()
             assert.truthy(Test.getInfo())
         end)
