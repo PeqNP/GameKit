@@ -14,10 +14,12 @@ from ugf.config import Config
 from ugf.pathbuilder import CocosPathBuilder
 
 def main(cocos):
+    os.chdir(cocos.basepath())
+    return
     # Removes all untracked files
-    call(["git", "clean", "-f", "-d", cocos.basepath()+"/"])
+    call(["git", "clean", "-f", "-d"])
     # Removes all unstaged files
-    call(["git", "checkout", cocos.basepath()+"/"])
+    call(["git", "checkout", "."])
 
 if __name__ == "__main__":
     import argparse
