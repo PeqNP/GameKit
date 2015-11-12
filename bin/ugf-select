@@ -46,13 +46,12 @@ def interpolate_iosplist(project, blob):
     blob = re.sub("##UGF-ORIENTATION-IOS##", c, blob)
     return blob
 
+def copy_source(source, cocos):
+    call(["rm", "-rf", cocos.path("src/game")])
+    call(["cp", "-r", source.path("src"), cocos.path("src/game")])
+
 # Select and make 'project' the active project.
 def main(project, source, cocos, options):
-    print("ugf-select v1.0.0, Time: {}".format(str(datetime.now())))
-    print("Project: {} v{} b{}".format(project.name, project.version, project.build))
-    if len(options.resource) > 0:
-        print("Resource: {}".format(options.resource))
-
     stage = StagePathBuilder(cocos.basepath())
 
     # Load and save any changes made to the project to the current project
@@ -112,9 +111,9 @@ def main(project, source, cocos, options):
     call(["cp", "-r", "/Users/eric/git/GameTools/src", cocos.path("src/ugf")])
 
     # Copy game source and assets
-    call(["rm", "-rf", cocos.path("src/game")])
-    call(["cp", "-r", source.path("src"), cocos.path("src/game")])
+    copy_source(source, cocos)
 
+    # Copy resources
     call(["rm", "-rf", cocos.path("res")])
     call(["cp", "-r", source.path("res"), cocos.path("res")])
 
@@ -127,11 +126,23 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Upstart Game Framework - Configure a project to build for specific version of Cocos2d-x")
     parser.add_argument('project', help="The project name to configure")
     parser.add_argument('--resource', help="Select the resource to use for project's icons and launch images (i.e. free, premium)", default=None)
+    # should only be boolean
+    parser.add_argument('--copy-source', help="Copies only the source files (src directory)", action="store_true", default=False)
     args = parser.parse_args()
 
     config = Config.load(os.path.join(gethomedir(), ".ugf"))
-    options = SelectOptions(args.resource and args.resource or "")
+    options = SelectOptions(args.resource and args.resource or "", args.copy_source)
     source = ProjectPathBuilder(config, args.project, options)
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
-    main(project, source, cocos, options)
+
+    print("ugf-select v1.0.0, Time: {}".format(str(datetime.now())))
+    print("Project: {} v{} b{}".format(project.name, project.version, project.build))
+    if len(options.resource) > 0:
+        print("Resource: {}".format(options.resource))
+
+    if args.copy_source:
+        print("Copying source files only...")
+        copy_source(source, cocos)
+    else:
+        main(project, source, cocos, options)
