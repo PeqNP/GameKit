@@ -93,34 +93,60 @@ function Class(extends)
         end
     end
 
+    -- Allocates an instance of the object. Does NOT call init.
+    function class.alloc(self)
+        if extends then
+            extends.alloc(self)
+        end
+
+        -- Super init
+        local __super = self.init
+
+        class.new(self)
+
+        -- Make sure super is called if init is not the same.
+        if __super and __super ~= self.init then
+            local __init = self.init
+            function self.init(...)
+                __super(__init(...))
+            end
+        end
+
+        function self.getClass()
+            return class
+        end
+
+        function self.getClassName()
+            return className
+        end
+
+        function self.conformsTo(protocol)
+            return class.conformsTo(protocol)
+        end
+
+        function self.kindOf(c)
+            return class.kindOf(c)
+        end
+
+        if not validated then
+            validate(self)
+        end
+
+        return self
+    end
+
     -- Factory --
     setmetatable(class, {
         __call = function (cls, ...)
             if not cls or type(cls.new) ~= "function" then
-                assert(false, string.format("(%s).new must be implemented", className))
+                assert(false, string.format("function (%s).new() must be implemented", className))
             end
 
-            local self = extends and extends() or {}
-            cls.new(self, ...)
+            local self = {}
+            class.alloc(self)
 
-            function self.getClass()
-                return class
-            end
-
-            function self.getClassName()
-                return className
-            end
-
-            function self.conformsTo(protocol)
-                return class.conformsTo(protocol)
-            end
-
-            function self.kindOf(c)
-                return class.kindOf(c)
-            end
-
-            if not validated then
-                validate(self)
+            if self.init then
+                self.init(...)
             end
 
             return self

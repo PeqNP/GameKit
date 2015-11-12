@@ -78,7 +78,15 @@ function Satan.new(self)
 end
 
 God = Class()
-function God.new(self, a, b)
+function God.new(self)
+    local a
+    local b
+
+    function self.init(_a, _b)
+        a = _a
+        b = _b
+    end
+
     function self.getA()
         return a
     end
@@ -90,10 +98,24 @@ end
 
 Parent = Class(God)
 function Parent.new(self)
+    function self.init(a, b)
+        return a, b
+    end
+
+    function self.call()
+        return "parent_call"
+    end
 end
 
 Child = Class(Parent)
 function Child.new(self)
+    function self.init(a, b)
+        return a, b
+    end
+
+    function self.call()
+        return "child_call"
+    end
 end
 
 describe("Class methods", function()
@@ -130,7 +152,7 @@ describe("Subclassing", function()
         local child
 
         before_each(function()
-            child = Child()
+            child = Child(4, 5)
         end)
 
         it("should be kind of God and Parent class", function()
@@ -144,6 +166,15 @@ describe("Subclassing", function()
 
         it("should be kind of self", function()
             assert.truthy(child.kindOf(Child))
+        end)
+
+        it("should have received the parameters", function()
+            assert.equals(4, child.getA())
+            assert.equals(5, child.getB())
+        end)
+
+        it("should call child subclass method call", function()
+            assert.equal("child_call", child.call())
         end)
     end)
 end)
