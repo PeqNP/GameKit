@@ -17,8 +17,16 @@ LogLevel = enum(0
 -- By default, print to stdout using the built-in Lua 'print' method.
 Logger.pipe = print
 
-function Logger.new(self, tag, _level)
-    local level = _level and _level or LogLevel.Debug
+function Logger.new(self)
+    local level
+
+    function self.init(_level)
+        level = _level and _level or LogLevel.Debug
+    end
+
+    function self.getLevel()
+        return level
+    end
 
     function self.setLevel(_level)
         level = _level

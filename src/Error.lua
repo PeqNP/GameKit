@@ -14,10 +14,12 @@ end
 Error.mt = {}
 Error.mt.__tostring = Error.tostring
 
-function Error.new(self, code, message, info)
-    self.code = code
-    self.message = message
-    self.info = info
+function Error.new(self)
+    function self.init(c, m, i)
+        self.code = c
+        self.message = m
+        self.info = i
+    end
 
     setmetatable(self, Error.mt)
 end
