@@ -15,8 +15,15 @@ AdPresenter = Class()
   @param configMatches - function used to determine if the config matches criteria of the current app state.
                          must return 'true', if the tier config matches. 'false', otherwise.
 --]]
-function AdPresenter.new(self, manifest, fn__configMatches)
+function AdPresenter.new(self)
+    local manifest
+    local fn__configMatches
     local unitPos = 1
+
+    function self.init(, _manifest, _fn)
+        manifest = _manifest
+        fn__configMatches = _fn
+    end
 
     function self.reset()
         unitPos = 1

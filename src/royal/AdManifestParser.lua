@@ -11,10 +11,15 @@ require "royal.AdManifest"
 
 AdManifestParser = Class()
 
-function AdManifestParser.new(self, classes)
-    if not classes or #classes == 0 then
-        --Log.w("AdManifest: No classes specified! Falling back to base class AdManifest")
-        classes = {AdManifest}
+function AdManifestParser.new(self)
+    local classes
+
+    function self.init(_classes)
+        classes = _classes
+        if not classes or #classes == 0 then
+            --Log.w("AdManifest: No classes specified! Falling back to base class AdManifest")
+            classes = {AdManifest}
+        end
     end
 
     function self.getClasses()

@@ -12,21 +12,31 @@ require "Glyph"
 
 TypeSetter = Class()
 
-function TypeSetter.new(self, _sheet, _data, _kerning)
+function TypeSetter.new(self)
+    local sheet
+    local data
+    local kerning
+
     local _glyphs = {}
 
+    function self.init(_sheet, _data, _kerning)
+        sheet = _sheet
+        data = _data
+        kerning = _kerning
+    end
+
     local function initialize()
-        local numLetters = #_data
-        local frames = _sheet.getFrames()
-        for i = 1, #_data do
+        local numLetters = #data
+        local frames = sheet.getFrames()
+        for i = 1, #data do
             local char, width
             -- hmmm... seems like there should be a better way to do this.
-            for k, v in pairs(_data[i]) do
+            for k, v in pairs(data[i]) do
                 char, width = k, v
             end
             _glyphs[ string.byte(char) ] = Glyph(char, width, frames[i])
         end
-        _data = nil -- No longer needed.
+        data = nil -- No longer needed.
     end
 
     --[[
@@ -43,9 +53,9 @@ function TypeSetter.new(self, _sheet, _data, _kerning)
             local glyph = _glyphs[ string.byte(char) ]
             if glyph then
                 local sprite = cc.Sprite:createWithSpriteFrame(glyph.frame.sprite)
-                sprite:setPosition(x, _sheet.height/2)
+                sprite:setPosition(x, sheet.height/2)
                 sprite:setGlobalZOrder(z)
-                x = x + glyph.width + _kerning -- Determine next position to set the letter.
+                x = x + glyph.width + kerning -- Determine next position to set the letter.
                 layout:addChild(sprite)
             end
         end

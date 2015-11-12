@@ -6,7 +6,21 @@
 
 MediationAdConfig = Class()
 
-function MediationAdConfig.new(self, adNetwork, adType, adImpressionType, frequency, reward)
+function MediationAdConfig.new(self)
+    local adNetwork
+    local adType
+    local adImpressionType
+    local frequency
+    local reward
+
+    function self.init(_adNetwork, _adType, _adImpressionType, _frequency, _reward)
+        adNetwork = _adNetwork
+        adType = _adType
+        adImpressionType = _adImpressionType
+        frequency = _frequency
+        reward = _reward
+    end
+
     function self.getAdNetwork()
         return adNetwork
     end

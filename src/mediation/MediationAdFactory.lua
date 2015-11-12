@@ -6,10 +6,15 @@ require "ad.Constants"
 MediationAdFactory = Class()
 
 -- @param MediationAdConfigs[] configs
-function MediationAdFactory.new(self, configs)
+function MediationAdFactory.new(self)
+    local configs
     local queues = {}
     local lastError = false
     local private = {}
+
+    function self.init(_configs)
+        configs = _configs
+    end
 
     --
     -- Returns array of configs for a given ad type.

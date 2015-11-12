@@ -12,7 +12,19 @@ require "royal.AdUnit"
 
 AdManifest = Class()
 
-function AdManifest.new(self, version, created, ttl, units)
+function AdManifest.new(self)
+    local version
+    local created
+    local ttl
+    local units
+
+    function self.init(_version, _created, _ttl, _units)
+        version = _version
+        created = _created
+        ttl = _ttl
+        units = _units
+    end
+
     function self.getVersion()
         return version
     end

@@ -12,14 +12,16 @@ require "royal.AdConfig"
 
 AdTier = Class()
 
-function AdTier.new(self, id, url, reward, title, waitsecs, maxclicks, config)
-    self.id = id
-    self.url = url
-    self.reward = reward
-    self.title = title
-    self.waitsecs = waitsecs
-    self.maxclicks = maxclicks
-    self.config = config
+function AdTier.new(self)
+    function self.init(id, url, reward, title, waitsecs, maxclicks, config)
+        self.id = id
+        self.url = url
+        self.reward = reward
+        self.title = title
+        self.waitsecs = waitsecs
+        self.maxclicks = maxclicks
+        self.config = config
+    end
 
     -- Clicks this ad has received.
     local clicks = {}

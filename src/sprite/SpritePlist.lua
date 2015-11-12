@@ -27,10 +27,22 @@ function SpritePlist.clean(name)
     end
 end
 
-function SpritePlist.new(self, textureName, frames, scale)
-    self.scale = scale
-    local imageName = textureName..".png"
-    local plistName = textureName..".plist"
+function SpritePlist.new(self)
+    local textureName
+    local frames
+    local scale
+
+    local imageName
+    local plistName
+
+    function self.init(_textureName, _frames, _scale)
+        textureName = _textureName
+        frames = _frames
+        scale = _scale
+
+        imageName = textureName..".png"
+        plistName = textureName..".plist"
+    end
 
     local function getFrameName(frame)
         return string.format("%s-frame-%d.png",  textureName, frame.number)

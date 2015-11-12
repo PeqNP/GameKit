@@ -13,21 +13,30 @@ setmetatable(TouchableSprite, {
     end,
 })
 
-function TouchableSprite.new(self, _layer, _imgName, _onTouch)
-    self.sprite = cc.Sprite:create(_imgName)
-    _layer:addChild(self.sprite)
+function TouchableSprite.new(self)
+    local imgName
+    local onTouch
+
     self.enabled = true
 
+    function self.init(_layer, _imgName, _onTouch)
+        imgName = _imgName
+        onTouch = _onTouch
+
+        self.sprite = cc.Sprite:create(imgName)
+        _layer:addChild(self.sprite)
+    end
+
     function onTouchBegan()
-        if self.enabled and _onTouch then
-            _onTouch()
+        if self.enabled and onTouch then
+            onTouch()
         end
         -- Swallow all touches.
         return true
     end
 
     function self.clean()
-        cc.Director:getInstance():getTextureCache():removeTextureForKey(_imgName)
+        cc.Director:getInstance():getTextureCache():removeTextureForKey(imgName)
         if not self.sprite then
             return
         end

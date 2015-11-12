@@ -14,11 +14,14 @@ require "mediation.MediationAdConfig"
 
 MediationService = Class()
 
-function MediationService.new(self, host, port, path)
-    self.host = host
-    self.port = port
-    self.path = path
+function MediationService.new(self)
     self.delegate = false -- Assign if you wish to get callbacks in regards to progress, etc.
+
+    function self.init(host, port, path)
+        self.host = host
+        self.port = port
+        self.path = path
+    end
 
     --[[ Download ad mediation config.
 

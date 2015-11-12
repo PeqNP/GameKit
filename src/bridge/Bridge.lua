@@ -5,7 +5,15 @@
 require "Promise"
 
 BridgeCall = Class()
-function BridgeCall.new(self, request, promise)
+function BridgeCall.new(self)
+    local request
+    local promise
+
+    function self.init(_request, _promise)
+        request = _request
+        promise = _promise
+    end
+
     function self.getId()
         return request.getId()
     end
@@ -19,11 +27,16 @@ end
 
 Bridge = Class()
 
-function Bridge.new(self, adaptor)
+function Bridge.new(self)
+    local adaptor
     local private = {}
     local requests = {}
     local modules = {}
     local registeredModules = {}
+
+    function self.init(_adaptor)
+        adaptor = _adaptor
+    end
 
     function self.getAdaptor()
         return adaptor

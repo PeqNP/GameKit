@@ -8,12 +8,15 @@
 
 Frame = Class()
 
-function Frame.new(self, _frameNum, _bbox)
-    self.number = _frameNum
-    if _bbox then
-        self.bbox = {x = _bbox[1], y = _bbox[2], width = _bbox[3], height = _bbox[4]}
-    else
-        self.bbox = false
-    end
+function Frame.new(self)
     self.sprite = false
+
+    function self.init(frameNum, bbox)
+        self.number = frameNum
+        if bbox then
+            self.bbox = {x = bbox[1], y = bbox[2], width = bbox[3], height = bbox[4]}
+        else
+            self.bbox = false
+        end
+    end
 end

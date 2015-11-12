@@ -15,12 +15,14 @@ AdUnit = Class()
   @param id - id of the AdUnit
   @param tiers - the individual tiers that provide reward/config info, for a given state within the app.
 --]]
-function AdUnit.new(self, id, startdate, enddate, waitsecs, maxclicks, tiers)
-    self.id = id
-    self.startdate = startdate
-    self.enddate = enddate
-    self.waitsecs = waitsecs
-    self.maxclicks = maxclicks
+function AdUnit.new(self)
+    function self.init(id, startdate, enddate, waitsecs, maxclicks, tiers)
+        self.id = id
+        self.startdate = startdate
+        self.enddate = enddate
+        self.waitsecs = waitsecs
+        self.maxclicks = maxclicks
+    end
 
     function convertDictionaryToAdTiers(t)
         if not t then

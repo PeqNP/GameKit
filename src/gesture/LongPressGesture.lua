@@ -1,12 +1,14 @@
 LongPressGesture = Class()
 
-function LongPressGesture.new(self, point, prevPoint, touch)
-    self.point = point
-    self.prevPoint = prevPoint
-    self.touch = touch
+function LongPressGesture.new(self)
+    function self.init(point, prevPoint, touch)
+        self.point = point
+        self.prevPoint = prevPoint
+        self.touch = touch
 
-    self.distance = cu.getDistance(point, prevPoint)
-    self.angle = math.deg(math.atan2(prevPoint.y - point.y, prevPoint.x - point.x))
+        self.distance = cu.getDistance(point, prevPoint)
+        self.angle = math.deg(math.atan2(prevPoint.y - point.y, prevPoint.x - point.x))
+    end
 
     --[[ Flip the angle to produce the opposite of the computed angle. ]]--
     function self.reversedDegree()

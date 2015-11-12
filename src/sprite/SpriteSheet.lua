@@ -23,23 +23,35 @@ function SpriteSheet.clean(name)
     end
 end
 
-function SpriteSheet.new(self, _texture, _frames, _cols, _rows)
+function SpriteSheet.new(self)
+    local textureName
+    local frames
+    local cols
+    local rows
+
     -- Computed width/height of each frame. These will be set only after
     -- getFrames() is called.
     self.width = false
     self.height = false
 
+    function self.init(_textureName, _frames, _cols, _rows)
+        textureName = _textureName
+        frames = _frames
+        cols = _cols
+        rows = _rows
+    end
+
     local function getFrameName(frame)
-        return _texture .. frame.number
+        return textureName .. frame.number
     end
 
     --[[ Load sprite sheet frames asynchronously. ]]--
     function self.loadFrames(callback)
-        if #_frames == 0 then
+        if #frames == 0 then
             callback({})
             return
         end
-        local texture = cc.Director:getInstance():getTextureCache():getTextureForKey(_textureName)
+        local texture = cc.Director:getInstance():getTextureCache():getTextureForKey(textureName)
         -- Already in memory.
         if texture then
             callback(self.getFrames())
@@ -47,29 +59,29 @@ function SpriteSheet.new(self, _texture, _frames, _cols, _rows)
         end
         -- Load texture into memory.
         local function textureLoaded(texture)
-            Log.i("Loading texture asynchonously (%s)...", _texture)
+            Log.i("Loading texture asynchonously (%s)...", textureName)
             callback(self.getFrames())
         end
-        cc.Director:getInstance():getTextureCache():addImageAsync(_texture, textureLoaded)
+        cc.Director:getInstance():getTextureCache():addImageAsync(textureName, textureLoaded)
     end
 
     --[[ Load and return sprite sheet frames. ]]--
     function self.getFrames()
-        local texture = cc.Director:getInstance():getTextureCache():getTextureForKey(_texture)
+        local texture = cc.Director:getInstance():getTextureCache():getTextureForKey(textureName)
         -- Synchronously load texture.
         if not texture then
-            Log.i("Loading texture (%s)...", _texture)
-            texture = cc.Director:getInstance():getTextureCache():addImage(_texture)
+            Log.i("Loading texture (%s)...", textureName)
+            texture = cc.Director:getInstance():getTextureCache():addImage(textureName)
         end
         self.width = texture:getPixelsWide() / _cols
         self.height = texture:getPixelsHigh() / _rows
         --Log.d("Texture size w(%s) h(%s)", self.width, self.height)
-        local frames = {}
-        for idx, frame in pairs(_frames) do
+        local orderedFrames = {}
+        for idx, frame in pairs(frames) do
             if type(frame) == "number" then
                 frame = Frame(frame) -- Convert to frame.
                 frame.bbox = cc.rect(0, 0, self.width, self.height)
-                _frames[idx] = frame
+                frames[idx] = frame
             end
             local col = (frame.number-1) % _cols
             local row = math.floor((frame.number-1) / _cols)
@@ -83,24 +95,24 @@ function SpriteSheet.new(self, _texture, _frames, _cols, _rows)
             end
             -- else, cache hit!
             frame.sprite = spriteFrame
-            frames[idx] = frame
+            orderedFrames[idx] = frame
         end
-        return frames
+        return orderedFrames
     end
 
     function self.clean()
-        local texture = cc.Director:getInstance():getTextureCache():getTextureForKey(_texture)
+        local texture = cc.Director:getInstance():getTextureCache():getTextureForKey(textureName)
         if not texture then
             return
         end
-        Log.i("Cleaning texture (%s)", _texture)
-        for idx, frame in pairs(_frames) do
+        Log.i("Cleaning texture (%s)", textureName)
+        for idx, frame in pairs(frames) do
             cc.SpriteFrameCache:getInstance():removeSpriteFrameByName(getFrameName(frame))
         end
         cc.SpriteFrameCache:getInstance():removeSpriteFramesFromTexture(texture)
-        cc.Director:getInstance():getTextureCache():removeTextureForKey(_texture)
+        cc.Director:getInstance():getTextureCache():removeTextureForKey(textureName)
         --cc.Director:getInstance():getTextureCache():dumpCachedTextureInfo()
     end
 
-    SpriteSheet.register(_texture, self)
+    SpriteSheet.register(textureName, self)
 end

@@ -7,8 +7,10 @@
 
 Glyph = Class()
 
-function Glyph.new(self, _char, _width, _frame)
-    self.char = _char
-    self.width = _width
-    self.frame = _frame
+function Glyph.new(self)
+    function self.init(, char, width, frame)
+        self.char = char
+        self.width = width
+        self.frame = frame
+    end
 end
