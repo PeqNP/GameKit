@@ -100,7 +100,7 @@ function Class(extends)
                 assert(false, string.format("(%s).new must be implemented", className))
             end
 
-            local self = extends and extends(...) or {}
+            local self = extends and extends() or {}
             cls.new(self, ...)
 
             function self.getClass()

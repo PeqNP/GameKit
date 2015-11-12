@@ -50,6 +50,9 @@ describe("AdPresenter", function()
         end
 
         local function fn__shouldShowTier(config)
+            if not config then
+                return false
+            end
             for _, v in ipairs(evolutions) do
                 if v == config.evolution then
                     return true
@@ -64,14 +67,14 @@ describe("AdPresenter", function()
         adUnit1 = AdUnit(100, 86400, 86500, 4, 86400, {tier1, tier2, tier3})
 
         tier4 = AdTier(2000, "http://www.example.com/tier/2000", 100, "Click 4", 86400, 1)
-        stub(tier4, "isActive").and_return(true)
+        stub(tier4, "isActive", true)
         adUnit2 = AdUnit(200, 85000, 87000, 1, 86400, {tier4})
-        stub(adUnit2, "isActive").and_return(true)
+        stub(adUnit2, "isActive", true)
 
         tier5 = AdTier(3000, "http://www.example.com/tier/3000", 100, "Click 5", 86400, 1)
-        stub(tier5, "isActive").and_return(true)
+        stub(tier5, "isActive", true)
         adUnit3 = AdUnit(300, 85000, 87000, 1, 86400, {tier5})
-        stub(adUnit3, "isActive").and_return(true)
+        stub(adUnit3, "isActive", true)
 
         local manifest = AdManifest()
         manifest.setAdUnits({adUnit1, adUnit2, adUnit3})
@@ -87,10 +90,10 @@ describe("AdPresenter", function()
 
         describe("when the first button's tier is inactive", function()
             before_each(function()
-                stub(adUnit1, "isActive").and_return(true)
-                stub(tier1, "isActive").and_return(false)
-                stub(tier2, "isActive").and_return(true)
-                stub(tier3, "isActive").and_return(true)
+                stub(adUnit1, "isActive", true)
+                stub(tier1, "isActive", false)
+                stub(tier2, "isActive", true)
+                stub(tier3, "isActive", true)
 
                 buttons = subject.getNextTierButtons(1, fn__callback)
                 buttons[1]:activate()
@@ -107,7 +110,7 @@ describe("AdPresenter", function()
 
         describe("when the first ad unit is inactive", function()
             before_each(function()
-                stub(adUnit1, "isActive").and_return(false)
+                stub(adUnit1, "isActive", false)
 
                 buttons = subject.getNextTierButtons(1, fn__callback)
                 buttons[1]:activate()
@@ -120,9 +123,9 @@ describe("AdPresenter", function()
 
         describe("when all buttons are inactive", function()
             before_each(function()
-                stub(adUnit1, "isActive").and_return(false)
-                stub(adUnit2, "isActive").and_return(false)
-                stub(adUnit3, "isActive").and_return(false)
+                stub(adUnit1, "isActive", false)
+                stub(adUnit2, "isActive", false)
+                stub(adUnit3, "isActive", false)
 
                 buttons = subject.getNextTierButtons(1, fn__callback)
             end)
@@ -139,16 +142,22 @@ describe("AdPresenter", function()
         before_each(function()
             evolutions = {3, 6, 9}
 
-            stub(adUnit1, "isActive").and_return(true)
-            stub(tier1, "isActive").and_return(true)
-            stub(tier2, "isActive").and_return(true)
-            stub(tier3, "isActive").and_return(true)
+            stub(adUnit1, "isActive", true)
+            stub(tier1, "isActive", true)
+            stub(tier2, "isActive", true)
+            stub(tier3, "isActive", true)
 
             ads = subject.getNextTiers(4)
         end)
 
         it("should only return the total number of ads", function()
             assert.equals(3, #ads)
+        end)
+
+        it("should have returned the correct ads", function()
+            assert.equals(tier1, ads[1])
+            assert.equals(tier4, ads[2])
+            assert.equals(tier5, ads[3])
         end)
     end)
 
@@ -158,10 +167,10 @@ describe("AdPresenter", function()
         before_each(function()
             evolutions = {3, 6, 9}
 
-            stub(adUnit1, "isActive").and_return(true)
-            stub(tier1, "isActive").and_return(true)
-            stub(tier2, "isActive").and_return(true)
-            stub(tier3, "isActive").and_return(true)
+            stub(adUnit1, "isActive", true)
+            stub(tier1, "isActive", true)
+            stub(tier2, "isActive", true)
+            stub(tier3, "isActive", true)
 
             ads = subject.getNextTiers(1)
         end)
@@ -251,10 +260,10 @@ describe("AdPresenter", function()
             before_each(function()
                 evolutions = {3}
 
-                stub(adUnit1, "isActive").and_return(true)
-                stub(tier1, "isActive").and_return(true)
-                stub(tier2, "isActive").and_return(true)
-                stub(tier3, "isActive").and_return(true)
+                stub(adUnit1, "isActive", true)
+                stub(tier1, "isActive", true)
+                stub(tier2, "isActive", true)
+                stub(tier3, "isActive", true)
 
                 buttons = subject.getNextTierButtons(1, fn__callback)
             end)
@@ -286,10 +295,10 @@ describe("AdPresenter", function()
             before_each(function()
                 evolutions = {9}
 
-                stub(adUnit1, "isActive").and_return(true)
-                stub(tier1, "isActive").and_return(true)
-                stub(tier2, "isActive").and_return(true)
-                stub(tier3, "isActive").and_return(true)
+                stub(adUnit1, "isActive", true)
+                stub(tier1, "isActive", true)
+                stub(tier2, "isActive", true)
+                stub(tier3, "isActive", true)
 
                 buttons = subject.getNextTierButtons(1, fn__callback)
             end)

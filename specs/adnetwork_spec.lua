@@ -162,8 +162,8 @@ describe("AdNetwork", function()
 
                     manifest = AdManifest()
                     manifest.setAdUnits(ads)
-                    stub(json, "decode").and_return(jsonDict)
-                    stub(AdManifestParser.singleton, "fromDictionary").and_return(manifest)
+                    stub(json, "decode", jsonDict)
+                    stub(AdManifestParser.singleton, "fromDictionary", manifest)
 
                     adRequest.fn()
                 end)
@@ -341,7 +341,7 @@ describe("AdNetwork", function()
                     local dlManifest = AdManifest(1, 550, 80)
 
                     stub(json, "decode")
-                    stub(AdManifestParser.singleton, "fromDictionary").and_return(dlManifest)
+                    stub(AdManifestParser.singleton, "fromDictionary", dlManifest)
 
                     adRequest.status = 200
                     adRequest.fn()
@@ -378,7 +378,7 @@ describe("AdNetwork", function()
                     dlManifest = AdManifest(1, 560, 80)
 
                     stub(json, "decode")
-                    stub(AdManifestParser.singleton, "fromDictionary").and_return(dlManifest)
+                    stub(AdManifestParser.singleton, "fromDictionary", dlManifest)
 
                     adRequest.status = 200
                     adRequest.fn()
@@ -473,14 +473,14 @@ describe("AdNetwork", function()
 
             before_each(function()
                 fakeManifest = {}
-                stub(AdManifestParser.singleton, "fromDictionary").and_return(fakeManifest)
+                stub(AdManifestParser.singleton, "fromDictionary", fakeManifest)
 
                 local jsonStr = "{'version': 1, 'created': 10000, 'ttl': 86500, 'units': [{'id': 2, 'reward': 25, 'startdate': 4, 'enddate': 5, 'waitsecs': 86400, 'maxclicks': 1, 'tiers': [{'id': 4, 'config': {}}]}]}"
                 local jsonDict = json.decode(jsonStr)
 
-                stub(io, "open").and_return(true)
-                stub(io, "read").and_return(jsonStr)
-                stub(json, "decode").and_return(jsonDict)
+                stub(io, "open", true)
+                stub(io, "read", jsonStr)
+                stub(json, "decode", jsonDict)
 
                 subject.loadFromCache()
             end)
@@ -498,8 +498,8 @@ describe("AdNetwork", function()
             before_each(function()
                 stub(AdManifestParser.singleton, "fromDictionary")
 
-                stub(io, "open").and_return(true)
-                stub(io, "read").and_return("")
+                stub(io, "open", true)
+                stub(io, "read", "")
                 
                 subject.loadFromCache()
             end)
@@ -517,8 +517,8 @@ describe("AdNetwork", function()
             before_each(function()
                 stub(AdManifestParser.singleton, "fromDictionary")
 
-                stub(io, "open").and_return(false)
-                stub(io, "read").and_return(nil)
+                stub(io, "open", false)
+                stub(io, "read", nil)
                 
                 subject.loadFromCache()
             end)

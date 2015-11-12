@@ -60,7 +60,7 @@ describe("AdTier", function()
         before_each(function()
             app = cc.Application()
             stub(app, "openURL")
-            stub(cc.Application, "getInstance").and_return(app)
+            stub(cc.Application, "getInstance", app)
 
             subject.click(8505)
         end)
@@ -109,9 +109,9 @@ describe("AdTier", function()
             before_each(function()
                 clicks = "[86555]"
                 
-                stub(io, "open").and_return(true)
+                stub(io, "open", true)
                 stub(io, "output")
-                stub(io, "read").and_return(clicks)
+                stub(io, "read", clicks)
                 stub(io, "write")
                 stub(io, "close")
 
@@ -137,9 +137,9 @@ describe("AdTier", function()
             before_each(function()
                 clicks = "[86555]"
                 
-                stub(io, "open").and_return(false)
+                stub(io, "open", false)
                 stub(io, "output")
-                stub(io, "read").and_return(clicks)
+                stub(io, "read", clicks)
                 stub(io, "write")
                 stub(io, "close")
 
@@ -169,7 +169,7 @@ describe("AdTier", function()
         before_each(function()
             returnedFrame = {}
             cache = cc.SpriteFrameCache:getInstance()
-            stub(cache, "getSpriteFrame").and_return(returnedFrame)
+            stub(cache, "getSpriteFrame", returnedFrame)
         end)
 
         describe("button", function()

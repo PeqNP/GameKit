@@ -124,13 +124,13 @@ describe("AdManager", function()
 
             context("when there is no config", function()
                 before_each(function()
-                    stub(adFactory, "nextAd").and_return(nil)
+                    stub(adFactory, "nextAd", nil)
                 end)
 
                 describe("show the ad", function()
                     before_each(function()
                         local promise = Promise()
-                        stub(bridge, "show").and_return(promise)
+                        stub(bridge, "show", promise)
 
                         assert.falsy(subject.showAd(AdType.Video))
                         assert.truthy(subject.showAd(AdType.Interstitial))
@@ -155,10 +155,10 @@ describe("AdManager", function()
 
                 before_each(function()
                     local promise = Promise()
-                    stub(bridge, "show").and_return(promise)
+                    stub(bridge, "show", promise)
 
                     config = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
-                    stub(adFactory, "nextAd").and_return(config)
+                    stub(adFactory, "nextAd", config)
                     assert.truthy(subject.showAd(AdType.Interstitial))
                 end)
 
@@ -172,14 +172,14 @@ describe("AdManager", function()
 
                 before_each(function()
                     local promise = Promise()
-                    stub(bridge, "show").and_return(promise)
+                    stub(bridge, "show", promise)
 
                     config = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
-                    stub(adFactory, "nextAd").and_return(config)
+                    stub(adFactory, "nextAd", config)
                     assert.truthy(subject.showAd(AdType.Interstitial))
                 end)
 
-                it("should show the next available ad type, AdMob #f", function()
+                it("should show the next available ad type, AdMob", function()
                     assert.stub(bridge.show).was.called_with(requesti)
                 end)
             end)
@@ -256,8 +256,8 @@ describe("AdManager", function()
 
                     before_each(function()
                         promise = Promise()
-                        stub(adFactor, nextAd).and_return(nil)
-                        stub(bridge, "show").and_return(promise)
+                        stub(adFactor, nextAd, nil)
+                        stub(bridge, "show", promise)
                         stub(cu, "delayCall")
 
                         assert.falsy(subject.showAd(AdType.Interstitial))
@@ -336,8 +336,8 @@ describe("AdManager when no ad factory", function()
         promises = Promise()
 
         bridge = require("bridge.modules.ad")
-        stub(bridge, "cache").and_return(promisec)
-        stub(bridge, "show").and_return(promises)
+        stub(bridge, "cache", promisec)
+        stub(bridge, "show", promises)
 
         subject = AdManager(bridge)
 

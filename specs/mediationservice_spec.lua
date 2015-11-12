@@ -60,7 +60,7 @@ describe("MediationService", function()
             end)
         end)
 
-        it("should have set the correct response type #force", function()
+        it("should have set the correct response type", function()
             assert.truthy(request.responseType)
             assert.equals(cc.XMLHTTPREQUEST_RESPONSE_STRING, request.responseType)
         end)

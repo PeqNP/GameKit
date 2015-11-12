@@ -65,7 +65,7 @@ describe("Bridge", function()
         before_each(function()
             response = nil
 
-            stub(adaptor, "send").and_return(true)
+            stub(adaptor, "send", true)
 
             request = TestRequest()
             promise = subject.send("test", request, nil)
@@ -116,7 +116,7 @@ describe("Bridge", function()
         before_each(function()
             response = nil
 
-            stub(adaptor, "send").and_return(false)
+            stub(adaptor, "send", false)
 
             request = TestRequest()
             promise = subject.send("test", request, nil)
