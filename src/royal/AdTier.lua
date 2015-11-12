@@ -13,16 +13,6 @@ require "royal.AdConfig"
 AdTier = Class()
 
 function AdTier.new(self)
-    function self.init(id, url, reward, title, waitsecs, maxclicks, config)
-        self.id = id
-        self.url = url
-        self.reward = reward
-        self.title = title
-        self.waitsecs = waitsecs
-        self.maxclicks = maxclicks
-        self.config = config
-    end
-
     -- Clicks this ad has received.
     local clicks = {}
 
@@ -39,6 +29,18 @@ function AdTier.new(self)
         if jsonStr and string.len(jsonStr) > 0 then
             clicks = json.decode(jsonStr)
         end
+    end
+
+    function self.init(id, url, reward, title, waitsecs, maxclicks, config)
+        self.id = id
+        self.url = url
+        self.reward = reward
+        self.title = title
+        self.waitsecs = waitsecs
+        self.maxclicks = maxclicks
+        self.config = config
+
+        init()
     end
 
     function self.getButtonName()
@@ -90,8 +92,6 @@ function AdTier.new(self)
     --[[ Returns whether this tier is active; which can be used to determine if
          it is displayed or not. ]]--
     function self.isActive()
-        return #clicks < maxclicks
+        return #clicks < self.maxclicks
     end
-
-    init()
 end

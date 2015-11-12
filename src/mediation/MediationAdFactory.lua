@@ -14,6 +14,13 @@ function MediationAdFactory.new(self)
 
     function self.init(_configs)
         configs = _configs
+
+        lastError = false
+
+        local groups = private.getGroupedConfigs()
+        for adType, configs in ipairs(groups) do
+            queues[adType] = private.getQueueForConfigs(configs)
+        end
     end
 
     --
@@ -119,15 +126,6 @@ function MediationAdFactory.new(self)
         return queue
     end
 
-    local function init()
-        lastError = false
-
-        local groups = private.getGroupedConfigs()
-        for adType, configs in ipairs(groups) do
-            queues[adType] = private.getQueueForConfigs(configs)
-        end
-    end
-
     function self.getConfigs()
         return configs
     end
@@ -153,6 +151,4 @@ function MediationAdFactory.new(self)
         end
         return queue[interval]
     end
-
-    init()
 end

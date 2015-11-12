@@ -16,12 +16,16 @@ AdUnit = Class()
   @param tiers - the individual tiers that provide reward/config info, for a given state within the app.
 --]]
 function AdUnit.new(self)
-    function self.init(id, startdate, enddate, waitsecs, maxclicks, tiers)
+    local tiers
+
+    function self.init(id, startdate, enddate, waitsecs, maxclicks, _tiers)
         self.id = id
         self.startdate = startdate
         self.enddate = enddate
         self.waitsecs = waitsecs
         self.maxclicks = maxclicks
+
+        self.setTiers(_tiers)
     end
 
     function convertDictionaryToAdTiers(t)
@@ -49,7 +53,7 @@ function AdUnit.new(self)
 
     function self.isActive()
         local ctime = socket.gettime()
-        if ctime < startdate or ctime > enddate then
+        if ctime < self.startdate or ctime > self.enddate then
             return false
         end
 
@@ -57,7 +61,7 @@ function AdUnit.new(self)
         local totalClicks = 0
         for _, tier in ipairs(tiers) do
             totalClicks = totalClicks + tier.getNumClicks()
-            if totalClicks >= maxclicks then
+            if totalClicks >= self.maxclicks then
                 return false
             end
             if not tier.isActive() then
@@ -66,6 +70,4 @@ function AdUnit.new(self)
         end
         return active ~= #tiers
     end
-
-    self.setTiers(tiers)
 end
