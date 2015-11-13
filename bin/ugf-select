@@ -13,7 +13,7 @@ import re
 import shutil
 import sys
 
-from ugf import gethomedir
+from ugf import gethomedir, emptydir, rmdir
 from ugf.config import Config, ProjectConfig
 from ugf.selectoptions import SelectOptions
 from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder
@@ -47,7 +47,7 @@ def interpolate_iosplist(project, blob):
     return blob
 
 def copy_source(source, cocos):
-    call(["rm", "-rf", cocos.path("src/game")])
+    rmdir(cocos.path("src/game"))
     call(["cp", "-r", source.path("src"), cocos.path("src/game")])
 
 # Select and make 'project' the active project.
@@ -101,20 +101,22 @@ def main(project, source, cocos, options):
     # Copy interpolated file to correct location.
 
     # Copy Xcode assets
-    call(["rm", "-rf", cocos.path("frameworks/runtime-src/proj.ios_mac/GameTools-mobile/*")])
+    emptydir(cocos.path("frameworks/runtime-src/proj.ios_mac/GameTools-mobile"))
     call(["cp", "-r", source.resourcepath(), cocos.path("frameworks/runtime-src/proj.ios_mac/GameTools-mobile/")])
+    call(["cp", "-r", source.xibpath(), cocos.path("frameworks/runtime-src/proj.ios_mac/ios/")])
 
     # Copy Android assets
 
     # Copy GameTools
-    call(["rm", "-rf", cocos.path("src/ugf")])
+    rmdir(cocos.path("src/ugf"))
+    # @todo fix this path
     call(["cp", "-r", "/Users/eric/git/GameTools/src", cocos.path("src/ugf")])
 
     # Copy game source and assets
     copy_source(source, cocos)
 
     # Copy resources
-    call(["rm", "-rf", cocos.path("res")])
+    rmdir(cocos.path("res"))
     call(["cp", "-r", source.path("res"), cocos.path("res")])
 
     # Update a compile time script that will call this script with the currently selected project before build

@@ -55,4 +55,7 @@ class ProjectPathBuilder (object):
         return self.options.resource and len(self.options.resource) > 0 and self.options.resource+"/" or ""
 
     def resourcepath(self):
-        return os.path.join(self.basepath(), "platform/ios/{}res/Images.xcassets".format(self.resdir()))
+        return self.path("platform/ios/res/{}Images.xcassets".format(self.resdir()))
+
+    def xibpath(self):
+        return self.path("platform/ios/src/LaunchScreen.xib")

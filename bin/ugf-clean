@@ -15,10 +15,11 @@ from ugf.pathbuilder import CocosPathBuilder
 
 def main(cocos):
     os.chdir(cocos.basepath())
+    # Removes all unstaged files
+    call(["git", "reset", "HEAD"])
+    call(["git", "checkout", "."])
     # Removes all untracked files
     call(["git", "clean", "-f", "-d"])
-    # Removes all unstaged files
-    call(["git", "checkout", "."])
 
 if __name__ == "__main__":
     import argparse
