@@ -39,6 +39,8 @@ function SpriteSheet.new(self)
         frames = _frames
         cols = _cols
         rows = _rows
+
+        SpriteSheet.register(textureName, self)
     end
 
     local function getFrameName(frame)
@@ -113,6 +115,4 @@ function SpriteSheet.new(self)
         cc.Director:getInstance():getTextureCache():removeTextureForKey(textureName)
         --cc.Director:getInstance():getTextureCache():dumpCachedTextureInfo()
     end
-
-    SpriteSheet.register(textureName, self)
 end

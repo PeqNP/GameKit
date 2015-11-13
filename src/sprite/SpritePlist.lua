@@ -42,6 +42,8 @@ function SpritePlist.new(self)
 
         imageName = textureName..".png"
         plistName = textureName..".plist"
+
+        SpritePlist.register(textureName, self)
     end
 
     local function getFrameName(frame)
@@ -121,6 +123,4 @@ function SpritePlist.new(self)
         --Log.d(debug.traceback())
         --cc.Director:getInstance():getTextureCache():dumpCachedTextureInfo()
     end
-
-    SpritePlist.register(textureName, self)
 end

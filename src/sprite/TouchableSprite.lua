@@ -25,6 +25,12 @@ function TouchableSprite.new(self)
 
         self.sprite = cc.Sprite:create(imgName)
         _layer:addChild(self.sprite)
+
+        local eventDispatcher = _layer:getEventDispatcher()
+        local listener = cc.EventListenerTouchOneByOne:create()
+        listener:setSwallowTouches(true)
+        listener:registerScriptHandler(onTouchBegan, cc.Handler.EVENT_TOUCH_BEGAN)
+        eventDispatcher:addEventListenerWithSceneGraphPriority(listener, self.sprite)
     end
 
     function onTouchBegan()
@@ -46,10 +52,4 @@ function TouchableSprite.new(self)
         end
         self.sprite = nil
     end
-
-    local eventDispatcher = _layer:getEventDispatcher()
-    local listener = cc.EventListenerTouchOneByOne:create()
-    listener:setSwallowTouches(true)
-    listener:registerScriptHandler(onTouchBegan, cc.Handler.EVENT_TOUCH_BEGAN)
-    eventDispatcher:addEventListenerWithSceneGraphPriority(listener, self.sprite)
 end
