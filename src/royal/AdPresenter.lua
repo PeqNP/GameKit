@@ -20,7 +20,7 @@ function AdPresenter.new(self)
     local fn__configMatches
     local unitPos = 1
 
-    function self.init(, _manifest, _fn)
+    function self.init(_manifest, _fn)
         manifest = _manifest
         fn__configMatches = _fn
     end

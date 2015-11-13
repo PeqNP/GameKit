@@ -7,8 +7,14 @@ require "ad.Constants"
 
 AdRequest = Class(BridgeRequest)
 
-function AdRequest.new(self, adModule, _state)
-    local state = _state and _state or AdState.Initial
+function AdRequest.new(self)
+    local adModule
+    local state
+
+    function self.init(_adModule, _state)
+        adModule = _adModule
+        state = _state and _state or AdState.Initial
+    end
 
     function self.setState(s)
         state = s

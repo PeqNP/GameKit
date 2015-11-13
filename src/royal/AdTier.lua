@@ -44,11 +44,11 @@ function AdTier.new(self)
     end
 
     function self.getButtonName()
-        return "button-" .. tostring(id) .. ".png"
+        return "button-" .. tostring(self.id) .. ".png"
     end
 
     function self.getBannerName()
-        return "banner-" .. tostring(id) .. ".png"
+        return "banner-" .. tostring(self.id) .. ".png"
     end
 
     function self.getButtonSpriteFrame()

@@ -6,11 +6,11 @@ require "ad.modules.AdMobInterstitial"
 
 describe("AdRequest", function()
     local subject
-    local module
+    local adModule
 
     before_each(function()
-        module = AdMobInterstitial("zone", 25)
-        subject = AdRequest(module)
+        adModule = AdMobInterstitial("zone", 25)
+        subject = AdRequest(adModule)
     end)
 
     -- Start: These MUST be the first two tests! --
@@ -27,8 +27,8 @@ describe("AdRequest", function()
         assert.equal(AdState.Initial, subject.getState())
     end)
 
-    it("should return correct module", function()
-        assert.equal(module, subject.getAdModule())
+    it("should return correct adModule", function()
+        assert.equal(adModule, subject.getAdModule())
     end)
 
     it("should return correct ad network", function()

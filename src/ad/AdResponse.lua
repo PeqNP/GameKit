@@ -7,7 +7,17 @@ require "bridge.BridgeResponseProtocol"
 AdResponse = Class()
 AdResponse.implements(BridgeResponseProtocol)
 
-function AdResponse.new(self, id, state, _error)
+function AdResponse.new(self)
+    local id
+    local state
+    local _error
+
+    function self.init(_id, _state, _err)
+        id = _id
+        state = _state
+        _error = _err
+    end
+
     function self.getState()
         return state
     end

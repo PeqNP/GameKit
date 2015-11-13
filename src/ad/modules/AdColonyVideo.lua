@@ -7,7 +7,15 @@ require("ad.AdRequest")
 
 AdColonyVideo = Class(AdModule)
 
-function AdColonyVideo.new(self, zone, reward)
+function AdColonyVideo.new(self)
+    local zone
+    local reward
+
+    function self.init(_zone, _reward)
+        zone = _zone
+        reward = _reward
+    end
+
     function self.getConfig()
         return nil
     end

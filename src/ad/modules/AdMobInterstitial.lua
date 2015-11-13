@@ -7,7 +7,15 @@ require("ad.AdRequest")
 
 AdMobInterstitial = Class(AdModule)
 
-function AdMobInterstitial.new(self, zone, reward)
+function AdMobInterstitial.new(self)
+    local zone
+    local reward
+
+    function self.init(_zone, _reward)
+        zone = _zone
+        reward = _reward
+    end
+
     function self.getConfig()
         return nil
     end

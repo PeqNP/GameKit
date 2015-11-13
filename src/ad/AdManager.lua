@@ -14,12 +14,19 @@ AdManager = Class()
 -- Graduated timeout intervals.
 local TIMEOUT = {15, 30, 60, 120, 240, 600}
 
-function AdManager.new(self, adaptor, adFactory)
+function AdManager.new(self)
+    local adaptor
+    local adFactory
     local delegate
     local networkModules = {}
     local _error
     local requests = {}
     local private = {}
+
+    function self.init(_adaptor, _adFactory)
+        adaptor = _adaptor
+        adFactory = _adFactory
+    end
 
     -- @edge Ensure network modules have unique network/ad type combination. It make no sense
     -- to have a module of the same type.

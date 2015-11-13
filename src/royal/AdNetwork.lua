@@ -14,11 +14,7 @@ require "royal.AdRequestCallback"
 
 AdNetwork = Class()
 
-function AdNetwork.new(self, host, port, path, maxVersions)
-    self.host = host
-    self.port = port
-    self.path = path
-    self.maxVersions = maxVersions
+function AdNetwork.new(self)
     self.delegate = false -- Assign if you wish to get callbacks in regards to progress, etc.
 
     local manifest
@@ -28,6 +24,13 @@ function AdNetwork.new(self, host, port, path, maxVersions)
     local callbacks = {}
 
     local plistLoaded = false
+
+    function self.init(host, port, path, maxVersions)
+        self.host = host
+        self.port = port
+        self.path = path
+        self.maxVersions = maxVersions
+    end
 
     local function clean()
         callbacks = {}

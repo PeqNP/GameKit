@@ -23,6 +23,8 @@ function AdManifest.new(self)
         created = _created
         ttl = _ttl
         units = _units
+
+        self.setAdUnits(units)
     end
 
     function self.getVersion()
@@ -63,6 +65,4 @@ function AdManifest.new(self)
     function self.isActive(epoch)
         return created >= epoch
     end
-
-    self.setAdUnits(units)
 end
