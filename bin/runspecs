@@ -1,0 +1,13 @@
+#!/bin/bash
+# http://www.tldp.org/LDP/abs/html/comparison-ops.html
+# http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-11.html
+
+filename=$1
+testpath="specs/"
+if [ "$filename" != "" ]
+then
+    testpath=$filename
+fi
+
+export LUA_PATH="/usr/local/share/lua/5.2/?.lua;/usr/local/share/lua/5.2/?/init.lua;/usr/local/lib/lua/5.2/?.lua;/usr/local/lib/lua/5.2/?/init.lua;./?.lua;/Users/eric/git/GameTools/?.lua;/Users/eric/git/GameTools/specs/?.lua;/Users/eric/git/GameTools/src/?.lua"
+busted $testpath
