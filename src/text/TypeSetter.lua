@@ -8,7 +8,7 @@
 
 --]]
 
-require "Glyph"
+require "text.Glyph"
 
 TypeSetter = Class()
 
@@ -19,13 +19,7 @@ function TypeSetter.new(self)
 
     local _glyphs = {}
 
-    function self.init(_sheet, _data, _kerning)
-        sheet = _sheet
-        data = _data
-        kerning = _kerning
-    end
-
-    local function initialize()
+    local function createGlyphs()
         local numLetters = #data
         local frames = sheet.getFrames()
         for i = 1, #data do
@@ -37,6 +31,14 @@ function TypeSetter.new(self)
             _glyphs[ string.byte(char) ] = Glyph(char, width, frames[i])
         end
         data = nil -- No longer needed.
+    end
+
+    function self.init(_sheet, _data, _kerning)
+        sheet = _sheet
+        data = _data
+        kerning = _kerning
+
+        createGlyphs()
     end
 
     --[[
@@ -61,6 +63,4 @@ function TypeSetter.new(self)
         end
         return layout
     end
-
-    initialize()
 end

@@ -5,6 +5,8 @@
 
 --]]
 
+require "sprite.Frame"
+
 SpriteSheet = Class()
 
 local sheets = {}
@@ -75,8 +77,8 @@ function SpriteSheet.new(self)
             Log.i("Loading texture (%s)...", textureName)
             texture = cc.Director:getInstance():getTextureCache():addImage(textureName)
         end
-        self.width = texture:getPixelsWide() / _cols
-        self.height = texture:getPixelsHigh() / _rows
+        self.width = texture:getPixelsWide() / cols
+        self.height = texture:getPixelsHigh() / rows
         --Log.d("Texture size w(%s) h(%s)", self.width, self.height)
         local orderedFrames = {}
         for idx, frame in pairs(frames) do
@@ -85,8 +87,8 @@ function SpriteSheet.new(self)
                 frame.bbox = cc.rect(0, 0, self.width, self.height)
                 frames[idx] = frame
             end
-            local col = (frame.number-1) % _cols
-            local row = math.floor((frame.number-1) / _cols)
+            local col = (frame.number-1) % cols
+            local row = math.floor((frame.number-1) / cols)
             local name = getFrameName(frame)
             local spriteFrame = cc.SpriteFrameCache:getInstance():getSpriteFrame(name)
             if not spriteFrame then

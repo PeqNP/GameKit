@@ -8,7 +8,7 @@
 Glyph = Class()
 
 function Glyph.new(self)
-    function self.init(, char, width, frame)
+    function self.init(char, width, frame)
         self.char = char
         self.width = width
         self.frame = frame
