@@ -6,55 +6,56 @@
 
 --]]
 
---[[ NotificationObserver ]]--
-
-NotificationObserver = Class()
-
-function NotificationObserver.new(_observer, _callback)
-    local self = {}
-    self.observer = _observer
-    self.callback = _callback
-    return self
-end
-
---[[ NotificationCenter ]]--
+require "NotificationObserver"
 
 NotificationCenter = Class()
-Singleton(NotificationCenter)
+
+local shared = nil
+function NotificationCenter.getInstance()
+    if not shared then
+        shared = NotificationCenter()
+    end
+    return shared
+end
 
 function NotificationCenter.new(self)
-    local _observers = {}
+    local observers = {}
+
+    -- @fixme I think it would be more appropriate to have a getObserversForEventID() method
+    function self.getObservers()
+        return observers
+    end
     
     --[[ Add observer for given event. ]]--
     function self.addObserver(observer, callback, eventId)
         --print("--->addObserver", tostring(observer), callback, eventId)
-        if not _observers[eventId] then
-            _observers[eventId] = {}
+        if not observers[eventId] then
+            observers[eventId] = {}
         end
-        for _, obs in ipairs(_observers[eventId]) do
+        for _, obs in ipairs(observers[eventId]) do
             if obs.observer == observer then
                 --cclog("-> Aldready listening")
                 return -- Already listening.
             end
         end
-        table.insert(_observers[eventId], NotificationObserver(observer, callback))
-        --print("-> # observers: "..#_observers[eventId])
+        table.insert(observers[eventId], NotificationObserver(observer, callback))
+        --print("-> # observers: "..#observers[eventId])
     end
 
     function self.removeObserverForEvent(observer, eventId)
         --cclog("--->removeObserverForEvent: "..tostring(observer)..", eventId: "..eventId)
         -- There are no observers for this event.
-        if not _observers[eventId] then
+        if not observers[eventId] then
             return
         end
         -- Remove observer from event list.
-        local tObs = _observers[eventId]
+        local tObs = observers[eventId]
         for id, obs in ipairs(tObs) do
             --cclog("-> curr: "..tostring(observer).." obs: "..tostring(obs.observer))
             if obs.observer == observer then
                 --cclog("->removeObserverForEvent removed! id: "..id)
-                table.remove(_observers[eventId], id)
-                --print("-> # left: "..#_observers[eventId])
+                table.remove(observers[eventId], id)
+                --print("-> # left: "..#observers[eventId])
                 return
             end
         end
@@ -63,7 +64,7 @@ function NotificationCenter.new(self)
     --[[ Remove observer from all observing events. ]]--
     function self.removeObserver(observer)
         --print("-->removeObserver:", tostring(observer))
-        for eventId, _ in pairs(_observers) do
+        for eventId, _ in pairs(observers) do
             self.removeObserverForEvent(observer, eventId)
         end
     end
@@ -72,16 +73,16 @@ function NotificationCenter.new(self)
     function self.postNotification(eventId, obj)
         --cclog("-->postNotification: "..eventId)
         -- Cleanup
-        if _observers[eventId] and #_observers[eventId] < 1 then
+        if observers[eventId] and #observers[eventId] < 1 then
             cclog("Cleaned up eventId: "..tostring(eventId))
-            _observers[eventId] = nil
+            observers[eventId] = nil
         end
-        if not _observers[eventId] then
+        if not observers[eventId] then
             return
         end
-        --cclog("-->postNotification: #"..#_observers[eventId])
+        --cclog("-->postNotification: #"..#observers[eventId])
         -- Inform all observers of event.
-        for _, obs in ipairs(_observers[eventId]) do
+        for _, obs in ipairs(observers[eventId]) do
             --print("calling:", tostring(obs), eventId)
             obs.callback(obj)
         end

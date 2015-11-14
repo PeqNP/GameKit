@@ -144,7 +144,7 @@ function Class(extends)
             if type(cls.new) ~= "function" then
                 require "Debug"
                 print(table.show(class.getInfo()))
-                assert(false, string.format("function (%s).new() must be implemented", className))
+                assert(false, string.format("function %s.new() must be implemented", className))
             end
 
             local self = {}
