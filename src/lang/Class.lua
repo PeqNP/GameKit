@@ -138,7 +138,10 @@ function Class(extends)
     -- Factory --
     setmetatable(class, {
         __call = function (cls, ...)
-            if not cls or type(cls.new) ~= "function" then
+            if not cls then
+                assert(false, string.format("cls (%s) is not a class", className))
+            end
+            if type(cls.new) ~= "function" then
                 assert(false, string.format("function (%s).new() must be implemented", className))
             end
 

@@ -1,7 +1,7 @@
 --[[
 
-  @author Eric Chamberlain
   @copyright 2014 Upstart Illustration LLC. All rights reserved.
+
 --]]
 
 TouchableSprite = {}
