@@ -94,5 +94,25 @@ describe("Signal", function()
             assert.equals(25, table.euclid({25, 75}))
         end)
     end)
+
+    describe("string.split", function()
+        it("should split by delimiter", function()
+            local parts = string.split("/path/to/NotificationCenter.lua", "/")
+            assert.equals(3, #parts)
+        end)
+
+        it("should return full string if delimiter not found", function()
+            local parts = string.split("NotificationCenter.lua", "/")
+            assert.equals(1, #parts)
+            assert.equals("NotificationCenter.lua", parts[1])
+            assert.equals("NotificationCenter.lua", parts[#parts]) -- sanity
+        end)
+
+        it("should return everything before the period", function()
+            local parts = string.split("NotificationCenter.lua", "%.")
+            assert.equals("NotificationCenter", parts[1])
+            assert.equals("lua", parts[2])
+        end)
+    end)
 end)
 

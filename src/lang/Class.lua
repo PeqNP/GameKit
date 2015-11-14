@@ -13,8 +13,8 @@ function Class(extends)
 
     -- Class information --
     local info = debug.getinfo(2, "Sl")
-    local className = string.split(info.source, "/")
-    className = string.split(className[#className], "%.")
+    local className = string.split(info.source, "/") -- remove everything before path
+    className = string.split(className[#className], "%.") -- remove '.lua[c|o]' extension
     className = className[1]
 
     function class.getInfo()
@@ -142,6 +142,8 @@ function Class(extends)
                 assert(false, string.format("cls (%s) is not a class", className))
             end
             if type(cls.new) ~= "function" then
+                require "Debug"
+                print(table.show(class.getInfo()))
                 assert(false, string.format("function (%s).new() must be implemented", className))
             end
 
