@@ -78,7 +78,7 @@ function Satan.new(self)
 end
 
 God = Class()
-function God.new(self)
+function God.new(self, init)
     local a
     local b
 
@@ -97,9 +97,9 @@ function God.new(self)
 end
 
 Parent = Class(God)
-function Parent.new(self)
+function Parent.new(self, init)
     function self.init(a, b)
-        return a, b
+        init(a, b)
     end
 
     function self.call()
@@ -108,9 +108,9 @@ function Parent.new(self)
 end
 
 Child = Class(Parent)
-function Child.new(self)
+function Child.new(self, init)
     function self.init(a, b)
-        return a, b
+        init(a, b)
     end
 
     function self.call()

@@ -14,6 +14,8 @@ function Class(extends)
     -- Class information --
     local info = debug.getinfo(2, "Sl")
     local className = string.split(info.source, "/") -- remove everything before path
+    -- @fixme This doesn't work with Lua 5.1. I'm not sure if it's because of
+    -- the escape character used or what.
     className = string.split(className[#className], "%.") -- remove '.lua[c|o]' extension
     className = className[1]
 
@@ -99,18 +101,7 @@ function Class(extends)
             extends.alloc(self)
         end
 
-        -- Super init
-        local __super = self.init
-
-        class.new(self)
-
-        -- Make sure super is called if init is not the same.
-        if __super and __super ~= self.init then
-            local __init = self.init
-            function self.init(...)
-                __super(__init(...))
-            end
-        end
+        class.new(self, self.init)
 
         function self.getClass()
             return class
@@ -142,8 +133,6 @@ function Class(extends)
                 assert(false, string.format("cls (%s) is not a class", className))
             end
             if type(cls.new) ~= "function" then
-                require "Debug"
-                print(table.show(class.getInfo()))
                 assert(false, string.format("function %s.new() must be implemented", className))
             end
 
