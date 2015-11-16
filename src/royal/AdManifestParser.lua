@@ -7,6 +7,7 @@
 
 --]]
 
+require "Logger"
 require "royal.AdManifest"
 
 AdManifestParser = Class()
@@ -17,7 +18,7 @@ function AdManifestParser.new(self)
     function self.init(_classes)
         classes = _classes
         if not classes or #classes == 0 then
-            --Log.w("AdManifest: No classes specified! Falling back to base class AdManifest")
+            Log.i("AdManifest: No classes specified! Falling back to base class AdManifest")
             classes = {AdManifest}
         end
     end
@@ -37,7 +38,7 @@ function AdManifestParser.new(self)
             Log.s("AdManifest version (%s) is not supported!", ver)
             return nil
         end
-        return class.new(ver, dict["created"], dict["ttl"], dict["units"])
+        return class(ver, dict["created"], dict["ttl"], dict["units"])
     end
 end
 

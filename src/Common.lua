@@ -34,7 +34,7 @@ end
 function cu.getRandomPoint(sprite)
     -- @fixme Ensure that the sprite is always in view. This code does not
     -- do that.
-    local size = getVisibleSize()
+    local size = cu.getVisibleSize()
     local xMin, xMax = 50, size.width - 50
     local yMin, yMax = BOTTOM_AD_HEIGHT + 50, size.height - 50
     local x = math.random(xMin, xMax)
@@ -92,7 +92,7 @@ end
 
 --]]
 function cu.getPointForPosition(position, sprite, padding)
-    local size = getVisibleSize()
+    local size = cu.getVisibleSize()
     local x, y
     if position == Heading.Random then
         position = math.random(Heading.MIN, Heading.MAX-1) -- -1 to remove 'Random'
@@ -138,7 +138,7 @@ end
 
 --[[ Return the location on the screen given a heading. ]]--
 function cu.getHeadingPosition(heading)
-    local size = getVisibleSize()
+    local size = cu.getVisibleSize()
     local x, y
     if heading == Heading.Random then
         heading = math.random(Heading.MIN, Heading.MAX-1)

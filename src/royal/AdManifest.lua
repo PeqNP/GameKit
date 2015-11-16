@@ -1,10 +1,9 @@
---[[ Provides an AdManifest, a structure that defines the version and TTL
-     of AdUnits.
-
- @since 2015.05.27
- @copyright Upstart Illustration LLC
-
---]]
+--
+-- Provides an AdManifest, a structure that defines the version and TTL
+-- of AdUnits.
+--
+-- @copyright Upstart Illustration LLC
+--
 
 require "Logger"
 

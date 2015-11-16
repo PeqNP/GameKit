@@ -2,7 +2,7 @@ require "lang.Signal"
 require "specs.Cocos2d-x"
 require "Logger"
 
-Log.setLevel(LogLevel.Info)
+Log.setLevel(LogLevel.Error)
 
 require "specs.AdManifestTest"
 require "royal.AdManifestParser"
@@ -88,9 +88,7 @@ describe("AdManifestParser", function()
 
             it("should have vended an AdManifestTest instance", function()
                 assert.truthy(manifest)
-                -- Currently Signal does not support subclasses as it should. The AdManifestTest should
-                -- subclass AdManifest with 
-                --assert.truthy(manifest.kindOf(AdManifestTest))
+                assert.equals(AdManifestTest, manifest.getClass())
             end)
 
             it("should have passed the vars in correctly", function()

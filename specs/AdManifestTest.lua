@@ -1,10 +1,8 @@
 
 require "royal.AdManifest"
 
-AdManifestTest = Class()
+AdManifestTest = Class(AdManifest)
 
-function AdManifestTest.new(version, created, ttl, units)
-    local self = AdManifest(version, created, ttl, units)
-    return self
+function AdManifestTest.new(self)
 end
 

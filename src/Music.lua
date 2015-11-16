@@ -7,25 +7,27 @@ require("Logger")
 
 Music = Class()
 
+local engine = cc.SimpleAudioEngine:getInstance()
+
 function Music.new(self)
     local tweenId
     local _bgPath
     local isOn = true
 
     function self.preload(path)
-        cc.SimpleAudioEngine:getIntance():preloadMusic(path)
+        engine:preloadMusic(path)
     end
 
     function self.play(path, loop)
-        cc.SimpleAudioEngine:getInstance():playMusic(path, loop)
+        engine:playMusic(path, loop)
     end
 
     function self.stop(release)
-        cc.SimpleAudioEngine:getInstance():stopMusic(release)
+        engine:stopMusic(release)
     end
 
     function self.setVolume(to)
-        cc.SimpleAudioEngine:getInstance():setMusicVolume(to)
+        engine:setMusicVolume(to)
     end
 
     function self.turnOn(vol)
@@ -72,7 +74,7 @@ function Music.new(self)
             self.play(bgPath, true)
             self.setVolume(0)
         else
-            from = cc.SimpleAudioEngine:getInstance():getMusicVolume()
+            from = engine:getMusicVolume()
             Log.d("Playing music @ volume (%s)", from)
         end
         local tweenEndTime = gettime() + length
