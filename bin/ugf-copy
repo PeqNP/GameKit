@@ -13,7 +13,6 @@ from subprocess  import call
 
 from ugf import gethomedir, emptydir, rmdir
 from ugf.config import configpath, checkconfig, Config, ProjectConfig
-from ugf.selectoptions import SelectOptions
 from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder
 
 def copy_gametools(source, cocos):
