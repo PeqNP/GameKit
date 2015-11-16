@@ -4,14 +4,7 @@
 
 --]]
 
-TouchableSprite = {}
-TouchableSprite.__index = TouchableSprite
-
-setmetatable(TouchableSprite, {
-    __call = function (cls, ...)
-        return cls.new(...)
-    end,
-})
+TouchableSprite = Class()
 
 function TouchableSprite.new(self)
     local imgName

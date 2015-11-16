@@ -50,6 +50,10 @@ function cu.getOrigin()
     return cc.Director:getInstance():getVisibleOrigin()
 end
 
+function cu.getWinSizeInPixels()
+    return cc.Director:getInstance():getWinSizeInPixels()
+end
+
 --[[ Schedules a function callback to be called every tick.
 
   @param fn - function to call
