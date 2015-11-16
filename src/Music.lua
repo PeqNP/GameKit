@@ -59,7 +59,7 @@ function Music.new(self)
         Log.d("Starting music...")
         if tweenId then
             Log.w("Attempting to fade music in before the previous transition is over!")
-            cu.unscheduleScriptEntry(tweenId)
+            cu.unscheduleFunc(tweenId)
             tweenId = nil
         end
         local from
@@ -83,7 +83,7 @@ function Music.new(self)
             if diff <= 0.0 then
                 Log.d("Music finished")
                 self.setVolume(to)
-                cu.unscheduleScriptEntry(tweenId)
+                cu.unscheduleFunc(tweenId)
                 tweenId = nil
                 p.resolve()
                 return
@@ -99,7 +99,7 @@ function Music.new(self)
             end
             self.setVolume(volume)
         end
-        tweenId = cu.scheduleScriptEntry(tweenTick, 0, false)
+        tweenId = cu.scheduleFunc(tweenTick, 0, false)
         return p
     end
 end
