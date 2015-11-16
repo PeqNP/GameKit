@@ -434,6 +434,19 @@ function cc.MenuItemSprite:activate()
     end
 end
 
+function cc.MenuItemSprite:setOpacity(opacity)
+end
+
+function cc.MenuItemSprite:setVisible(visible)
+end
+
+function cc.MenuItemSprite:setPosition(point)
+end
+
+function cc.MenuItemSprite:getBoundingBox()
+    return cc.rect(0,0,10,10)
+end
+
 cc.Application = class()
 
 local instance__Application
@@ -450,4 +463,16 @@ end
 -- Rather than recreate these, just bring in the Cocos2d-x util scripts.
 function cc.p(x, y)
     return {x=x, y=y}
+end
+
+cc.Menu = class()
+
+function cc.Menu:create()
+    return cc.Menu()
+end
+
+function cc.Menu:setPosition(x, y)
+end
+
+function cc.Menu:addChild(child)
 end
