@@ -8,8 +8,9 @@
 
 --]]
 
-require "Constants"
 require "Logger"
+
+require "Constants"
 
 require "gesture.LongPressGesture"
 require "gesture.TapGesture"
@@ -33,9 +34,11 @@ V.finalResult = 0
 V.touchBeganTime = false
 V.isLongPress = false
 V.swipeMinDuration = 0.22
+V.swipeMinDistance = 5.0
 
 -- Executed when gesture is complete.
 V.longPressCallback = false
+V.swipeCancelsLongPress = false
 V.tapCallback = false
 V.swipeCallback = false
 
@@ -244,6 +247,8 @@ local function OnTouchBegan(touch, event)
     V.touchBeganTime = gettime()
     local pt = touch:getLocation()
     pt.time = gettime()
+    -- @todo Add timer, where by, if the time elapses past ~0.5 it will start
+    -- registering long press events.
     table.insert(V.points, pt)
     return true
 end
@@ -256,7 +261,6 @@ local function OnTouchMoved(touch, event)
         if V.isLongPress then
             V.longPressCallback(LongPressGesture(pt, V.points[#V.points], Touch.Moved))
         else
-            Log.d("Is long press...")
             V.isLongPress = true
             V.longPressCallback(LongPressGesture(pt, pt, Touch.Began))
         end
@@ -287,28 +291,36 @@ local function OnTouchEnded(touch, event)
     end
 
     if #V.points >= V.minimumLinePoints then
-        Log.d("Line points")
+        local swiped = false
         -- Swipe gesture.
         if V.swipeCallback and gettime() - V.touchBeganTime < V.swipeMinDuration then
-            local sign = V.gestureSigns[gestureId]
-            if sign == "SwipeL" then
-                V.swipeCallback(SwipeGesture(V.points[1], V.points[#V.points], Direction.Left))
-            elseif sign == "SwipeR" then
-                V.swipeCallback(SwipeGesture(V.points[1], V.points[#V.points], Direction.Right))
-            elseif sign == "SwipeU" then
-                V.swipeCallback(SwipeGesture(V.points[1], V.points[#V.points], Direction.Up))
-            elseif sign == "SwipeD" then
-                V.swipeCallback(SwipeGesture(V.points[1], V.points[#V.points], Direction.Down))
+            local start = V.points[1]
+            local stop = V.points[#V.points]
+            local distance = Distance(start, stop)
+            swiped = true
+            if distance < V.swipeMinDistance then -- Not a swipe. A tap.
+                V.tapCallback(TapGesture(V.points[1]))
+            else
+                local sign = V.gestureSigns[gestureId]
+                if sign == "SwipeL" then
+                    V.swipeCallback(SwipeGesture(start, stop, Direction.Left))
+                elseif sign == "SwipeR" then
+                    V.swipeCallback(SwipeGesture(start, stop, Direction.Right))
+                elseif sign == "SwipeU" then
+                    V.swipeCallback(SwipeGesture(start, stop, Direction.Up))
+                elseif sign == "SwipeD" then
+                    V.swipeCallback(SwipeGesture(start, stop, Direction.Down))
+                end
             end
         end
 
         -- Long press gesture.
-        if V.isLongPress then
+        if (not V.swipeCancelsLongPress or not swiped) and V.isLongPress then
             if V.longPressCallback then
                 V.longPressCallback(LongPressGesture(V.points[#V.points], V.points[#V.points], Touch.Ended))
             end
         end
-    elseif V.tapCallback then
+    elseif V.tapCallback and #V.points[1] then
         V.tapCallback(TapGesture(V.points[1]))
     end
 
@@ -318,7 +330,7 @@ local function OnTouchEnded(touch, event)
 end
 
 --[[ Start recording touches on a given layer. ]]--
-local function Start(layer, tapCallback, swipeCallback, longPressCallback)
+local function start(layer, tapCallback, swipeCallback, longPressCallback)
     -- @fixme Stop listening to any previous layer.
     local eventDispatcher = layer:getEventDispatcher()
     local listener = cc.EventListenerTouchOneByOne:create()
@@ -330,9 +342,9 @@ local function Start(layer, tapCallback, swipeCallback, longPressCallback)
     V.tapCallback = tapCallback
     V.longPressCallback = longPressCallback
 end
-V.Start = Start
+V.start = start
 
-local function Stop()
+local function stop()
 
     --Runtime:removeEventListener( "touch", Start )
     -- @todo unregister gesture.
@@ -348,6 +360,11 @@ local function Stop()
 
     Log.d("Gesture.Exit(): Finished.")
 end
-V.Stop = Stop
+V.stop = stop
+
+local function setSwipeCancelsLongPress(cancel)
+    V.swipeCancelsLongPress = cancel
+end
+V.setSwipeCancelsLongPress = setSwipeCancelsLongPress
 
 return V

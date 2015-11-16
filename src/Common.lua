@@ -210,6 +210,17 @@ function cu.getRenderedTexture(child)
     return sprite
 end
 
+function cu.fitImageInCenter(img)
+    local size = cu.getVisibleSize()
+    local origin = cu.getMidPoint()
+
+    local contentSize = img:getContentSize()
+    local x, y = size.width / contentSize.width, size.height / contentSize.height
+    img:setScaleX(x)
+    img:setScaleY(y)
+    img:setPosition(origin.x, origin.y)
+end
+
 function cu.takeScreenShot()
     local promise = Promise()
     local path = cc.FileUtils:getInstance():getWritablePath() .. "screen.png"
