@@ -63,10 +63,16 @@ function SpriteSheet.new(self)
         end
         -- Load texture into memory.
         local function textureLoaded(texture)
-            Log.i("Loading texture asynchonously (%s)...", textureName)
+            Log.i("Finished loading texture (%s)...", textureName)
             callback(self.getFrames())
         end
+        --[[ Until further notice. This fails on some Android devices and
+        even occassionaly fails to work on iOS.
         cc.Director:getInstance():getTextureCache():addImageAsync(textureName, textureLoaded)
+        --]]
+        cc.Director:getInstance():getTextureCache():addImage(textureName)
+        textureLoaded()
+        return promise
     end
 
     --[[ Load and return sprite sheet frames. ]]--

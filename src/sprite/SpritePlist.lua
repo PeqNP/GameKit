@@ -74,7 +74,12 @@ function SpritePlist.new(self)
             loadPlist()
             promise.resolve(self.getFrames())
         end
+        --[[ Until further notice. This fails on some Android devices and
+        even occassionaly fails to work on iOS.
         cc.Director:getInstance():getTextureCache():addImageAsync(imageName, textureLoaded)
+        --]]
+        cc.Director:getInstance():getTextureCache():addImage(imageName)
+        textureLoaded()
         return promise
     end
 
