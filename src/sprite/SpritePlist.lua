@@ -59,7 +59,7 @@ function SpritePlist.new(self)
     function self.loadFrames()
         local promise = Promise()
         if #frames == 0 then
-            Log.e("No frames provided for texture (%s)!", textureName)
+            Log.s("No frames provided for texture (%s)!", textureName)
             promise.reject()
             return promise
         end
