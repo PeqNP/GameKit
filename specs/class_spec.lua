@@ -75,6 +75,19 @@ end)
 
 Satan = Class()
 function Satan.new(self)
+    local name
+
+    function self.init(_name)
+        name = _name
+    end
+
+    function self.getName()
+        return name
+    end
+end
+
+Demon = Class(Satan)
+function Demon.new(self)
 end
 
 God = Class()
@@ -147,7 +160,7 @@ describe("Class methods", function()
     end)
 end)
 
-describe("Subclassing", function()
+describe("Subclassing w/ init", function()
     describe("Child", function()
         local child
 
@@ -176,5 +189,17 @@ describe("Subclassing", function()
         it("should call child subclass method call", function()
             assert.equal("child_call", child.call())
         end)
+    end)
+end)
+
+describe("Subclassing w/o init", function()
+    local subject
+
+    before_each(function()
+        subject = Demon("Blarg")
+    end)
+
+    it("should have called base class's init method", function()
+        assert.equals("Blarg", subject.getName())
     end)
 end)
