@@ -3,6 +3,5 @@
 #
 
 class SelectOptions (object):
-    def __init__(self, resource=None, copy_source=False):
+    def __init__(self, resource=None):
         self.resource = resource
-        self.copy_source = copy_source

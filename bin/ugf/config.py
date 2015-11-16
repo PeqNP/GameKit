@@ -3,22 +3,52 @@
 #
 
 import json
+import os
+import sys
+
+from ugf import gethomedir
+
+def configpath():
+    return os.path.join(gethomedir(), ".ugf")
+
+def checkconfig(config):
+    if not config.basepath:
+        print("The basepath must be configured using the ugf-config CLI tool")
+        sys.exit(1)
+    if not config.project:
+        print("A project must be selected first using the ugf-select CLI tool")
+        sys.exit(1)
 
 class Config (object):
     @staticmethod
-    def load(path):
+    def load(path, project=None, resource=None):
         fh = open(path, "r")
         json_blob = fh.read()
         fh.close()
-        config = Config.configFromJson(json.loads(json_blob))
+        json_dict = json.loads(json_blob)
+        if project:
+            json_dict["project"] = project
+        if resource:
+            json_dict["resource"] = resource
+        config = Config.configFromJson(json_dict)
         return config
 
     @staticmethod
     def configFromJson(json):
-        return Config(basepath=json["basepath"])
+        project = "project" in json and json["project"] or None
+        resource = "resource" in json and json["resource"] or None
+        return Config(json["basepath"], project, resource)
 
-    def __init__(self, basepath=None):
+    def __init__(self, basepath, project, resource):
         self.basepath = basepath
+        self.project = project
+        self.resource = resource
+
+    def save(self, path):
+        json_blob = json.dumps(self.__dict__)
+        fh = open(path, "w")
+        fh.write(json_blob)
+        fh.close()
 
 # Project configuration structure.
 class ProjectConfig (object):

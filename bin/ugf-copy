@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+#
+# Copies files from game project to Cocos2d-x project.
+#
+# @copyright 2015 Upstart Illustration LLC. All rights reserved.
+#
+
+import os
+import sys
+
+from datetime import datetime
+from subprocess  import call
+
+from ugf import gethomedir, emptydir, rmdir
+from ugf.config import configpath, checkconfig, Config, ProjectConfig
+from ugf.selectoptions import SelectOptions
+from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder
+
+def copy_gametools(source, cocos):
+    rmdir(cocos.path("src/ugf"))
+    # @todo fix this path
+    call(["cp", "-r", "/Users/eric/git/GameTools/src", cocos.path("src/ugf")])
+
+def copy_ios_assets(source, cocos):
+    emptydir(cocos.path("frameworks/runtime-src/proj.ios_mac/GameTools-mobile"))
+    call(["cp", "-r", source.resourcepath(), cocos.path("frameworks/runtime-src/proj.ios_mac/GameTools-mobile/")])
+    call(["cp", "-r", source.xibpath(), cocos.path("frameworks/runtime-src/proj.ios_mac/ios/")])
+
+def copy_resources(source, cocos):
+    rmdir(cocos.path("res"))
+    call(["cp", "-r", source.path("res"), cocos.path("res")])
+
+def copy_source(source, cocos):
+    rmdir(cocos.path("src/game"))
+    call(["cp", "-r", source.path("src"), cocos.path("src/game")])
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Upstart Game Framework - Copy project files to Cocos2d-x project")
+    parser.add_argument('files', help="Copies all project files", nargs="*", default=["all"])
+    args = parser.parse_args()
+
+    config = Config.load(configpath())
+    checkconfig(config)
+
+    source = ProjectPathBuilder(config)
+    project = ProjectConfig.load(source.configpath())
+    cocos = CocosPathBuilder(config, project.cocos)
+
+    print("ugf-copy v1.0.0, Time: {}".format(str(datetime.now())))
+    if config.resource and len(config.resource) > 0:
+        print("Resource: {}".format(config.resource))
+
+    # Validate
+    valid_options = ["all", "platform", "gametools", "source", "resource"]
+    for opt in args.files:
+        if opt not in valid_options:
+            print("'{}' is not a valid 'files' option".format(opt))
+            sys.exit(1)
+
+    if "all" in args.files:
+        print "Copying all files."
+        copy_ios_assets(source, cocos)
+        copy_gametools(source, cocos)
+        copy_source(source, cocos)
+        copy_resources(source, cocos)
+        sys.exit(0)
+    
+    if "platform" in args.files:
+        print "Copying project platform files."
+        copy_ios_assets(source, cocos)
+    if "gametools" in args.files:
+        print "Copying GameTools files."
+        copy_gametools(source, cocos)
+    if "source" in args.files:
+        print "Copying project source files."
+        copy_source(source, cocos)
+    if "resource" in args.files:
+        print "Copying project resource files."
+        copy_resources(source, cocos)

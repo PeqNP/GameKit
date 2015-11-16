@@ -8,7 +8,6 @@ import os
 class CocosPathBuilder (object):
     # @param Config
     # @param str - Version of Cocos
-    # @param SelectOptions
     def __init__(self, config, version):
         self.config = config
         self.version = version
@@ -36,14 +35,11 @@ class StagePathBuilder (object):
 class ProjectPathBuilder (object):
     # @param Config
     # @param str - project name
-    # @param SelectOptions
-    def __init__(self, config, projectname, options):
+    def __init__(self, config):
         self.config = config
-        self.projectname = projectname
-        self.options = options
 
     def basepath(self):
-        return os.path.join(self.config.basepath, self.projectname)
+        return os.path.join(self.config.basepath, self.config.project)
 
     def path(self, path):
         return os.path.join(self.basepath(), path)
@@ -52,7 +48,7 @@ class ProjectPathBuilder (object):
         return os.path.join(self.basepath(), "config.json")
 
     def resdir(self):
-        return self.options.resource and len(self.options.resource) > 0 and self.options.resource+"/" or ""
+        return self.config.resource and len(self.config.resource) > 0 and self.config.resource+"/" or ""
 
     def resourcepath(self):
         return self.path("platform/ios/res/{}Images.xcassets".format(self.resdir()))

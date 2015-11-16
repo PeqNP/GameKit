@@ -13,9 +13,7 @@ import re
 import shutil
 import sys
 
-from ugf import gethomedir, emptydir, rmdir
-from ugf.config import Config, ProjectConfig
-from ugf.selectoptions import SelectOptions
+from ugf.config import configpath, Config, ProjectConfig
 from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder
 from ugf.interpolator import Interpolator
 
@@ -51,12 +49,8 @@ def interpolate_configjson(project, blob):
     blob = re.sub("##UGF-ORIENTATION##", isLandscape, blob)
     return blob
 
-def copy_source(source, cocos):
-    rmdir(cocos.path("src/game"))
-    call(["cp", "-r", source.path("src"), cocos.path("src/game")])
-
 # Select and make 'project' the active project.
-def main(project, source, cocos, options):
+def main(project, source, cocos):
     stage = StagePathBuilder(cocos.basepath())
 
     # Load and save any changes made to the project to the current project
@@ -100,25 +94,7 @@ def main(project, source, cocos, options):
     # operations are checked correctly, but also that some options are removed!
 
     # Copy interpolated file to correct location.
-
-    # Copy Xcode assets
-    emptydir(cocos.path("frameworks/runtime-src/proj.ios_mac/GameTools-mobile"))
-    call(["cp", "-r", source.resourcepath(), cocos.path("frameworks/runtime-src/proj.ios_mac/GameTools-mobile/")])
-    call(["cp", "-r", source.xibpath(), cocos.path("frameworks/runtime-src/proj.ios_mac/ios/")])
-
-    # Copy Android assets
-
-    # Copy GameTools
-    rmdir(cocos.path("src/ugf"))
-    # @todo fix this path
-    call(["cp", "-r", "/Users/eric/git/GameTools/src", cocos.path("src/ugf")])
-
-    # Copy game source and assets
-    copy_source(source, cocos)
-
-    # Copy resources
-    rmdir(cocos.path("res"))
-    call(["cp", "-r", source.path("res"), cocos.path("res")])
+    call(["ugf-copy"])
 
     # Update a compile time script that will call this script with the currently selected project before build
     # so that all of the latest code is copied. (???)
@@ -128,24 +104,17 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Upstart Game Framework - Configure a project to build for specific version of Cocos2d-x")
     parser.add_argument('project', help="The project name to configure")
-    parser.add_argument('--resource', help="Select the resource to use for project's icons and launch images (i.e. free, premium)", default=None)
-    # should only be boolean
-    parser.add_argument('--copy-source', help="Copies only the source files (src directory)", action="store_true", default=False)
+    parser.add_argument('--resource', help="The project's platform resources (icons and launch images) to copy (i.e. free, premium)", default=None)
     args = parser.parse_args()
 
-    config = Config.load(os.path.join(gethomedir(), ".ugf"))
-    options = SelectOptions(args.resource and args.resource or "", args.copy_source)
-    source = ProjectPathBuilder(config, args.project, options)
+    config = Config.load(configpath(), args.project, args.resource)
+    config.save(configpath())
+
+    source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
 
-    print("ugf-select v1.0.0, Time: {}".format(str(datetime.now())))
+    print("ugf-select v1.1.0, Time: {}".format(str(datetime.now())))
     print("Project: {} v{} b{}".format(project.name, project.version, project.build))
-    if len(options.resource) > 0:
-        print("Resource: {}".format(options.resource))
+    main(project, source, cocos)
 
-    if args.copy_source:
-        print("Copying source files only...")
-        copy_source(source, cocos)
-    else:
-        main(project, source, cocos, options)
