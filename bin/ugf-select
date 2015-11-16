@@ -49,6 +49,9 @@ def interpolate_configjson(project, blob):
     blob = re.sub("##UGF-ORIENTATION##", isLandscape, blob)
     return blob
 
+def interpolate_projectconfig(project, blob):
+    return re.sub("##UGF-ORIENTATION##", project.orientation, blob)
+
 # Select and make 'project' the active project.
 def main(project, source, cocos):
     stage = StagePathBuilder(cocos.basepath())
@@ -85,7 +88,7 @@ def main(project, source, cocos):
     interpolator.interpolate("templates/project/ios/Info.plist", "frameworks/runtime-src/proj.ios_mac/ios/Info.plist", interpolate_iosplist)
     interpolator.interpolate("templates/project/ios/AppConfig.h", "frameworks/runtime-src/proj.ios_mac/ios/AppConfig.h")
     interpolator.interpolate("templates/config.json", "config.json", interpolate_configjson)
-    interpolator.interpolate("templates/project/config.lua", "src/config.lua")
+    interpolator.interpolate("templates/project/config.lua", "src/config.lua", interpolate_projectconfig)
     interpolator.interpolate("stage/project.pbxproj", "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj", interpolate_iospbxproj)
 
     # @todo Cleanup stage directory
