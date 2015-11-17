@@ -52,11 +52,11 @@ def interpolate_configjson(project, blob):
 def interpolate_projectconfig(project, blob):
     return re.sub("##UGF-ORIENTATION##", project.orientation, blob)
 
-def run_post_select(source, cocos):
+def run_post_select(config, source, cocos):
     post_select = source.path("ugf/post-select")
     if os.path.isfile(post_select):
         print("Running post-select script.")
-        call([post_select, cocos.basepath()])
+        call([post_select, cocos.basepath(), config.apptype])
 
 # Select and make 'project' the active project.
 def main(project, source, cocos):
@@ -102,13 +102,6 @@ def main(project, source, cocos):
     # @todo The orientation config may need to be specific to files so that
     # operations are checked correctly, but also that some options are removed!
 
-    # Copy interpolated file to correct location.
-    call(["ugf-copy"])
-
-    # Update a compile time script that will call this script with the currently selected project before build
-    # so that all of the latest code is copied. (???)
-    run_post_select(source, cocos)
-
 if __name__ == "__main__":
     import argparse
 
@@ -128,3 +121,9 @@ if __name__ == "__main__":
     print("Project: {} v{} b{}".format(project.name, project.version, project.build))
     main(project, source, cocos)
 
+    # Copy interpolated file to correct location.
+    call(["ugf-copy"])
+
+    # Update a compile time script that will call this script with the currently selected project before build
+    # so that all of the latest code is copied. (???)
+    run_post_select(config, project, source, cocos)
