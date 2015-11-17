@@ -45,13 +45,14 @@ class ProjectPathBuilder (object):
         return os.path.join(self.basepath(), path)
 
     def configpath(self):
-        return os.path.join(self.basepath(), "config.json")
+        apptype = self.config.apptype and "-{}".format(self.config.apptype) or ""
+        return os.path.join(self.basepath(), "config{}.json".format(apptype))
 
-    def resdir(self):
-        return self.config.resource and len(self.config.resource) > 0 and self.config.resource+"/" or ""
+    def apptypedir(self):
+        return self.config.apptype and len(self.config.apptype) > 0 and self.config.apptype+"/" or ""
 
     def resourcepath(self):
-        return self.path("platform/ios/res/{}Images.xcassets".format(self.resdir()))
+        return self.path("platform/ios/res/{}Images.xcassets".format(self.apptypedir()))
 
     def xibpath(self):
         return self.path("platform/ios/src/LaunchScreen.xib")

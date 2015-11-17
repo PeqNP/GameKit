@@ -21,28 +21,28 @@ def checkconfig(config):
 
 class Config (object):
     @staticmethod
-    def load(path, project=None, resource=None):
+    def load(path, project=None, apptype=None):
         fh = open(path, "r")
         json_blob = fh.read()
         fh.close()
         json_dict = json.loads(json_blob)
         if project:
             json_dict["project"] = project
-        if resource:
-            json_dict["resource"] = resource
+        if apptype:
+            json_dict["apptype"] = apptype
         config = Config.configFromJson(json_dict)
         return config
 
     @staticmethod
     def configFromJson(json):
         project = "project" in json and json["project"] or None
-        resource = "resource" in json and json["resource"] or None
-        return Config(json["basepath"], project, resource)
+        apptype = "apptype" in json and json["apptype"] or None
+        return Config(json["basepath"], project, apptype)
 
-    def __init__(self, basepath, project, resource):
+    def __init__(self, basepath, project, apptype):
         self.basepath = basepath
         self.project = project
-        self.resource = resource
+        self.apptype = apptype
 
     def save(self, path):
         json_blob = json.dumps(self.__dict__)

@@ -48,8 +48,8 @@ if __name__ == "__main__":
     cocos = CocosPathBuilder(config, project.cocos)
 
     print("ugf-copy v1.0.0, Time: {}".format(str(datetime.now())))
-    if config.resource and len(config.resource) > 0:
-        print("Resource: {}".format(config.resource))
+    if config.apptype and len(config.apptype) > 0:
+        print("Type: {}".format(config.apptype))
 
     # Validate
     valid_options = ["all", "platform", "gametools", "source", "resource"]

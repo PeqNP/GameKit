@@ -52,6 +52,12 @@ def interpolate_configjson(project, blob):
 def interpolate_projectconfig(project, blob):
     return re.sub("##UGF-ORIENTATION##", project.orientation, blob)
 
+def run_post_select(source, cocos):
+    post_select = source.path("ugf/post-select")
+    if os.path.isfile(post_select):
+        print("Running post-select script.")
+        call([post_select, cocos.basepath()])
+
 # Select and make 'project' the active project.
 def main(project, source, cocos):
     stage = StagePathBuilder(cocos.basepath())
@@ -101,16 +107,17 @@ def main(project, source, cocos):
 
     # Update a compile time script that will call this script with the currently selected project before build
     # so that all of the latest code is copied. (???)
+    run_post_select(source, cocos)
 
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Upstart Game Framework - Configure a project to build for specific version of Cocos2d-x")
     parser.add_argument('project', help="The project name to configure")
-    parser.add_argument('--resource', help="The project's platform resources (icons and launch images) to copy (i.e. free, premium)", default=None)
+    parser.add_argument('--app-type', help="The type of project (i.e. free, premium) This determines which config and resource files to copy", default=None)
     args = parser.parse_args()
 
-    config = Config.load(configpath(), args.project, args.resource)
+    config = Config.load(configpath(), args.project, args.app_type)
     config.save(configpath())
 
     source = ProjectPathBuilder(config)
