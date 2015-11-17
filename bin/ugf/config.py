@@ -28,7 +28,7 @@ class Config (object):
         json_dict = json.loads(json_blob)
         if project:
             json_dict["project"] = project
-        if apptype:
+        if apptype is not None:
             json_dict["apptype"] = apptype
         config = Config.configFromJson(json_dict)
         return config
