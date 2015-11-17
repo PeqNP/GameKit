@@ -126,4 +126,4 @@ if __name__ == "__main__":
 
     # Update a compile time script that will call this script with the currently selected project before build
     # so that all of the latest code is copied. (???)
-    run_post_select(config, project, source, cocos)
+    run_post_select(config, source, cocos)
