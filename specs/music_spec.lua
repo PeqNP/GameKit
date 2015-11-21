@@ -27,7 +27,7 @@ describe("Music", function()
         before_each(function()
             scriptId = 1
             stub(cu, "unscheduleScriptEntry")
-            cu.scheduleScriptEntry = scheduleScriptEntry
+            cu.scheduleFunc = scheduleScriptEntry
         end)
 
         describe("fadeTo", function()

@@ -145,6 +145,9 @@ cc.Scheduler = class()
 function cc.Scheduler:scheduleScriptFunc(fn, priority, pause)
 end
 
+function cc.Scheduler:unscheduleScriptEntry(scheduledId)
+end
+
 cc.Director = class()
 
 function cc.Director:getInstance()
