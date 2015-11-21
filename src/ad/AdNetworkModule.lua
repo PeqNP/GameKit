@@ -2,26 +2,25 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights resevered.
 --
 
-AdModule = Class()
-AdModule.abstract(Protocol(
+AdNetworkModule = Class()
+AdNetworkModule.abstract(Protocol(
     -- Return config used to initialize network module.
     Method("getConfig")
     -- Returns the ad network ID used by this module.
-  , Method("getAdNetwork")
-    -- Returns the name of the ad network used by this module.
-  , Method("getAdNetworkName")
-    -- Returns the AdType
-  , Method("getAdType")
+  , Method("getName")
 ))
 
-function AdModule.new(self)
-    local devices
+function AdNetworkModule.new(self)
+    local ads
 
-    function self.setDevices(d)
-        devices = d
+    function self.init(_ads)
+        ads = _ads
     end
 
-    function self.getDevices()
-        return devices
+    function self.getAdConfig()
+        -- @todo
+    end
+
+    function self.getAds()
     end
 end
