@@ -4,8 +4,10 @@
 
 AdNetworkModule = Class()
 AdNetworkModule.abstract(Protocol(
+    -- Return the ID of the network
+    Method("getAdNetwork")
     -- Return config used to initialize network module.
-    Method("getConfig")
+  , Method("getConfig")
     -- Returns the ad network ID used by this module.
   , Method("getName")
 ))

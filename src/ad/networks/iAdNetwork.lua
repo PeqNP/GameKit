@@ -2,6 +2,7 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
+require "ad.Constants"
 require "ad.AdNetworkModule"
 
 iAdNetwork = Class(AdNetworkModule)
@@ -11,7 +12,11 @@ function iAdNetwork.new(self, init)
         return "iAd"
     end
 
-    function getConfig()
-        return {"network" = self.getName(), "appid": appid, "ads": self.getAdConfig()}
+    function self.getAdNetwork()
+        return AdNetwork.iAd
+    end
+
+    function self.getConfig()
+        return {network = self.getName(), ads = self.getAdConfig()}
     end
 end

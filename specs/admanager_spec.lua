@@ -6,8 +6,8 @@ require "Common"
 require "ad.Constants"
 require "ad.AdManager"
 require "ad.AdResponse"
-require "ad.modules.AdMobInterstitial"
-require "ad.modules.AdColonyVideo"
+require "ad.networks.AdMobNetwork"
+require "ad.networks.AdColonyNetwork"
 require "mediation.MediationAdFactory"
 require "mediation.MediationAdConfig"
 
@@ -53,8 +53,8 @@ describe("AdManager", function()
         local promisev
 
         before_each(function()
-            modulei = AdMobInterstitial()
-            modulev = AdColonyVideo()
+            modulei = AdMobNetwork()
+            modulev = AdColonyNetwork()
 
             function bridge.cache(request)
                 if request.getAdNetwork() == AdNetwork.AdMob then
@@ -341,7 +341,7 @@ describe("AdManager when no ad factory", function()
 
         subject = AdManager(bridge)
 
-        module = AdMobInterstitial()
+        module = AdMobNetwork()
         subject.registerNetworkModule(module)
 
         request = subject.getRequests()[1]

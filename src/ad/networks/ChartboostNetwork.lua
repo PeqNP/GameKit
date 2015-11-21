@@ -2,6 +2,7 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
+require "ad.Constants"
 require "ad.AdNetworkModule"
 
 ChartboostNetwork = Class(AdNetworkModule)
@@ -18,11 +19,15 @@ function ChartboostNetwork.new(self, init)
         signature = _signature
     end
 
+    function self.getAdNetwork()
+        return AdNetwork.Chartboost
+    end
+
     function self.getName()
         return "Chartboost"
     end
 
-    function getConfig()
-        return {"network" = self.getName(), "appid": appid, "signature": signature, "ads": self.getAdConfig()}
+    function self.getConfig()
+        return {network = self.getName(), appid = appid, signature = signature, ads = self.getAdConfig()}
     end
 end

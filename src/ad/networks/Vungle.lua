@@ -2,6 +2,7 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
+require "ad.Constants"
 require "ad.AdNetworkModule"
 
 VungleNetwork = Class(AdNetworkModule)
@@ -16,11 +17,15 @@ function VungleNetwork.new(self, init)
         appid = _appid
     end
 
+    function self.getAdNetwork()
+        return AdNetwork.Vungle
+    end
+
     function self.getName()
         return "Vungle"
     end
 
-    function getConfig()
-        return {"network" = self.getName(), "appid": appid, "ads": self.getAdConfig()}
+    function self.getConfig()
+        return {network = self.getName(), appid = appid, ads = self.getAdConfig()}
     end
 end

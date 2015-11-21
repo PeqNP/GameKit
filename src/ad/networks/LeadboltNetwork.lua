@@ -2,6 +2,7 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
+require "ad.Constants"
 require "ad.AdNetworkModule"
 
 LeadboltNetwork = Class(AdNetworkModule)
@@ -16,11 +17,15 @@ function LeadboltNetwork.new(self, init)
         appid = _appid
     end
 
+    function self.getAdNetwork()
+        return AdNetwork.Leadbolt
+    end
+
     function self.getName()
         return "Leadbolt"
     end
 
-    function getConfig()
-        return {"network" = self.getName(), "appid": appid, "ads": self.getAdConfig()}
+    function self.getConfig()
+        return {network = self.getName(), appid = appid, ads = self.getAdConfig()}
     end
 end

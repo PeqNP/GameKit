@@ -5,6 +5,7 @@ AdNetwork = enum(1
   , 'Chartboost'
   , 'iAd'
   , 'Leadbolt'
+  , 'Vungle'
 )
 
 AdType = enum(1
