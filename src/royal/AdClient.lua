@@ -11,9 +11,9 @@ require "Promise"
 require "royal.AdManifestParser"
 require "royal.AdRequestCallback"
 
-AdNetwork = Class()
+AdClient = Class()
 
-function AdNetwork.new(self)
+function AdClient.new(self)
     self.delegate = false -- Assign if you wish to get callbacks in regards to progress, etc.
 
     local manifest

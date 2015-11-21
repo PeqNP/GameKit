@@ -1,6 +1,6 @@
 --[[
   TODO:
-  + Fix responseType. assert.equal should work. I also know that AdNetwork is setting this values properly. It's almost
+  + Fix responseType. assert.equal should work. I also know that AdClient is setting this values properly. It's almost
     as if the variable isn't created in the constructor... or being visible.
   + Fix: statusText needs to be tested when something fails.
   + Fix: Make sure the sprite frames are not loaded into the cache until ALL files are downloaded.
@@ -15,12 +15,12 @@ Log.setLevel(LogLevel.Warning)
 require "royal.AdConfig"
 require "royal.AdManifestParser"
 require "royal.AdManifest"
-require "royal.AdNetwork"
+require "royal.AdClient"
 require "royal.AdUnit"
 
 AdConfig.singleton.setBasePath("/path/")
 
-describe("AdNetwork", function()
+describe("AdClient", function()
     local subject = false
 
     local host
@@ -33,7 +33,7 @@ describe("AdNetwork", function()
         port = 80
         path = "/ad/com.example.game/"
         maxVersions = {1, 2}
-        subject = AdNetwork(host, port, path, maxVersions)
+        subject = AdClient(host, port, path, maxVersions)
 
         -- Never read/write/close an actual file.
         stub(io, "open")
