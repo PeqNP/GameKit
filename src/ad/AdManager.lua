@@ -28,9 +28,6 @@ function AdManager.new(self)
         adFactory = _adFactory
     end
 
-    -- @edge Ensure network modules have unique network/ad type combination. It make no sense
-    -- to have a module of the same type.
-
     function private.getNetworkModule(adNetwork, adType)
         for _, module in ipairs(networkModules) do
             if module.getAdNetwork() == adNetwork and module.getAdType() == adType then
