@@ -1,16 +1,15 @@
 require "lang.Signal"
 
 require "ad.Constants"
+require "ad.Ad"
 require "ad.AdRequest"
-require "ad.modules.AdMobInterstitial"
+require "ad.networks.AdMobNetwork"
 
 describe("AdRequest", function()
     local subject
-    local adModule
 
     before_each(function()
-        adModule = AdMobInterstitial("zone", 25)
-        subject = AdRequest(adModule)
+        subject = AdRequest(AdNetwork.AdMob, Ad(AdType.Interstitial, "zone", 25))
     end)
 
     -- Start: These MUST be the first two tests! --
@@ -27,11 +26,7 @@ describe("AdRequest", function()
         assert.equal(AdState.Initial, subject.getState())
     end)
 
-    it("should return correct adModule", function()
-        assert.equal(adModule, subject.getAdModule())
-    end)
-
-    it("should return correct ad network", function()
+    it("should return the network", function()
         assert.equal(AdNetwork.AdMob, subject.getAdNetwork())
     end)
 
@@ -40,8 +35,8 @@ describe("AdRequest", function()
     end)
 
     it("should return the correct zone", function()
-        assert.truthy(subject.getZone()) -- sanity. Make sure it is a value and not nil.
-        assert.equal("zone", subject.getZone())
+        assert.truthy(subject.getZoneId()) -- sanity. Make sure it is a value and not nil.
+        assert.equal("zone", subject.getZoneId())
     end)
 
     it("should return the correct reward", function()

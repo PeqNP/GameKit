@@ -68,8 +68,8 @@ describe("AdManager", function()
                 end
             end
 
-            subject.registerNetworkModule(modulei)
-            subject.registerNetworkModule(modulev)
+            subject.registerAd(modulei)
+            subject.registerAd(modulev)
 
             requests = subject.getRequests()
 
@@ -83,7 +83,7 @@ describe("AdManager", function()
         end)
 
         it("should have added the network module to list of registered modules", function()
-            local modules = subject.getRegisteredNetworkModules()
+            local modules = subject.getRegisteredAds()
             assert.equal(2, #modules)
             assert.equal(modulei, modules[1])
             assert.equal(modulev, modules[2])
@@ -350,7 +350,7 @@ describe("AdManager when no ad factory", function()
         subject = AdManager(bridge)
 
         module = AdMobNetwork()
-        subject.registerNetworkModule(module)
+        subject.registerAd(module)
 
         request = subject.getRequests()[1]
         assert.truthy(request) -- should have created a request

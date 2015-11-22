@@ -98,13 +98,13 @@ function AdManager.new(self)
     -- 
     -- @param AdNetworkModule
     -- 
-    function self.registerNetworkModule(module)
+    function self.registerAd(module)
         table.insert(networkModules, module)
         private.cacheModule(module)
     end
 
     -- @return AdNetworkModule[]
-    function self.getRegisteredNetworkModules()
+    function self.getRegisteredAds()
         return networkModules
     end
 

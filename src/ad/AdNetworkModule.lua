@@ -15,8 +15,15 @@ AdNetworkModule.abstract(Protocol(
 function AdNetworkModule.new(self)
     local ads
 
+    local function configureAds()
+        for _, ad in ipairs(ads) do
+            ad.setAdNetwork(self.getAdNetwork())
+        end
+    end
+
     function self.init(_ads)
         ads = _ads
+        configureAds()
     end
 
     function self.getAdConfig()
@@ -24,5 +31,6 @@ function AdNetworkModule.new(self)
     end
 
     function self.getAds()
+        return ads
     end
 end
