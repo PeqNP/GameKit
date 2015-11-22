@@ -18,7 +18,7 @@ function AdManager.new(self)
     local adaptor
     local adFactory
     local delegate
-    local networkModules = {}
+    local ads = {}
     local _error
     local requests = {}
     local private = {}
@@ -28,28 +28,19 @@ function AdManager.new(self)
         adFactory = _adFactory
     end
 
-    function private.getNetworkModule(adNetwork, adType)
-        for _, module in ipairs(networkModules) do
-            if module.getAdNetwork() == adNetwork and module.getAdType() == adType then
-                return module
-            end
-        end
-        return nil
-    end
-
-    function private.cacheModules(modules)
-        for _, module in ipairs(modules) do
-            private.cacheModule(module)
+    function private.cacheAds(ads)
+        for _, ad in ipairs(ads) do
+            private.cacheAd(ad)
         end
     end
 
     function private.rebuildRequests()
-        local modules = {}
+        local ads = {}
         local incomplete = {}
         for pos, request in ipairs(requests) do
             if request.isComplete() then
-                local module = request.getAdModule()
-                table.insert(modules, module)
+                local ad = request.getAd()
+                table.insert(ads, ad)
             else
                 table.insert(incomplete, request)
             end
@@ -57,11 +48,11 @@ function AdManager.new(self)
 
         requests = incomplete
 
-        private.cacheModules(modules)
+        private.cacheAds(ads)
     end
 
-    function private.cacheModule(module)
-        local request = AdRequest(module)
+    function private.cacheAd(ad)
+        local request = AdRequest(ad)
         table.insert(requests, request)
         request.setState(AdState.Loading)
 
@@ -93,19 +84,18 @@ function AdManager.new(self)
     end
 
     --
-    -- Register a network service module.
-    -- Starts the process of caching the module.
+    -- Register an ad. Starts the process of caching the ad.
     -- 
-    -- @param AdNetworkModule
+    -- @param Ad
     -- 
-    function self.registerAd(module)
-        table.insert(networkModules, module)
-        private.cacheModule(module)
+    function self.registerAd(ad)
+        table.insert(ads, ad)
+        private.cacheAd(ad)
     end
 
-    -- @return AdNetworkModule[]
+    -- @return AdNetworkad[]
     function self.getRegisteredAds()
-        return networkModules
+        return ads
     end
 
     --

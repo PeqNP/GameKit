@@ -8,12 +8,10 @@ require "ad.Constants"
 AdRequest = Class(BridgeRequest)
 
 function AdRequest.new(self)
-    local adNetwork
     local ad
     local state
 
-    function self.init(_adNetwork, _ad, _state)
-        adNetwork = _adNetwork
+    function self.init(_ad, _state)
         ad = _ad
         state = _state and _state or AdState.Initial
     end
@@ -26,8 +24,12 @@ function AdRequest.new(self)
         return state
     end
 
+    function self.getAd()
+        return ad
+    end
+
     function self.getAdNetwork()
-        return adNetwork
+        return ad.getAdNetwork()
     end
 
     function self.getAdType()
@@ -40,6 +42,10 @@ function AdRequest.new(self)
 
     function self.getReward()
         return ad.getReward()
+    end
+
+    function self.getToken()
+        return ad.getToken()
     end
 
     function self.isComplete()

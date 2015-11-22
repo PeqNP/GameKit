@@ -7,20 +7,18 @@ require "ad.networks.AdMobNetwork"
 
 describe("AdRequest", function()
     local subject
+    local ad
 
     before_each(function()
-        subject = AdRequest(AdNetwork.AdMob, Ad(AdType.Interstitial, "zone", 25))
+        ad = Ad(AdType.Interstitial, "zone", 25)
+        ad.setAdNetwork(AdNetwork.AdMob)
+        ad.setToken("token")
+        subject = AdRequest(ad)
     end)
 
-    -- Start: These MUST be the first two tests! --
-    it("should have created a new ID", function()
-        assert.equal(1, subject.getId())
+    it("should return the ad", function()
+        assert.equals(ad, subject.getAd())
     end)
-
-    it("should have created a new ID for second subject", function()
-        assert.equal(2, subject.getId())
-    end)
-    -- End --
 
     it("should be in the initial state by default", function()
         assert.equal(AdState.Initial, subject.getState())
@@ -42,6 +40,10 @@ describe("AdRequest", function()
     it("should return the correct reward", function()
         assert.truthy(subject.getReward()) -- sanity. Make sure it is a value and not nil.
         assert.equal(25, subject.getReward())
+    end)
+
+    it("should return the correct token", function()
+        assert.equals("token", subject.getToken())
     end)
 
     describe("state", function()

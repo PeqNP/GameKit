@@ -4,12 +4,19 @@ require "lang.Signal"
 
 require "Common"
 require "ad.Constants"
+require "ad.Ad"
 require "ad.AdManager"
 require "ad.AdResponse"
 require "ad.networks.AdMobNetwork"
 require "ad.networks.AdColonyNetwork"
 require "mediation.MediationAdFactory"
 require "mediation.MediationAdConfig"
+
+function Ad.init4(adNetwork, adType, zoneId, reward, token)
+    local ad = Ad(adType, zoneId, reward)
+    ad.setAdNetwork(adNetwork)
+    return ad
+end
 
 describe("AdManager", function()
     local subject
@@ -45,16 +52,16 @@ describe("AdManager", function()
 
     describe("adding network modules", function()
         local requests
-        local modulei
+        local adi
         local requesti
         local promisei
-        local modulev
+        local adv
         local requestv
         local promisev
 
         before_each(function()
-            modulei = AdMobNetwork()
-            modulev = AdColonyNetwork()
+            adi = Ad.init4(AdNetwork.AdMob, AdType.Interstitial, "interstitial-zone")
+            adv = Ad.init4(AdNetwork.AdColony, AdType.Video, "interstitial-zone")
 
             function bridge.cache(request)
                 if request.getAdNetwork() == AdNetwork.AdMob then
@@ -68,8 +75,8 @@ describe("AdManager", function()
                 end
             end
 
-            subject.registerAd(modulei)
-            subject.registerAd(modulev)
+            subject.registerAd(adi)
+            subject.registerAd(adv)
 
             requests = subject.getRequests()
 
@@ -79,14 +86,11 @@ describe("AdManager", function()
         it("should have made call to bridge to register network", function()
         end)
 
-        it("should have set token on both requests", function()
-        end)
-
         it("should have added the network module to list of registered modules", function()
             local modules = subject.getRegisteredAds()
             assert.equal(2, #modules)
-            assert.equal(modulei, modules[1])
-            assert.equal(modulev, modules[2])
+            assert.equal(adi, modules[1])
+            assert.equal(adv, modules[2])
         end)
 
         it("should have created two requests", function()
@@ -119,7 +123,7 @@ describe("AdManager", function()
             before_each(function()
                 requesti = requests[1]
                 requestv = requests[2]
-                promisei.resolve(AdResponse(requesti.getId(), AdState.Ready))
+                promisei.resolve(AdResponse(requesti.getToken(), AdState.Ready))
             end)
 
             it("should have an available interstitial", function()
@@ -204,7 +208,7 @@ describe("AdManager", function()
                 spy.on(cu, "delayCall")
 
                 requesti = requests[1]
-                promisei.reject(AdResponse(requesti.getId(), AdState.Complete, "Cache failure"))
+                promisei.reject(AdResponse(requesti.getToken(), AdState.Complete, "Cache failure"))
             end)
 
             it("should have completed request", function()
@@ -220,6 +224,7 @@ describe("AdManager", function()
             end)
 
             it("should have scheduled the request to be performed at a later time", function()
+                -- @fixme Called with what value?
                 assert.stub(cu.delayCall).was.called()
             end)
 
@@ -247,7 +252,7 @@ describe("AdManager", function()
             before_each(function()
                 requesti = requests[1]
                 requestv = requests[2]
-                promisev.resolve(AdResponse(requestv.getId(), AdState.Ready))
+                promisev.resolve(AdResponse(requestv.getToken(), AdState.Ready))
             end)
 
             it("should NOT have an available interstitial", function()
@@ -282,7 +287,7 @@ describe("AdManager", function()
 
                     describe("when the ad is closed", function()
                         before_each(function()
-                            promise.resolve(AdResponse(requestv.getId(), AdState.Complete))
+                            promise.resolve(AdResponse(requestv.getToken(), AdState.Complete))
                         end)
 
                         it("should have updated the state of the ad request", function()
@@ -296,7 +301,7 @@ describe("AdManager", function()
 
                     describe("when the ad is clicked", function()
                         before_each(function()
-                            promise.resolve(AdResponse(requestv.getId(), AdState.Clicked))
+                            promise.resolve(AdResponse(requestv.getToken(), AdState.Clicked))
                         end)
 
                         it("should have updated the state of the ad request", function()
@@ -310,7 +315,7 @@ describe("AdManager", function()
 
                     describe("when the request fails", function()
                         before_each(function()
-                            promise.reject(AdResponse(requestv.getId(), AdState.Complete, "Failure"))
+                            promise.reject(AdResponse(requestv.getToken(), AdState.Complete, "Failure"))
                         end)
 
                         it("should have updated the state of the ad request", function()
@@ -334,7 +339,7 @@ end)
 describe("AdManager when no ad factory", function()
     local subject
     local adFactory
-    local module
+    local ad
     local request
     local promisec
     local promises
@@ -349,18 +354,32 @@ describe("AdManager when no ad factory", function()
 
         subject = AdManager(bridge)
 
-        module = AdMobNetwork()
-        subject.registerAd(module)
-
-        request = subject.getRequests()[1]
-        assert.truthy(request) -- should have created a request
-
-        assert.truthy(promisec) -- should have called cache method
-        promisec.resolve(AdResponse(request.getId(), AdState.Ready))
+        ad = Ad.init4(AdNetwork.AdMob, AdType.Interstitial, "token", 5)
+        subject.registerAd(ad)
     end)
 
-    it("should have displayed an ad mob ad", function()
-        assert.truthy(subject.showAd(AdType.Interstitial))
-        assert.stub(bridge.show).was.called_with(request)
+    it("should have created a request", function()
+        local requests = subject.getRequests()
+        assert.equals(1, #requests) -- sanity
+        local request = requests[1]
+        assert.truthy(request) -- should have created a request
+    end)
+
+    it("should have cached the ad", function()
+        assert.stub(bridge.cache).was.called()
+    end)
+
+    context("when the ad is cached successfully", function()
+        local request
+
+        before_each(function()
+            request = subject.getRequests()[1]
+            promisec.resolve(AdResponse(request.getToken(), AdState.Ready))
+        end)
+
+        it("should have displayed an AdMob interstitial ad", function()
+            assert.truthy(subject.showAd(AdType.Interstitial))
+            assert.stub(bridge.show).was.called_with(request)
+        end)
     end)
 end)
