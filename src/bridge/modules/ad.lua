@@ -14,15 +14,15 @@ end
 -- Send
 
 --
--- Configure a mediation network.
+-- Register an ad network and its respective ads with the system.
 --
 -- A typical request looks like:
 -- {network: "AdColony", appid: "vcz-123456789", ads: [{"type": AdType.Interstitial, "zoneid": "abcd-12345"}]}
 --
 -- @return dictionary{success:, error:, ads: [{str token:, str zoneid:} ... ]} List of tokenz/zoneide pairs.
 --
-function ad.configure(config)
-    return bridge.send("ad__configure", config)
+function ad.register(config)
+    return bridge.send("ad__register", config)
 end
 
 -- @return {success:, error:}
