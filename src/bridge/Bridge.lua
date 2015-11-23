@@ -3,35 +3,7 @@
 --
 
 require "Promise"
-
-BridgeCall = Class()
-function BridgeCall.new(self)
-    local request
-    local promise
-    local response
-
-    function self.init(_request, _promise, _response)
-        request = _request
-        promise = _promise
-        response = _response
-    end
-
-    function self.getId()
-        return request.getId()
-    end
-
-    function self.getRequest()
-        return request
-    end
-
-    function self.getPromise()
-        return promise
-    end
-
-    function self.getResponse()
-        return response
-    end
-end
+require "bridge.BridgeCall"
 
 Bridge = Class()
 
@@ -82,17 +54,20 @@ function Bridge.new(self)
         return modules
     end
 
-    -- @return Promise, mixed (response from native layer)
     function self.send(method, request, sig)
-        local promise = Promise()
+        return adaptor.send(method, request.getMessage(), sig)
+    end
+
+    -- @return Promise, mixed (response from native layer)
+    function self.sendAsync(method, request, sig)
         local response = adaptor.send(method, request.getMessage(), sig)
+        local req = BridgeCall(request, response)
         if response then
-            local req = BridgeCall(request, promise, response)
             table.insert(requests, req)
         else
-            promise.reject(string.format("Failed to call method (%s)", method))
+            req.reject(string.format("Failed to call method (%s)", method))
         end
-        return promise, response
+        return req
     end
 
     function private.getRequestForResponse(response)
@@ -111,7 +86,7 @@ function Bridge.new(self)
             Log.e("Response (%s) no longer has corresponding request!", response.getId())
             return
         end
-        request.getPromise().resolve(response)
+        request.resolve(response)
         table.remove(requests, idx)
     end
 end

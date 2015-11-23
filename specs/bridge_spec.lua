@@ -36,6 +36,18 @@ describe("Bridge", function()
                 return message
             end
         end
+
+        TestResponse = Class()
+        TestResponse.protocol(BridgeResponseProtocol)
+        function TestResponse.new(self)
+            local id
+            function self.init(_id)
+                id = _id
+            end
+            function self.getId()
+                return id
+            end
+        end
     end)
 
     it("should return the adaptor", function()
@@ -67,15 +79,16 @@ describe("Bridge", function()
         end)
     end)
 
-    context("when sending successful request", function()
+    context("when sending a request", function()
         local request
         local promise
         local response
+        local nativeResponse
 
         before_each(function()
-            response = nil
+            nativeResponse = {}
 
-            stub(adaptor, "send", true)
+            stub(adaptor, "send", nativeResponse)
 
             request = TestRequest()
             response = subject.send("test", request, nil)
@@ -86,11 +99,11 @@ describe("Bridge", function()
         end)
 
         it("should have returned value from native layer", function()
-            -- @todo
+            assert.equals(nativeResponse, response)
         end)
     end)
 
-    context("when sending fails request", function()
+    context("when sending a request failed", function()
         local request
         local promise
         local response
@@ -106,6 +119,75 @@ describe("Bridge", function()
 
         it("should have failed immediately", function()
             assert.falsy(response)
+        end)
+    end)
+
+    context("when sending an async request", function()
+        local request
+        local call
+        local nativeResponse
+
+        before_each(function()
+            nativeResponse = {}
+
+            stub(adaptor, "send", nativeResponse)
+
+            request = TestRequest()
+            call = subject.sendAsync("test", request, nil)
+        end)
+
+        it("should send the request to the adaptor", function()
+            assert.stub(adaptor.send).was.called_with("test", message, nil)
+        end)
+
+        it("should have returned value from native layer", function()
+            assert.equals(nativeResponse, call.getResponse())
+        end)
+
+        context("when the request fails", function()
+            local t_response
+            local p_response
+
+            before_each(function()
+                p_response = false
+                call.done(function(r)
+                    p_response = r
+                end)
+                t_response = TestResponse(request.getId())
+                subject.receive(t_response)
+            end)
+
+            it("should have returned the response", function()
+                assert.truthy(p_response)
+                assert.equals(t_response, p_response)
+            end)
+
+            it("should no longer be tracking any requests", function()
+                local requests = subject.getRequests()
+                assert.equal(0, #requests)
+            end)
+        end)
+    end)
+
+    context("when async request fails", function()
+        local request
+        local call
+        local _error
+
+        before_each(function()
+            _error = nil
+
+            stub(adaptor, "send", false)
+
+            request = TestRequest()
+            call = subject.sendAsync("test", request, nil)
+            call.fail(function(e)
+                _error = e
+            end)
+        end)
+
+        it("should have rejected immediately", function()
+            assert.equals("Failed to call method (test)", _error)
         end)
     end)
 end)
