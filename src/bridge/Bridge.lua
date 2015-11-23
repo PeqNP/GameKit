@@ -8,20 +8,28 @@ BridgeCall = Class()
 function BridgeCall.new(self)
     local request
     local promise
+    local response
 
-    function self.init(_request, _promise)
+    function self.init(_request, _promise, _response)
         request = _request
         promise = _promise
+        response = _response
     end
 
     function self.getId()
         return request.getId()
     end
+
     function self.getRequest()
         return request
     end
+
     function self.getPromise()
         return promise
+    end
+
+    function self.getResponse()
+        return response
     end
 end
 
@@ -74,17 +82,17 @@ function Bridge.new(self)
         return modules
     end
 
-    -- @return Promise
+    -- @return Promise, mixed (response from native layer)
     function self.send(method, request, sig)
         local promise = Promise()
-        local ok = adaptor.send(method, request.getMessage(), sig)
-        if ok then
-            local req = BridgeCall(request, promise)
+        local response = adaptor.send(method, request.getMessage(), sig)
+        if response then
+            local req = BridgeCall(request, promise, response)
             table.insert(requests, req)
         else
             promise.reject(string.format("Failed to call method (%s)", method))
         end
-        return promise
+        return promise, response
     end
 
     function private.getRequestForResponse(response)

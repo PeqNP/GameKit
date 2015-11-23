@@ -7,6 +7,12 @@ require "bridge.Bridge"
 require "bridge.BridgeAdaptor"
 require "bridge.BridgeRequest"
 
+local id = 0
+function get_id()
+    id = id + 1
+    return id
+end
+
 describe("Bridge", function()
     local subject
     local adaptor
@@ -22,6 +28,10 @@ describe("Bridge", function()
         message = {}
         TestRequest = Class(BridgeRequest)
         function TestRequest.new(self)
+            local id = get_id()
+            function self.getId()
+                return id
+            end
             function self.getMessage()
                 return message
             end
@@ -68,42 +78,15 @@ describe("Bridge", function()
             stub(adaptor, "send", true)
 
             request = TestRequest()
-            promise = subject.send("test", request, nil)
-            promise.done(function(r)
-                response = r
-            end)
+            response = subject.send("test", request, nil)
         end)
 
         it("should send the request to the adaptor", function()
             assert.stub(adaptor.send).was.called_with("test", message, nil)
         end)
 
-        it("should not yet have responded", function()
-            assert.falsy(response)
-        end)
-
-        it("should be tracking one request", function()
-            local requests = subject.getRequests()
-            assert.equal(1, #requests)
-        end)
-
-        context("when the user clicks the response", function()
-            local c_response
-
-            before_each(function()
-                c_response = {id= request.getId(), state= AdState.Clicked}
-                ad__callback(c_response)
-            end)
-
-            it("should have responded", function()
-                assert.truthy(response.kindOf(AdResponse))
-                assert.equal(response.getState(), AdState.Clicked)
-            end)
-
-            it("should no longer be tracking any requests", function()
-                local requests = subject.getRequests()
-                assert.equal(0, #requests)
-            end)
+        it("should have returned value from native layer", function()
+            -- @todo
         end)
     end)
 
@@ -111,7 +94,6 @@ describe("Bridge", function()
         local request
         local promise
         local response
-        local _error
 
         before_each(function()
             response = nil
@@ -119,14 +101,11 @@ describe("Bridge", function()
             stub(adaptor, "send", false)
 
             request = TestRequest()
-            promise = subject.send("test", request, nil)
-            promise.fail(function(e)
-                _error = e
-            end)
+            response = subject.send("test", request, nil)
         end)
 
         it("should have failed immediately", function()
-            assert.truthy(_error)
+            assert.falsy(response)
         end)
     end)
 end)
