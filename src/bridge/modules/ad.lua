@@ -22,23 +22,28 @@ end
 -- @return dictionary{success:, error:, ads: [{str token:, str zoneid:} ... ]} List of tokenz/zoneide pairs.
 --
 function ad.register(config)
-    return bridge.send("ad__register", config)
+    -- success
+    -- ads[] {token:, zoneId}
+    local response = bridge.send("ad__register", config)
+    return response
 end
 
 -- @return {success:, error:}
-function ad.cache(request)
-    return bridge.send("ad__cache", request)
+function ad.cache(ad)
+    local response = bridge.send("ad__cache", ad)
+    return response
 end
 
 -- @return {success:, error:}
-function ad.show(request)
-    return bridge.send("ad__show", request)
+function ad.show(ad)
+    local response = bridge.send("ad__show", ad)
+    return response
 end
 
 -- @return {success:, error:}
-function ad.destroy(request)
-    return bridge.send("ad__destroy", request)
-end
+--function ad.destroy(ad)
+--    return bridge.send("ad__destroy", ad)
+--end
 
 --
 -- Receive

@@ -54,6 +54,10 @@ function AdRequest.new(self)
 
     -- BridgeRequest
 
+    function self.getId()
+        return ad.getToken()
+    end
+
     function self.getMessage()
         -- @todo
     end

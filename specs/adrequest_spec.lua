@@ -46,6 +46,16 @@ describe("AdRequest", function()
         assert.equals("token", subject.getToken())
     end)
 
+    -- BridgeRequestProtocol
+
+    it("should return the correct ID", function()
+        assert.equals("token", subject.getId())
+    end)
+
+    it("should return dictionary with config", function()
+        -- @todo
+    end)
+
     describe("state", function()
         before_each(function()
             subject.setState(AdState.Ready)
