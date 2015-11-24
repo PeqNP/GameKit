@@ -208,7 +208,7 @@ describe("AdManager", function()
                 spy.on(cu, "delayCall")
 
                 requesti = requests[1]
-                promisei.reject(AdResponse(requesti.getToken(), AdState.Complete, "Cache failure"))
+                promisei.reject(AdResponse(requesti.getToken(), AdState.Complete, 0, false, "Cache failure"))
             end)
 
             it("should have completed request", function()
@@ -315,7 +315,7 @@ describe("AdManager", function()
 
                     describe("when the request fails", function()
                         before_each(function()
-                            promise.reject(AdResponse(requestv.getToken(), AdState.Complete, "Failure"))
+                            promise.reject(AdResponse(requestv.getToken(), AdState.Complete, 0, false, "Failure"))
                         end)
 
                         it("should have updated the state of the ad request", function()
