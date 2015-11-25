@@ -2,8 +2,11 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
+require "ad.AdToken"
+
 require "ad.response.AdCacheResponse"
 require "ad.response.AdCompleteResponse"
+require "ad.response.AdRegisterResponse"
 
 local ad = {}
 
@@ -13,6 +16,18 @@ function ad.init(b)
 end
 
 -- Send
+
+local function getAdTokens(response)
+    if not response.ads then
+        return {}
+    end
+    local ads = {}
+    for _, ad in ipairs(response.ads) do
+        local a = AdToken(ad.token, ad.zoneid)
+        table.insert(ads, a)
+    end
+    return ads
+end
 
 --
 -- Register an ad network and its respective ads with the system.
@@ -25,7 +40,8 @@ end
 function ad.register(config)
     -- success
     -- ads[] {token:, zoneId}
-    return bridge.send("ad__register", config)
+    local response = bridge.send("ad__register", config)
+    return AdRegisterResponse(response.success, getAdTokens(response))
 end
 
 -- @return {success:, error:}
@@ -46,20 +62,13 @@ end
 --
 -- Receive
 --
--- Configured
--- Registered
--- Cached
--- Presented
--- ?Destroyed
---
 
--- @todo Could use same response but have a cached/completed state.
 function ad__cached(response)
     bridge.receive(AdCacheResponse(response["token"], response["error"]))
 end
 
 function ad__completed(response)
-    bridge.receive(AdCompletedResponse(response["token"], response["clicked"], response["reward"], response["error"]))
+    bridge.receive(AdCompleteResponse(response["token"], response["reward"], response["clicked"], response["error"]))
 end
 
 return ad

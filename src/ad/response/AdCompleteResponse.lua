@@ -13,20 +13,23 @@ function AdCompleteResponse.new(self)
     local clicked
     local _error
 
-    function self.init(_id, reward, clicked, _err)
+    function self.init(_id, _reward, _clicked, _err)
         id = _id
-        reward = reward
-        clicked = clicked
+        reward = _reward
+        clicked = _clicked
         _error = _err
     end
 
     function self.isFailure()
+        return _error and true or false
     end
 
     function self.getReward()
+        return reward
     end
 
-    function self.clicked()
+    function self.isClicked()
+        return clicked
     end
 
     function self.getError()
