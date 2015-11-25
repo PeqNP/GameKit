@@ -109,6 +109,10 @@ describe("modules.ad", function()
             assert.stub(bridge.sendAsync).was.called_with("ad__cache", payload)
         end)
 
+        it("should have returned the BridgeCall", function()
+            assert.equals(call, c)
+        end)
+
         it("should have returned the bridge's response", function()
             assert.equals(AdResponse, r.getClass())
         end)
@@ -130,6 +134,10 @@ describe("modules.ad", function()
 
         it("should have sent correct request", function()
             assert.stub(bridge.sendAsync).was.called_with("ad__cache", payload)
+        end)
+
+        it("should have returned the BridgeCall", function()
+            assert.equals(call, c)
         end)
 
         it("should have returned the bridge's response", function()
@@ -159,6 +167,10 @@ describe("modules.ad", function()
             assert.stub(bridge.sendAsync).was.called_with("ad__show", payload)
         end)
 
+        it("should have returned the BridgeCall", function()
+            assert.equals(call, c)
+        end)
+
         it("should have returned the bridge's response", function()
             assert.equals(AdResponse, r.getClass())
         end)
@@ -176,6 +188,10 @@ describe("modules.ad", function()
             response = {success=false, error="An error"}
             stub(bridge, "sendAsync", response, call)
             r, c = subject.show(payload)
+        end)
+
+        it("should have returned the BridgeCall", function()
+            assert.equals(call, c)
         end)
 
         it("should have sent correct request", function()

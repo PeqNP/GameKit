@@ -49,20 +49,20 @@ function ad.register(config)
     return AdRegisterResponse(response.success, getAdTokens(response))
 end
 
--- @return {success:, error:}
 function ad.cache(ad)
+    -- @return {success:, error:}
     local response, call = bridge.sendAsync("ad__cache", ad)
-    return getAdResponse(response)
+    return getAdResponse(response), call
 end
 
--- @return {success:, error:}
 function ad.show(ad)
+    -- @return {success:, error:}
     local response, call = bridge.sendAsync("ad__show", ad)
-    return getAdResponse(response)
+    return getAdResponse(response), call
 end
 
--- @return {success:, error:}
 --function ad.destroy(ad)
+--    -- @return {success:, error:}
 --    return bridge.send("ad__destroy", ad)
 --end
 
