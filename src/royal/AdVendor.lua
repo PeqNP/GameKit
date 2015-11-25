@@ -7,14 +7,14 @@
 -- @copyright Upstart Illustration LLC. All rights reserved.
 --
 
-AdPresentationQueue = Class()
+AdVendor = Class()
 
 -- 
 --  @param AdManifest
 --  @param configMatches - function used to determine if the config matches criteria of the current app state.
 --                         must return 'true', if the tier config matches. 'false', otherwise.
 --
-function AdPresentationQueue.new(self)
+function AdVendor.new(self)
     local manifest
     local fn__configMatches
     local unitPos = 1
