@@ -24,20 +24,17 @@ end
 function ad.register(config)
     -- success
     -- ads[] {token:, zoneId}
-    local response = bridge.send("ad__register", config)
-    return response
+    return bridge.send("ad__register", config)
 end
 
 -- @return {success:, error:}
 function ad.cache(ad)
-    local response = bridge.send("ad__cache", ad)
-    return response
+    return bridge.sendAsync("ad__cache", ad)
 end
 
 -- @return {success:, error:}
 function ad.show(ad)
-    local response = bridge.send("ad__show", ad)
-    return response
+    return bridge.sendAsync("ad__show", ad)
 end
 
 -- @return {success:, error:}
@@ -55,8 +52,13 @@ end
 -- ?Destroyed
 --
 
-function ad__callback(response)
-    bridge.receive(AdResponse(response["token"], response["state"], response["error"]))
+-- @todo Could use same response but have a cached/completed state.
+function ad__cached(response)
+    bridge.receive(AdCacheResponse(response["token"], response["error"]))
+end
+
+function ad__completed(response)
+    bridge.receive(AdCompletedResponse(response["token"], response["clicked"], response["reward"], response["error"]))
 end
 
 return ad
