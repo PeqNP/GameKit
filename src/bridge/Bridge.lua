@@ -55,19 +55,25 @@ function Bridge.new(self)
     end
 
     function self.send(method, request, sig)
-        return adaptor.send(method, request.getMessage(), sig)
+        return adaptor.send(method, request.toDict(), sig)
     end
 
+    --
+    -- @param str - method name
+    -- @param id<BridgeRequestProtocol>
+    -- @param table - key/value pair indicating the types of parameters being sent.
+    --
     -- @return Promise, mixed (response from native layer)
+    --
     function self.sendAsync(method, request, sig)
-        local response = adaptor.send(method, request.getMessage(), sig)
-        local req = BridgeCall(request, response)
+        local response = adaptor.send(method, request.toDict(), sig)
+        local req = BridgeCall(request)
         if response then
             table.insert(requests, req)
         else
             req.reject(string.format("Failed to call method (%s)", method))
         end
-        return req
+        return response, req
     end
 
     function private.getRequestForResponse(response)

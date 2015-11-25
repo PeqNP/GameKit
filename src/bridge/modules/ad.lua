@@ -51,13 +51,13 @@ end
 
 -- @return {success:, error:}
 function ad.cache(ad)
-    local response = bridge.sendAsync("ad__cache", ad)
+    local response, call = bridge.sendAsync("ad__cache", ad)
     return getAdResponse(response)
 end
 
 -- @return {success:, error:}
 function ad.show(ad)
-    local response = bridge.sendAsync("ad__show", ad)
+    local response, call = bridge.sendAsync("ad__show", ad)
     return getAdResponse(response)
 end
 

@@ -9,6 +9,7 @@ require "ad.response.AdCompleteResponse"
 describe("modules.ad", function()
     local subject
     local bridge
+    local call
     local payload
     local response
 
@@ -18,6 +19,8 @@ describe("modules.ad", function()
 
         bridge = Bridge()
         mock(bridge, true)
+        call = BridgeCall()
+        mock(call, true)
 
         subject = require("bridge.modules.ad")
         subject.init(bridge)
@@ -94,11 +97,12 @@ describe("modules.ad", function()
 
     describe("cache", function()
         local r
+        local c
 
         before_each(function()
             response = {success=true}
-            stub(bridge, "sendAsync", response)
-            r = subject.cache(payload)
+            stub(bridge, "sendAsync", response, call)
+            r, c = subject.cache(payload)
         end)
 
         it("should have sent correct request", function()
@@ -116,11 +120,12 @@ describe("modules.ad", function()
 
     describe("failed cache", function()
         local r
+        local c
 
         before_each(function()
             response = {success=false, error="An error"}
-            stub(bridge, "sendAsync", response)
-            r = subject.cache(payload)
+            stub(bridge, "sendAsync", response, call)
+            r, c = subject.cache(payload)
         end)
 
         it("should have sent correct request", function()
@@ -142,11 +147,12 @@ describe("modules.ad", function()
 
     describe("show", function()
         local r
+        local c
 
         before_each(function()
             response = {success=true}
-            stub(bridge, "sendAsync", response)
-            r = subject.show(payload)
+            stub(bridge, "sendAsync", response, call)
+            r, c = subject.show(payload)
         end)
 
         it("should have sent correct request", function()
@@ -164,11 +170,12 @@ describe("modules.ad", function()
 
     describe("failed show", function()
         local r
+        local c
 
         before_each(function()
             response = {success=false, error="An error"}
-            stub(bridge, "sendAsync", response)
-            r = subject.show(payload)
+            stub(bridge, "sendAsync", response, call)
+            r, c = subject.show(payload)
         end)
 
         it("should have sent correct request", function()

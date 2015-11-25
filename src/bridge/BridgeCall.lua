@@ -6,11 +6,9 @@ BridgeCall = Class(Promise)
 
 function BridgeCall.new(self)
     local request
-    local response
 
-    function self.init(_request, _response)
+    function self.init(_request)
         request = _request
-        response = _response
     end
 
     function self.getId()
@@ -19,10 +17,6 @@ function BridgeCall.new(self)
 
     function self.getRequest()
         return request
-    end
-
-    function self.getResponse()
-        return response
     end
 end
 

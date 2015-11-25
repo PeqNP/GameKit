@@ -32,7 +32,7 @@ describe("Bridge", function()
             function self.getId()
                 return id
             end
-            function self.getMessage()
+            function self.toDict()
                 return message
             end
         end
@@ -55,7 +55,8 @@ describe("Bridge", function()
     end)
 
     it("should have loaded the module", function()
-        assert.truthy(ad__callback)
+        assert.truthy(ad__cached)
+        assert.truthy(ad__completed)
     end)
 
     it("should have the module", function()
@@ -126,6 +127,7 @@ describe("Bridge", function()
         local request
         local call
         local nativeResponse
+        local response
 
         before_each(function()
             nativeResponse = {}
@@ -133,7 +135,7 @@ describe("Bridge", function()
             stub(adaptor, "send", nativeResponse)
 
             request = TestRequest()
-            call = subject.sendAsync("test", request, nil)
+            response, call = subject.sendAsync("test", request, nil)
         end)
 
         it("should send the request to the adaptor", function()
@@ -141,7 +143,7 @@ describe("Bridge", function()
         end)
 
         it("should have returned value from native layer", function()
-            assert.equals(nativeResponse, call.getResponse())
+            assert.equals(nativeResponse, response)
         end)
 
         context("when the request fails", function()
@@ -173,14 +175,16 @@ describe("Bridge", function()
         local request
         local call
         local _error
+        local response
 
         before_each(function()
             _error = nil
+            response = true
 
             stub(adaptor, "send", false)
 
             request = TestRequest()
-            call = subject.sendAsync("test", request, nil)
+            response, call = subject.sendAsync("test", request, nil)
             call.fail(function(e)
                 _error = e
             end)
@@ -188,6 +192,10 @@ describe("Bridge", function()
 
         it("should have rejected immediately", function()
             assert.equals("Failed to call method (test)", _error)
+        end)
+
+        it("should have returned native response", function()
+            assert.falsy(response)
         end)
     end)
 end)

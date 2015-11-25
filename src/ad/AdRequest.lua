@@ -58,7 +58,7 @@ function AdRequest.new(self)
         return ad.getToken()
     end
 
-    function self.getMessage()
+    function self.toDict()
         -- @todo
     end
 end

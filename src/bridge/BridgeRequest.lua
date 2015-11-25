@@ -6,8 +6,8 @@ BridgeRequest = Class(self)
 BridgeRequest.abstract(Protocol(
     -- Returns the ID that can be used to match corresponding response.
     Method("getId")
-    -- Returns a message that will be sent to the native layer.
-  , Method("getMessage")
+    -- Returns a dictionary (key/value) representation of object that will be sent to native layer.
+  , Method("toDict")
 ))
 
 function BridgeRequest.new(self)
