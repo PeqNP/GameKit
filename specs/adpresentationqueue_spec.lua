@@ -6,14 +6,14 @@ require "Common"
 Log.setLevel(LogLevel.Info)
 
 require "royal.AdConfig"
-require "royal.AdPresenter"
+require "royal.AdPresentationQueue"
 require "royal.AdTier"
 require "royal.AdUnit"
 require "royal.AdManifest"
 
 AdConfig.singleton.setBasePath("/path/")
 
-describe("AdPresenter", function()
+describe("AdPresentationQueue", function()
     local subject = false
 
     local evolutions
@@ -78,7 +78,7 @@ describe("AdPresenter", function()
 
         local manifest = AdManifest()
         manifest.setAdUnits({adUnit1, adUnit2, adUnit3})
-        subject = AdPresenter(manifest, fn__shouldShowTier)
+        subject = AdPresentationQueue(manifest, fn__shouldShowTier)
     end)
 
     describe("getNextTiers", function()
