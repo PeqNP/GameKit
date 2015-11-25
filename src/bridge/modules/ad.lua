@@ -7,6 +7,7 @@ require "ad.AdToken"
 require "ad.response.AdCacheResponse"
 require "ad.response.AdCompleteResponse"
 require "ad.response.AdRegisterResponse"
+require "ad.response.AdResponse"
 
 local ad = {}
 
@@ -29,6 +30,10 @@ local function getAdTokens(response)
     return ads
 end
 
+local function getAdResponse(response)
+    return AdResponse(response.success, response.error)
+end
+
 --
 -- Register an ad network and its respective ads with the system.
 --
@@ -46,12 +51,14 @@ end
 
 -- @return {success:, error:}
 function ad.cache(ad)
-    return bridge.sendAsync("ad__cache", ad)
+    local response = bridge.sendAsync("ad__cache", ad)
+    return getAdResponse(response)
 end
 
 -- @return {success:, error:}
 function ad.show(ad)
-    return bridge.sendAsync("ad__show", ad)
+    local response = bridge.sendAsync("ad__show", ad)
+    return getAdResponse(response)
 end
 
 -- @return {success:, error:}

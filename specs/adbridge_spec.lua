@@ -92,15 +92,11 @@ describe("modules.ad", function()
         end)
     end)
 
-    -- @todo cache
-    -- @todo show
-    -- @todo callback:cached
-    -- @todo callback:completed
-
     describe("cache", function()
         local r
 
         before_each(function()
+            response = {success=true}
             stub(bridge, "sendAsync", response)
             r = subject.cache(payload)
         end)
@@ -110,7 +106,37 @@ describe("modules.ad", function()
         end)
 
         it("should have returned the bridge's response", function()
-            assert.equals(response, r)
+            assert.equals(AdResponse, r.getClass())
+        end)
+
+        it("should be a success", function()
+            assert.truthy(r.isSuccess())
+        end)
+    end)
+
+    describe("failed cache", function()
+        local r
+
+        before_each(function()
+            response = {success=false, error="An error"}
+            stub(bridge, "sendAsync", response)
+            r = subject.cache(payload)
+        end)
+
+        it("should have sent correct request", function()
+            assert.stub(bridge.sendAsync).was.called_with("ad__cache", payload)
+        end)
+
+        it("should have returned the bridge's response", function()
+            assert.equals(AdResponse, r.getClass())
+        end)
+
+        it("should be a failure", function()
+            assert.falsy(r.isSuccess())
+        end)
+
+        it("should have set correct error on response", function()
+            assert.equals("An error", r.getError())
         end)
     end)
 
@@ -118,6 +144,7 @@ describe("modules.ad", function()
         local r
 
         before_each(function()
+            response = {success=true}
             stub(bridge, "sendAsync", response)
             r = subject.show(payload)
         end)
@@ -127,7 +154,37 @@ describe("modules.ad", function()
         end)
 
         it("should have returned the bridge's response", function()
-            assert.equals(response, r)
+            assert.equals(AdResponse, r.getClass())
+        end)
+
+        it("should be a successful response", function()
+            assert.truthy(r.isSuccess())
+        end)
+    end)
+
+    describe("failed show", function()
+        local r
+
+        before_each(function()
+            response = {success=false, error="An error"}
+            stub(bridge, "sendAsync", response)
+            r = subject.show(payload)
+        end)
+
+        it("should have sent correct request", function()
+            assert.stub(bridge.sendAsync).was.called_with("ad__show", payload)
+        end)
+
+        it("should have returned the bridge's response", function()
+            assert.equals(AdResponse, r.getClass())
+        end)
+
+        it("should be a failure", function()
+            assert.falsy(r.isSuccess())
+        end)
+
+        it("should have set correct error on response", function()
+            assert.equals("An error", r.getError())
         end)
     end)
 
