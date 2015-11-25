@@ -28,6 +28,16 @@ function AdManager.new(self)
         adFactory = _adFactory
     end
 
+    -- Prevents the delay from being called more than once.
+    local delayInProgress = false
+    function private.delayRebuildRequests()
+        if delayInProgress then
+            return
+        end
+        delayInProgress = true
+        cu.delayCall(private.rebuildRequests, TIMEOUT[2])
+    end
+
     function private.cacheAds(ads)
         for _, ad in ipairs(ads) do
             private.cacheAd(ad)
@@ -35,6 +45,8 @@ function AdManager.new(self)
     end
 
     function private.rebuildRequests()
+        delayInProgress = false
+
         local ads = {}
         local incomplete = {}
         for pos, request in ipairs(requests) do
@@ -54,16 +66,21 @@ function AdManager.new(self)
     function private.cacheAd(ad)
         local request = AdRequest(ad)
         request.setState(AdState.Loading)
-        table.insert(requests, request)
-
         local response, promise = adaptor.cache(request)
+
+        if not response.success then
+            private.delayRebuildRequests()
+            return
+        end
+
+        table.insert(requests, request)
         promise.done(function(response)
             request.setState(AdState.Ready)
         end)
         promise.fail(function(response)
             request.setState(AdState.Complete)
             _error = response.getError()
-            cu.delayCall(private.rebuildRequests, TIMEOUT[2])
+            private.delayRebuildRequests()
         end)
     end
 
@@ -133,7 +150,7 @@ function AdManager.new(self)
             _error = response.getError()
         end)
         promise.always(function(response)
-            cu.delayCall(private.rebuildRequests, TIMEOUT[2])
+            private.delayRebuildRequests()
         end)
         return promise
     end

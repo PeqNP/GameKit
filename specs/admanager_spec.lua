@@ -12,6 +12,8 @@ require "ad.networks.AdColonyNetwork"
 require "mediation.MediationAdFactory"
 require "mediation.MediationAdConfig"
 
+local match = require("luassert.match")
+
 function Ad.init4(adNetwork, adType, zoneId, reward, token)
     local ad = Ad(adType, zoneId, reward)
     ad.setAdNetwork(adNetwork)
@@ -204,10 +206,12 @@ describe("AdManager", function()
 
         context("when the ad fails to be cached", function()
             local delayfn
+            local delayval
 
             before_each(function()
                 function cu.delayCall(fn, delay)
                     delayfn = fn
+                    delayval = delay
                 end
 
                 spy.on(cu, "delayCall")
@@ -229,8 +233,7 @@ describe("AdManager", function()
             end)
 
             it("should have scheduled the request to be performed at a later time", function()
-                -- @fixme Called with what value?
-                assert.stub(cu.delayCall).was.called()
+                assert.equals(30, delayval)
             end)
 
             describe("caching the module that failed", function()
@@ -340,41 +343,74 @@ describe("AdManager when no ad factory", function()
     before_each(function()
         promisec = Promise()
         promises = Promise()
-        responsec = {success=true}
-        responses = {success=true}
 
         bridge = require("bridge.modules.ad")
-        stub(bridge, "cache", responsec, promisec)
-        stub(bridge, "show", responses, promises)
+        function bridge.cache(request)
+            return responsec, promisec
+        end
+        function bridge.show(request)
+            return responses, promises
+        end
+        bridge = mock(bridge)
+
+        stub(cu, "delayCall")
 
         subject = AdManager(bridge)
 
         ad = Ad.init4(AdNetwork.AdMob, AdType.Interstitial, "token", 5)
-        subject.registerAd(ad)
-    end)
-
-    it("should have created a request", function()
-        local requests = subject.getRequests()
-        assert.equals(1, #requests) -- sanity
-        local request = requests[1]
-        assert.truthy(request) -- should have created a request
-    end)
-
-    it("should have cached the ad", function()
-        assert.stub(bridge.cache).was.called()
     end)
 
     context("when the ad is cached successfully", function()
         local request
 
         before_each(function()
+            responsec = {success=true}
+            responses = {success=true}
+
+            subject.registerAd(ad)
+
             request = subject.getRequests()[1]
             promisec.resolve(AdResponse(true))
         end)
 
+        it("should have created a request", function()
+            local requests = subject.getRequests()
+            assert.equals(1, #requests) -- sanity
+            local request = requests[1]
+            assert.truthy(request) -- should have created a request
+        end)
+
+        it("should have cached the ad", function()
+            assert.spy(bridge.cache).was.called()
+        end)
+
         it("should have displayed an AdMob interstitial ad", function()
             assert.truthy(subject.showAd(AdType.Interstitial))
-            assert.stub(bridge.show).was.called_with(request)
+            assert.spy(bridge.show).was.called_with(request)
+        end)
+    end)
+
+    context("when the ad fails to be cached", function()
+        local request
+
+        before_each(function()
+            responsec = {success=false, error="cache error"}
+            responses = {success=false, error="show error"}
+
+            subject.registerAd(ad)
+        end)
+
+        it("should try to rebuild the requests after 30 seconds", function()
+            assert.stub(cu.delayCall).was.called_with(match._, 30)
+        end)
+
+        it("should not have added request to tracked requests", function()
+            local requests = subject.getRequests()
+            assert.equals(0, #requests)
+        end)
+
+        it("should have displayed an AdMob interstitial ad", function()
+            assert.falsy(subject.showAd(AdType.Interstitial))
         end)
     end)
 end)
