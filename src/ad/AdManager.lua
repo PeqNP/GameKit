@@ -53,10 +53,10 @@ function AdManager.new(self)
 
     function private.cacheAd(ad)
         local request = AdRequest(ad)
-        table.insert(requests, request)
         request.setState(AdState.Loading)
+        table.insert(requests, request)
 
-        local promise = adaptor.cache(request)
+        local response, promise = adaptor.cache(request)
         promise.done(function(response)
             request.setState(AdState.Ready)
         end)
@@ -123,7 +123,7 @@ function AdManager.new(self)
     end
 
     function private.showAdForRequest(request)
-        local promise = adaptor.show(request)
+        local response, promise = adaptor.show(request)
         request.setState(AdState.Presenting)
         promise.done(function(response)
             request.setState(AdState.Complete)

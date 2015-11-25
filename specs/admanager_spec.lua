@@ -6,7 +6,7 @@ require "Common"
 require "ad.Constants"
 require "ad.Ad"
 require "ad.AdManager"
-require "ad.AdResponse"
+require "ad.response.AdResponse"
 require "ad.networks.AdMobNetwork"
 require "ad.networks.AdColonyNetwork"
 require "mediation.MediationAdFactory"
@@ -54,22 +54,27 @@ describe("AdManager", function()
         local requests
         local adi
         local requesti
+        local responsei
         local promisei
         local adv
         local requestv
+        local responsev
         local promisev
 
         before_each(function()
             adi = Ad.init4(AdNetwork.AdMob, AdType.Interstitial, "interstitial-zone")
             adv = Ad.init4(AdNetwork.AdColony, AdType.Video, "interstitial-zone")
 
+            responsei = {success=true}
+            responsev = {success=true}
+
             function bridge.cache(request)
                 if request.getAdNetwork() == AdNetwork.AdMob then
                     promisei = Promise()
-                    return promisei
+                    return responsei, promisei
                 elseif request.getAdNetwork() == AdNetwork.AdColony then
                     promisev = Promise()
-                    return promisev
+                    return responsev, promisev
                 else
                     assert.truthy(false)
                 end
@@ -123,7 +128,7 @@ describe("AdManager", function()
             before_each(function()
                 requesti = requests[1]
                 requestv = requests[2]
-                promisei.resolve(AdResponse(requesti.getToken(), AdState.Ready))
+                promisei.resolve(AdResponse(true))
             end)
 
             it("should have an available interstitial", function()
@@ -142,7 +147,7 @@ describe("AdManager", function()
                 describe("show the ad", function()
                     before_each(function()
                         local promise = Promise()
-                        stub(bridge, "show", promise)
+                        stub(bridge, "show", responsei, promise)
 
                         assert.falsy(subject.showAd(AdType.Video))
                         assert.truthy(subject.showAd(AdType.Interstitial))
@@ -167,7 +172,7 @@ describe("AdManager", function()
 
                 before_each(function()
                     local promise = Promise()
-                    stub(bridge, "show", promise)
+                    stub(bridge, "show", responsei, promise)
 
                     config = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
                     stub(adFactory, "nextAd", config)
@@ -184,7 +189,7 @@ describe("AdManager", function()
 
                 before_each(function()
                     local promise = Promise()
-                    stub(bridge, "show", promise)
+                    stub(bridge, "show", responsei, promise)
 
                     config = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
                     stub(adFactory, "nextAd", config)
@@ -208,7 +213,7 @@ describe("AdManager", function()
                 spy.on(cu, "delayCall")
 
                 requesti = requests[1]
-                promisei.reject(AdResponse(requesti.getToken(), AdState.Complete, 0, false, "Cache failure"))
+                promisei.reject(AdResponse(false, "Cache failure"))
             end)
 
             it("should have completed request", function()
@@ -252,7 +257,7 @@ describe("AdManager", function()
             before_each(function()
                 requesti = requests[1]
                 requestv = requests[2]
-                promisev.resolve(AdResponse(requestv.getToken(), AdState.Ready))
+                promisev.resolve(AdResponse(true))
             end)
 
             it("should NOT have an available interstitial", function()
@@ -270,7 +275,7 @@ describe("AdManager", function()
                     before_each(function()
                         promise = Promise()
                         stub(adFactor, nextAd, nil)
-                        stub(bridge, "show", promise)
+                        stub(bridge, "show", responsei, promise)
                         stub(cu, "delayCall")
 
                         assert.falsy(subject.showAd(AdType.Interstitial))
@@ -285,9 +290,9 @@ describe("AdManager", function()
                         assert.equal(AdState.Presenting, requestv.getState())
                     end)
 
-                    describe("when the ad is closed", function()
+                    describe("when the ad is completed", function()
                         before_each(function()
-                            promise.resolve(AdResponse(requestv.getToken(), AdState.Complete))
+                            promise.resolve(AdResponse(true))
                         end)
 
                         it("should have updated the state of the ad request", function()
@@ -299,23 +304,9 @@ describe("AdManager", function()
                         end)
                     end)
 
-                    describe("when the ad is clicked", function()
-                        before_each(function()
-                            promise.resolve(AdResponse(requestv.getToken(), AdState.Clicked))
-                        end)
-
-                        it("should have updated the state of the ad request", function()
-                            assert.equal(AdState.Clicked, requestv.getState())
-                        end)
-
-                        it("should cache module", function()
-                            assert.stub(cu.delayCall).was.called()
-                        end)
-                    end)
-
                     describe("when the request fails", function()
                         before_each(function()
-                            promise.reject(AdResponse(requestv.getToken(), AdState.Complete, 0, false, "Failure"))
+                            promise.reject(AdResponse(false, "Failure"))
                         end)
 
                         it("should have updated the state of the ad request", function()
@@ -343,14 +334,18 @@ describe("AdManager when no ad factory", function()
     local request
     local promisec
     local promises
+    local responsec
+    local responses
 
     before_each(function()
         promisec = Promise()
         promises = Promise()
+        responsec = {success=true}
+        responses = {success=true}
 
         bridge = require("bridge.modules.ad")
-        stub(bridge, "cache", promisec)
-        stub(bridge, "show", promises)
+        stub(bridge, "cache", responsec, promisec)
+        stub(bridge, "show", responses, promises)
 
         subject = AdManager(bridge)
 
@@ -374,7 +369,7 @@ describe("AdManager when no ad factory", function()
 
         before_each(function()
             request = subject.getRequests()[1]
-            promisec.resolve(AdResponse(request.getToken(), AdState.Ready))
+            promisec.resolve(AdResponse(true))
         end)
 
         it("should have displayed an AdMob interstitial ad", function()
