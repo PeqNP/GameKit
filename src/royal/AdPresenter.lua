@@ -1,5 +1,5 @@
 --
--- Provides base class for presenting downloaded ads to the end-user.
+-- Manages which tiers can be presented.
 --
 -- @todo Filter adunits and tiers to have the highest paid tiers displayed first.
 -- @todo Add a 'stylize' parameter that is used to style the button being presented.
@@ -9,12 +9,11 @@
 
 AdPresenter = Class()
 
---[[
-  
-  @param AdManifest
-  @param configMatches - function used to determine if the config matches criteria of the current app state.
-                         must return 'true', if the tier config matches. 'false', otherwise.
---]]
+-- 
+--  @param AdManifest
+--  @param configMatches - function used to determine if the config matches criteria of the current app state.
+--                         must return 'true', if the tier config matches. 'false', otherwise.
+--
 function AdPresenter.new(self)
     local manifest
     local fn__configMatches
