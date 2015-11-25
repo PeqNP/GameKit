@@ -2,7 +2,8 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "ad.AdResponse"
+require "ad.response.AdCacheResponse"
+require "ad.response.AdCompleteResponse"
 
 local ad = {}
 

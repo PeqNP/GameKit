@@ -4,10 +4,10 @@
 
 require "bridge.BridgeResponseProtocol"
 
-AdResponse = Class()
-AdResponse.implements(BridgeResponseProtocol)
+AdCompleteResponse = Class()
+AdCompleteResponse.implements(BridgeResponseProtocol)
 
-function AdResponse.new(self)
+function AdCompleteResponse.new(self)
     local id
     local reward
     local clicked

@@ -3,6 +3,8 @@ require "specs.busted"
 
 require "bridge.Bridge"
 require "bridge.modules.ad"
+require "ad.response.AdCacheResponse"
+require "ad.response.AdCompleteResponse"
 
 describe("modules.ad", function()
     local subject
@@ -77,24 +79,101 @@ describe("modules.ad", function()
         end)
     end)
 
-    --[[
-    context("when the user clicks the response", function()
+    context("when an ad is cached", function()
+        local subject
         local c_response
+        local response
+        local bridge
 
         before_each(function()
-            c_response = {id= request.getId(), state= AdState.Clicked}
-            ad__callback(c_response)
+            response = nil
+
+            bridge = Bridge()
+            bridge.receive = function(r)
+                response = r
+            end
+
+            subject = require("bridge.modules.ad")
+            subject.init(bridge)
         end)
 
-        it("should have responded", function()
-            assert.truthy(response.kindOf(AdResponse))
-            assert.equal(response.getState(), AdState.Clicked)
+        context("when caching is successful", function()
+            before_each(function()
+                c_response = {token= 10}
+                ad__cached(c_response)
+            end)
+
+            it("should have created a cached response", function()
+                assert.truthy(response)
+                assert.truthy(response.kindOf(AdCacheResponse))
+                assert.equals(10, response.getId())
+                assert.falsy(response.isFailure())
+            end)
         end)
 
-        it("should no longer be tracking any requests", function()
-            local requests = subject.getRequests()
-            assert.equal(0, #requests)
+        context("when caching is unsuccessful", function()
+            before_each(function()
+                c_response = {token= 10, error="An error"}
+                ad__cached(c_response)
+            end)
+
+            it("should have created a cached response", function()
+                assert.truthy(response)
+                assert.truthy(response.kindOf(AdCacheResponse))
+                assert.equals(10, response.getId())
+                assert.truthy(response.isFailure())
+                assert.equals("An error", response.getError())
+            end)
         end)
     end)
-    --]]
+
+    context("when an ad is shown", function()
+        local subject
+        local c_response
+        local response
+        local bridge
+
+        before_each(function()
+            response = nil
+
+            bridge = Bridge()
+            bridge.receive = function(r)
+                response = r
+            end
+
+            subject = require("bridge.modules.ad")
+            subject.init(bridge)
+        end)
+
+        context("when showing is successful", function()
+            before_each(function()
+                c_response = {token= 10, reward=20, clicked=true}
+                ad__completed(c_response)
+            end)
+
+            it("should have created a cached response", function()
+                assert.truthy(response)
+                assert.truthy(response.kindOf(AdCompleteResponse))
+                assert.equals(10, response.getId())
+                assert.falsy(response.isFailure())
+                assert.equals(20, response.getReward())
+                assert.truthy(response.isClicked())
+            end)
+        end)
+
+        context("when caching is unsuccessful", function()
+            before_each(function()
+                c_response = {token= 10, error="An error"}
+                ad__cached(c_response)
+            end)
+
+            it("should have created a cached response", function()
+                assert.truthy(response)
+                assert.truthy(response.kindOf(AdCacheResponse))
+                assert.equals(10, response.getId())
+                assert.truthy(response.isFailure())
+                assert.equals("An error", response.getError())
+            end)
+        end)
+    end)
 end)
