@@ -86,11 +86,6 @@ describe("AdManager", function()
             subject.registerAd(adv)
 
             requests = subject.getRequests()
-
-            -- @todo Resolve promise which associates token to ad.
-        end)
-
-        it("should have made call to bridge to register network", function()
         end)
 
         it("should have added the network module to list of registered modules", function()
