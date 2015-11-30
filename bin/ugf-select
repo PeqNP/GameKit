@@ -16,6 +16,7 @@ import sys
 from ugf.config import configpath, Config, ProjectConfig
 from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder
 from ugf.interpolator import Interpolator
+from ugf.mediation import load_mediation_config, pods_for_networks
 
 def interpolate_iospbxproj(project, blob):
     # Global
@@ -64,25 +65,8 @@ def install_dependencies(project, source, cocos):
     if not os.path.exists(stage.basepath()):
         os.makedirs(stage.basepath())
     # Load mediation config
-    mediation = source.mediationpath("ios")
-    if os.path.isfile(mediation):
-        fh = open(source.mediationpath("ios"), "r")
-        json_blob = fh.read()
-        fh.close()
-        json_dict = json.loads(json_blob)
-    # Network pod aliases
-    networks = {
-        "AdColony": "pod 'AdColony', '~> 2.6'"
-      , "AdMob": "pod 'Google-Mobile-Ads-SDK', '~> 7.0'"
-      , "Chartboost": "pod 'ChartboostSDK', '~> 6.0'"
-      , "Leadbolt": "pod 'Leadbolt-iOS-SDK', :git => 'https://github.com/PeqNP/Leadbolt-iOS-SDK.git', :tag => '6.0.0'"
-      , "Vungle": "pod 'VungleSDK-iOS', '~> 3.2'"
-    }
-    pods = []
-    for network in json_dict:
-        name = network["network"]
-        if name in networks.keys():
-            pods.append(networks[network["network"]])
+    networks = load_mediation_config(source, "ios")
+    pods = pods_for_networks(networks)
     # Add mediation networks to Podfile
     keys = {
         "##UGF-MEDIATION-DEPENDENCIES##": "    " + "\n    ".join(pods)
