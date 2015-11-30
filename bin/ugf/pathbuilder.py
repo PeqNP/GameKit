@@ -19,7 +19,13 @@ class CocosPathBuilder (object):
         return os.path.join(self.basepath(), path)
 
     def iosprojectpath(self):
-        return os.path.join(self.basepath(), "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj")
+        return self.path("frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj")
+
+    def mediationpath(self):
+        return self.path("src/game/Mediation.lua")
+
+    def podfilepath(self):
+        return self.path("frameworks/runtime-src/proj.ios_mac/Podfile")
 
 class StagePathBuilder (object):
     def __init__(self, cocospath):
@@ -56,3 +62,8 @@ class ProjectPathBuilder (object):
 
     def xibpath(self):
         return self.path("platform/ios/src/LaunchScreen.xib")
+    
+    def mediationpath(self, platform):
+        if not platform or len(platform) < 1:
+            raise Exception("'platform' must be a string with a length greater than one.")
+        return self.path("platform/{}/mediation.json".format(platform))

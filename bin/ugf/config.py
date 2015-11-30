@@ -54,6 +54,8 @@ class Config (object):
 class ProjectConfig (object):
     @staticmethod
     def load(path):
+        if not os.path.isfile(path):
+            raise IOError("Project config file does not exist at path {}. Does this project have an app type?".format(path))
         fh = open(path, "r")
         json_blob = fh.read()
         fh.close()
