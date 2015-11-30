@@ -70,6 +70,7 @@ def install_dependencies(project, source, cocos):
         json_blob = fh.read()
         fh.close()
         json_dict = json.loads(json_blob)
+    # Network pod aliases
     networks = {
         "AdColony": "pod 'AdColony', '~> 2.6'"
       , "AdMob": "pod 'Google-Mobile-Ads-SDK', '~> 7.0'"
@@ -79,10 +80,12 @@ def install_dependencies(project, source, cocos):
     }
     pods = []
     for network in json_dict:
-        pods.append(networks[network["network"]])
+        name = network["network"]
+        if name in networks.keys():
+            pods.append(networks[network["network"]])
     # Add mediation networks to Podfile
     keys = {
-        "##UGF-MEDIATION-DEPENDENCIES##": "\n    ".join(pods)
+        "##UGF-MEDIATION-DEPENDENCIES##": "    " + "\n    ".join(pods)
     }
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/ios/Podfile", "frameworks/runtime-src/proj.ios_mac/Podfile")
