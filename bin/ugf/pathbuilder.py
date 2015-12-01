@@ -21,8 +21,8 @@ class CocosPathBuilder (object):
     def iosprojectpath(self):
         return self.path("frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj")
 
-    def mediationpath(self):
-        return self.path("src/game/Mediation.lua")
+    def mediationluapath(self, platform):
+        return self.path("src/Mediation-{}.lua".format(platform))
 
     def podfilepath(self):
         return self.path("frameworks/runtime-src/proj.ios_mac/Podfile")

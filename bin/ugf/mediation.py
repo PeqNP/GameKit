@@ -9,16 +9,47 @@ POD_NETWORKS = {
   , "Leadbolt": "pod 'Leadbolt-iOS-SDK', :git => 'https://github.com/PeqNP/Leadbolt-iOS-SDK.git', :tag => '6.0.0'"
   , "Vungle": "pod 'VungleSDK-iOS', '~> 3.2'"
 }
+LUA_NETWORKS = {
+    "AdColony": "AdColonyNetwork({appId}, {ads})"
+  , "AdMob": "AdMobNetwork({ads})"
+  , "Chartboost": "ChartboostNetwork({appId}, {signature}, {ads})"
+  , "Leadbolt": "LeadboltNetwork({appId}, {ads})"
+  , "Vungle": "VungleNetwork({appId}, {ads})"
+}
+LUA_AD_TYPES = {
+    "Banner": "AdType.Banner"
+  , "Interstitial": "AdType.Interstitial"
+  , "Video": "AdType.Video"
+}
+
+def quote(val):
+    if not val:
+        return None
+    return '"' + val + '"'
 
 class Network (object):
-    def __init__(self, name, ads):
+    def __init__(self, name, appId, signature, ads):
         self.name = name
+        self.appId = appId
+        self.signature = signature
         self.ads = ads
 
+    def toLua(self):
+        ads = []
+        for ad in self.ads:
+            ads.append(ad.toLua())
+        params = {"appId": quote(self.appId), "signature": quote(self.signature), "ads": "{" + ", ".join(ads) + "}"}
+        return LUA_NETWORKS[self.name].format(**params)
+    
 class Ad (object):
-    def __init__(self, _type, zoneId):
+    def __init__(self, _type, zoneId, reward=None):
         self.type = _type
         self.zoneId = zoneId
+        self.reward = reward
+
+    def toLua(self):
+        return "Ad({}, {}, {})".format(LUA_AD_TYPES[self.type], quote(self.zoneId), self.reward and self.reward or "0")
+
 
 def pods_for_networks(networks):
     pods = []
@@ -27,10 +58,9 @@ def pods_for_networks(networks):
             pods.append(POD_NETWORKS[network.name])
     return pods
 
-def load_mediation_config(source, platform):
-    path = source.mediationpath(platform)
+def load_mediation_config(path):
     if not os.path.isfile(path):
-        raise IOError("Mediation config file for platform {} does not exist at path {}".format(platform, path))
+        raise IOError("Mediation config file does not exist at path {}".format(path))
     fh = open(path, "r")
     json_blob = fh.read()
     fh.close()
@@ -40,5 +70,11 @@ def load_mediation_config(source, platform):
         ads = []
         for ad in network["ads"]:
             ads.append(Ad(ad["type"], ad["zoneId"]))
-        networks.append(Network(network["network"], ads))
+        networks.append(Network(network["network"], network.get("appId"), network.get("signature"), ads))
     return networks
+
+def lua_for_networks(networks):
+    code = []
+    for network in networks:
+        code.append(network.toLua())
+    return code
