@@ -61,22 +61,16 @@ def run_post_select(config, source, cocos):
         print("Running post-select script.")
         call([post_select, cocos.basepath(), config.apptype])
 
-def install_dependencies(project, source, cocos):
-    import json
-    stage = StagePathBuilder(cocos.basepath())
-    if not os.path.exists(stage.basepath()):
-        os.makedirs(stage.basepath())
-    # Load mediation config
-    path = source.mediationpath("ios")
-    networks = load_mediation_config(path)
-    pods = pods_for_networks(networks)
+def install_ios_dependencies(networks, project, cocos, stage):
     # Add mediation networks to Podfile
+    pods = pods_for_networks(networks)
     keys = {
         "##UGF-MEDIATION-DEPENDENCIES##": "    " + "\n    ".join(pods)
     }
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/ios/Podfile", "frameworks/runtime-src/proj.ios_mac/Podfile")
-    # Create Lua script
+
+def create_lua_mediation(networks, cocos):
     lua_networks = lua_for_networks(networks)
     lua = """
 --
@@ -91,6 +85,15 @@ return networks
     fh = open(cocos.mediationluapath("ios"), "w")
     fh.write(lua)
     fh.close()
+
+def install_dependencies(project, source, cocos):
+    stage = StagePathBuilder(cocos.basepath())
+    if not os.path.exists(stage.basepath()):
+        os.makedirs(stage.basepath())
+    path = source.mediationpath("ios")
+    networks = load_mediation_config(path)
+    install_ios_dependencies(networks, project, cocos, stage)
+    create_lua_mediation(networks, cocos)
 
 # Select and make 'project' the active project.
 def main(project, source, cocos):
