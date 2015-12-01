@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+#
+# Selects (installs/configures) a project into a Cocos2d-x project.
+#
+# @copyright 2015 Upstart Illustration LLC. All rights reserved.
+#
+
+from datetime import datetime
+from subprocess  import call
+
+import os
+import re
+import shutil
+import sys
+
+from ugf.config import configpath, Config, ProjectConfig
+from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder
+from ugf.interpolator import Interpolator
+from ugf.mediation import load_mediation_config, pods_for_networks, lua_for_networks
+
+VERSION = "ugf-select v1.0.0"
+
+def run_post_select(config, source, cocos):
+    post_select = source.path("ugf/post-select")
+    if os.path.isfile(post_select):
+        print("Running post-select script.")
+        call([post_select, cocos.basepath(), config.apptype])
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Upstart Game Framework - Configure a project to build for specific version of Cocos2d-x")
+    parser.add_argument('project', help="The project name to configure")
+    parser.add_argument('--app-type', help="The type of project (i.e. free, premium) This determines which config and resource files to copy", default=None)
+    args = parser.parse_args()
+
+    config = Config.load(configpath(), args.project, args.app_type and args.app_type or "")
+    config.save(configpath())
+
+    source = ProjectPathBuilder(config)
+    project = ProjectConfig.load(source.configpath())
+    cocos = CocosPathBuilder(config, project.cocos)
+
+    print("{}, Time: {}".format(VERSION, str(datetime.now())))
+    print("Project: {} v{} b{}".format(project.name, project.version, project.build))
+
+    # @todo Possibly create a script that copies any _modified_ files, in the currently configured
+    # Cocos2d-x repository, back into the current project's file structure. This way, if app icons
+    # are updated, etc. they are reflected back into the project's directory.
+    call(["ugf-configure"])
+    call(["ugf-copy"])
+    run_post_select(config, source, cocos)

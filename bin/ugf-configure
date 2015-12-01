@@ -13,12 +13,12 @@ import re
 import shutil
 import sys
 
-from ugf.config import configpath, Config, ProjectConfig
+from ugf.config import configpath, checkconfig, Config, ProjectConfig
 from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder
 from ugf.interpolator import Interpolator
 from ugf.mediation import load_mediation_config, pods_for_networks, lua_for_networks
 
-VERSION = "ugf-select v1.1.0"
+VERSION = "ugf-configure v1.0.0"
 
 def interpolate_iospbxproj(project, blob):
     # Global
@@ -54,12 +54,6 @@ def interpolate_configjson(project, blob):
 
 def interpolate_projectconfig(project, blob):
     return re.sub("##UGF-ORIENTATION##", project.orientation, blob)
-
-def run_post_select(config, source, cocos):
-    post_select = source.path("ugf/post-select")
-    if os.path.isfile(post_select):
-        print("Running post-select script.")
-        call([post_select, cocos.basepath(), config.apptype])
 
 def install_ios_dependencies(networks, project, cocos, stage):
     # Add mediation networks to Podfile
@@ -134,9 +128,6 @@ def configure_ios_targets(project, source, cocos):
     interpolator.interpolate("templates/project/config.lua", "src/config.lua", interpolate_projectconfig)
     interpolator.interpolate("stage/project.pbxproj", "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj", interpolate_iospbxproj)
 
-    # Open mediation.json config file
-    # Create Mediation.lua in game/
-
     # @todo Cleanup stage directory
 
     # @todo The orientation config may need to be specific to files so that
@@ -145,21 +136,18 @@ def configure_ios_targets(project, source, cocos):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Upstart Game Framework - Configure a project to build for specific version of Cocos2d-x")
-    parser.add_argument('project', help="The project name to configure")
+    parser = argparse.ArgumentParser(description="Upstart Game Framework - Configures a project into a Cocos2d-x project")
     parser.add_argument('configure', help="Configuration processes to perform on project", nargs="*", default=["all"])
-    parser.add_argument('--app-type', help="The type of project (i.e. free, premium) This determines which config and resource files to copy", default=None)
     args = parser.parse_args()
 
-    config = Config.load(configpath(), args.project, args.app_type and args.app_type or "")
-    config.save(configpath())
+    config = Config.load(configpath())
+    checkconfig(config)
 
     source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
-    print("Project: {} v{} b{}".format(project.name, project.version, project.build))
 
     valid_configure_options = ["all", "dependencies"]
     for option in args.configure:
@@ -172,7 +160,3 @@ if __name__ == "__main__":
     elif "all" in args.configure:
         configure_ios_targets(project, source, cocos)
         configure_dependencies(project, source, cocos)
-        call(["ugf-copy"])
-        # Update a compile time script that will call this script with the currently selected project before build
-        # so that all of the latest code is copied. (???)
-        run_post_select(config, source, cocos)
