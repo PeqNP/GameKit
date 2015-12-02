@@ -5,16 +5,22 @@ require "bridge.Bridge"
 require "bridge.modules.ad"
 require "ad.response.AdCacheResponse"
 require "ad.response.AdCompleteResponse"
+require "ad.Ad"
+require "ad.networks.AdColonyNetwork"
 
 describe("modules.ad", function()
     local subject
     local bridge
     local call
+    local network
     local payload
     local response
 
     before_each(function()
         payload = {}
+        network = AdColonyNetwork("id", {Ad()})
+        stub(network, "getConfig", payload)
+
         response = {}
 
         bridge = Bridge()
@@ -32,7 +38,7 @@ describe("modules.ad", function()
         before_each(function()
             response = {success=true, tokens={1, 2}}
             stub(bridge, "send", response)
-            r = subject.register(payload)
+            r = subject.register(network)
         end)
 
         it("should have sent correct request", function()
@@ -69,7 +75,7 @@ describe("modules.ad", function()
         before_each(function()
             response = {success=false, error="An error"}
             stub(bridge, "send", response)
-            r = subject.register(payload)
+            r = subject.register(network)
         end)
 
         it("should have sent correct request", function()

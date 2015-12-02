@@ -6,7 +6,8 @@ AdNetworkModule = Class()
 AdNetworkModule.abstract(Protocol(
     -- Return the ID of the network
     Method("getAdNetwork")
-    -- Return config used to initialize network module.
+    -- Return dictionary that represents the ad network. The dict must conform to the
+    -- protocol for registering networks as defined in bridge.modules.ad.register().
   , Method("getConfig")
     -- Returns the ad network ID used by this module.
   , Method("getName")
