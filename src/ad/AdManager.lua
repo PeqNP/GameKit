@@ -109,12 +109,12 @@ function AdManager.new(self)
 
     function self.registerNetwork(network)
         local response = adaptor.register(network)
-        if not response.success then
-            return false, AdError(100, string.format("Failed to register the %s network", network.getName()), response.error)
+        if not response.isSuccess() then
+            return false, AdError(100, string.format("Failed to register the %s network", network.getName()), response.getError())
         end
         -- Map token to respective ad.
         local ads = network.getAds()
-        for i, token in ipairs(response.tokens) do
+        for i, token in ipairs(response.getTokens()) do
             local ad = ads[i]
             ad.setToken(token)
             self.registerAd(ad)

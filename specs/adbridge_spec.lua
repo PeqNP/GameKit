@@ -30,7 +30,7 @@ describe("modules.ad", function()
         local r
 
         before_each(function()
-            response = {success=true, ads={{token=1, zoneid="zoneid1"}, {token=2, zoneid="zoneid2"}}}
+            response = {success=true, tokens={1, 2}}
             stub(bridge, "send", response)
             r = subject.register(payload)
         end)
@@ -47,32 +47,27 @@ describe("modules.ad", function()
             assert.truthy(r.isSuccess())
         end)
 
-        it("should have created two ads", function()
-            local ads = r.getAds()
-            assert.equals(2, #ads)
+        it("should have created two tokens", function()
+            local tokens = r.getTokens()
+            assert.equals(2, #tokens)
         end)
 
-        it("should have created ad 1 correctly", function()
-            local ads = r.getAds()
-            local ad = ads[1]
-            assert.truthy(ad)
-            assert.equals(AdToken, ad.getClass())
-            assert.equals(1, ad.getToken())
-            assert.equals("zoneid1", ad.getZoneId())
+        it("should have created ad token 1 correctly", function()
+            local tokens = r.getTokens()
+            local token = tokens[1]
+            assert.equals(1, token)
         end)
 
-        it("should have created ad 2 correctly", function()
-            local ads = r.getAds()
-            local ad = ads[2]
-            assert.equals(AdToken, ad.getClass())
-            assert.equals(2, ad.getToken())
-            assert.equals("zoneid2", ad.getZoneId())
+        it("should have created ad token 2 correctly", function()
+            local tokens = r.getTokens()
+            local token = tokens[2]
+            assert.equals(2, token)
         end)
     end)
 
     context("failed register", function()
         before_each(function()
-            response = {success=false}
+            response = {success=false, error="An error"}
             stub(bridge, "send", response)
             r = subject.register(payload)
         end)
@@ -89,9 +84,13 @@ describe("modules.ad", function()
             assert.falsy(r.isSuccess())
         end)
 
-        it("should not have created any ads", function()
-            local ads = r.getAds()
-            assert.equals(0, #ads)
+        it("should not have created any tokens", function()
+            local tokens = r.getTokens()
+            assert.equals(0, #tokens)
+        end)
+
+        it("should have an error", function()
+            assert.equals("An error", r.getError())
         end)
     end)
 

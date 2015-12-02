@@ -18,18 +18,6 @@ end
 
 -- Send
 
-local function getAdTokens(response)
-    if not response.ads then
-        return {}
-    end
-    local ads = {}
-    for _, ad in ipairs(response.ads) do
-        local a = AdToken(ad.token, ad.zoneid)
-        table.insert(ads, a)
-    end
-    return ads
-end
-
 local function getAdResponse(response)
     return AdResponse(response.success, response.error)
 end
@@ -40,13 +28,13 @@ end
 -- A typical request looks like:
 -- {network: "AdColony", appid: "vcz-123456789", ads: [{"type": AdType.Interstitial, "zoneid": "abcd-12345"}]}
 --
--- @return dictionary{success:, error:, ads: [{str token:, str zoneid:} ... ]} List of tokenz/zoneide pairs.
+-- @return AdRegisterResponse
 --
 function ad.register(config)
-    -- success
+    -- @return {success:, (tokens: OR error:)}
     -- ads[] {token:, zoneId}
     local response = bridge.send("ad__register", config)
-    return AdRegisterResponse(response.success, getAdTokens(response))
+    return AdRegisterResponse(response.success, response.tokens and response.tokens or {}, response.error)
 end
 
 function ad.cache(ad)

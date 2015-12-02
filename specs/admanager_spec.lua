@@ -7,6 +7,7 @@ require "ad.Constants"
 require "ad.Ad"
 require "ad.AdManager"
 require "ad.response.AdResponse"
+require "ad.response.AdRegisterResponse"
 require "ad.networks.AdMobNetwork"
 require "ad.networks.AdColonyNetwork"
 require "mediation.MediationAdFactory"
@@ -70,7 +71,7 @@ describe("AdManager", function()
                 bannerAd = adMob.getAds()[1]
                 interstitialAd = adMob.getAds()[2]
 
-                stub(bridge, "register", {success= true, tokens= {100, 200}})
+                stub(bridge, "register", AdRegisterResponse(true, {100, 200}))
                 stub(subject, "registerAd")
 
                 success, _error = subject.registerNetwork(adMob)
@@ -103,7 +104,7 @@ describe("AdManager", function()
                 bannerAd = adMob.getAds()[1]
                 interstitialAd = adMob.getAds()[2]
 
-                stub(bridge, "register", {success= false, error="Info"})
+                stub(bridge, "register", AdRegisterResponse(false, {}, "Info"))
                 stub(subject, "registerAd")
 
                 success, _error = subject.registerNetwork(adMob)
