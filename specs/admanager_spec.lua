@@ -129,7 +129,7 @@ describe("AdManager", function()
         end)
     end)
 
-    describe("registering more than one network at a time", function()
+    context("registering more than one network at a time", function()
         local adColony
         local adMob
 
