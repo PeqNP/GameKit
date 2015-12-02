@@ -15,10 +15,26 @@ Error.mt = {}
 Error.mt.__tostring = Error.tostring
 
 function Error.new(self)
+    local code
+    local message
+    local info
+
     function self.init(c, m, i)
-        self.code = c
-        self.message = m
-        self.info = i
+        code = c
+        message = m
+        info = i
+    end
+
+    function self.getCode()
+        return code
+    end
+
+    function self.getMessage()
+        return message
+    end
+
+    function self.getInfo()
+        return info
     end
 
     setmetatable(self, Error.mt)

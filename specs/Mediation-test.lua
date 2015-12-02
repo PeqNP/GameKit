@@ -7,12 +7,10 @@ require "ad.Constants"
 require "ad.Ad"
 require "ad.networks.AdColonyNetwork"
 require "ad.networks.AdMobNetwork"
-require "ad.networks.LeadboltNetwork"
 
 local networks = {
-    AdColonyNetwork("appd2f131e997a94cbbb5", {Ad(AdType.Video, "vze8bed504d05a4e36bd", 0)}),
-    AdMobNetwork({Ad(AdType.Banner, "ca-app-pub-4086587270747424/9041395833", 0), Ad(AdType.Interstitial, "ca-app-pub-4086587270747424/5955001833", 0)}),
-    LeadboltNetwork("rm90vG8w032MztDkFPAsEWGuEWpqjoDx", {Ad(AdType.Interstitial, None, 0), Ad(AdType.Video, None, 0)})
+    AdColonyNetwork("appd2f131e997a94cbbb5", {Ad(AdType.Video, "video-zone", 0)}),
+    AdMobNetwork({Ad(AdType.Banner, "banner-zone", 0), Ad(AdType.Interstitial, "interstitial-zone", 0)})
 }
 return networks
     

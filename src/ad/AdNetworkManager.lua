@@ -19,7 +19,7 @@ function AdNetworkManager.new(self)
 
     function self.registerNetworks()
         for _, network in ipairs(networks) do
-            bridge.register()
+            bridge.register(network)
         end
     end
 end

@@ -8,6 +8,7 @@ require("Logger")
 require("Promise")
 require("ad.Constants")
 require("ad.AdRequest")
+require("ad.AdError")
 
 AdManager = Class()
 
@@ -98,6 +99,27 @@ function AdManager.new(self)
 
     function self.getRequests()
         return requests
+    end
+
+    function self.registerNetworks(networks)
+        for _, network in ipairs(networks) do
+            self.registerNetwork(network)
+        end
+    end
+
+    function self.registerNetwork(network)
+        local response = adaptor.register(network)
+        if not response.success then
+            return false, AdError(100, string.format("Failed to register the %s network", network.getName()), response.error)
+        end
+        -- Map token to respective ad.
+        local ads = network.getAds()
+        for i, token in ipairs(response.tokens) do
+            local ad = ads[i]
+            ad.setToken(token)
+            self.registerAd(ad)
+        end
+        return true
     end
 
     --

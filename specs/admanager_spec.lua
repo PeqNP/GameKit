@@ -14,6 +14,11 @@ require "mediation.MediationAdConfig"
 
 local match = require("luassert.match")
 
+function reload(pckg)
+    package.loaded[pckg] = nil
+    return require(pckg)
+end
+
 function Ad.init4(adNetwork, adType, zoneId, reward, token)
     local ad = Ad(adType, zoneId, reward)
     ad.setAdNetwork(adNetwork)
@@ -52,7 +57,99 @@ describe("AdManager", function()
         assert.falsy(subject.getError())
     end)
 
-    describe("adding network modules", function()
+    context("when registering networks", function()
+        local adMob
+        local bannerAd
+        local interstitialAd
+        local success, _error
+
+        context("when the network is successfully registered", function()
+            before_each(function()
+                networks = reload("specs.Mediation-test")
+                adMob = networks[2]
+                bannerAd = adMob.getAds()[1]
+                interstitialAd = adMob.getAds()[2]
+
+                stub(bridge, "register", {success= true, tokens= {100, 200}})
+                stub(subject, "registerAd")
+
+                success, _error = subject.registerNetwork(adMob)
+            end)
+
+            it("should have returned a response", function()
+                assert.truthy(success)
+                assert.falsy(_error)
+            end)
+
+            it("should have registered all of the networks", function()
+                assert.stub(bridge.register).was.called_with(adMob)
+            end)
+
+            it("should have associated tokens to respective ads", function()
+                assert.equals(100, bannerAd.getToken())
+                assert.equals(200, interstitialAd.getToken())
+            end)
+
+            it("should have registered all ads", function()
+                assert.stub(subject.registerAd).was.called_with(bannerAd)
+                assert.stub(subject.registerAd).was.called_with(interstitialAd)
+            end)
+        end)
+
+        context("when the networks fails to be registered", function()
+            before_each(function()
+                networks = reload("specs.Mediation-test")
+                adMob = networks[2]
+                bannerAd = adMob.getAds()[1]
+                interstitialAd = adMob.getAds()[2]
+
+                stub(bridge, "register", {success= false, error="Info"})
+                stub(subject, "registerAd")
+
+                success, _error = subject.registerNetwork(adMob)
+            end)
+
+            it("should return correct response", function()
+                assert.falsy(success)
+                assert.equals(AdError, _error.getClass())
+                assert.equals(100, _error.getCode())
+                assert.equals("Failed to register the AdMob network", _error.getMessage())
+                assert.equals("Info", _error.getInfo())
+            end)
+
+            it("should NOT have associated tokens to respective ads", function()
+                assert.falsy(bannerAd.getToken())
+                assert.falsy(interstitialAd.getToken())
+            end)
+
+            it("should have registered all ads", function()
+                assert.stub(subject.registerAd).was_not.called_with(bannerAd)
+                assert.stub(subject.registerAd).was_not.called_with(interstitialAd)
+            end)
+        end)
+    end)
+
+    describe("registering more than one network at a time", function()
+        local adColony
+        local adMob
+
+        before_each(function()
+            networks = reload("specs.Mediation-test")
+            adColony = networks[1]
+            adMob = networks[2]
+
+            stub(subject, "registerNetwork")
+
+            subject.registerNetworks(networks)
+        end)
+
+        it("should have registered all networks", function()
+            assert.stub(subject.registerNetwork).was.called_with(adColony)
+            assert.stub(subject.registerNetwork).was.called_with(adMob)
+        end)
+    end)
+
+    describe("adding ad modules", function()
         local requests
         local adi
         local requesti
