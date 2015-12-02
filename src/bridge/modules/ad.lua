@@ -41,26 +41,28 @@ end
 --
 -- Cache an ad.
 --
--- @param Ad
+-- @param int token
 --
 -- @return AdResponse
 --
-function ad.cache(ad)
+function ad.cache(token)
     -- @return {success:, error:}
-    local response, call = bridge.sendAsync("ad__cache", ad)
+    local payload = {token= token}
+    local response, call = bridge.sendAsync("ad__cache", payload)
     return getAdResponse(response), call
 end
 
 --
 -- Show an ad.
 --
--- @param Ad
+-- @param int token
 --
 -- @return AdResponse
 --
-function ad.show(ad)
+function ad.show(token)
     -- @return {success:, error:}
-    local response, call = bridge.sendAsync("ad__show", ad)
+    local payload = {token= token}
+    local response, call = bridge.sendAsync("ad__show", payload)
     return getAdResponse(response), call
 end
 
