@@ -5,10 +5,31 @@ require "bridge.Bridge"
 require "bridge.modules.ad"
 require "ad.response.AdCacheResponse"
 require "ad.response.AdCompleteResponse"
-require "ad.Ad"
 require "ad.networks.AdColonyNetwork"
 
 local match = require("luassert.match")
+
+local function is_equal(state, arguments)
+    local expected = arguments[1]
+    return function(value)
+        return table.equals(expected, value)
+    end
+end
+
+assert:register("matcher", "equal", is_equal)
+
+Ad = Class()
+function Ad.new(self)
+    local token
+    function self.init(_token)
+        token = _token
+    end
+    function self.getToken()
+        return token
+    end
+    function self.setAdNetwork(network)
+    end
+end
 
 describe("modules.ad", function()
     local subject
@@ -109,11 +130,11 @@ describe("modules.ad", function()
         before_each(function()
             response = {success=true}
             stub(bridge, "sendAsync", response, call)
-            r, c = subject.cache(1)
+            r, c = subject.cache(Ad(1))
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.sendAsync).was.called_with("ad__cache", match._)
+            assert.stub(bridge.sendAsync).was.called_with("ad__cache", match.is_equal({token= 1}))
         end)
 
         it("should have returned the BridgeCall", function()
@@ -136,11 +157,11 @@ describe("modules.ad", function()
         before_each(function()
             response = {success=false, error="An error"}
             stub(bridge, "sendAsync", response, call)
-            r, c = subject.cache(2)
+            r, c = subject.cache(Ad(2))
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.sendAsync).was.called_with("ad__cache", match._)
+            assert.stub(bridge.sendAsync).was.called_with("ad__cache", match.is_equal({token= 2}))
         end)
 
         it("should have returned the BridgeCall", function()
@@ -167,11 +188,11 @@ describe("modules.ad", function()
         before_each(function()
             response = {success=true}
             stub(bridge, "sendAsync", response, call)
-            r, c = subject.show(3)
+            r, c = subject.show(Ad(3))
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.sendAsync).was.called_with("ad__show", match._)
+            assert.stub(bridge.sendAsync).was.called_with("ad__show", match.is_equal({token= 3}))
         end)
 
         it("should have returned the BridgeCall", function()
@@ -194,7 +215,7 @@ describe("modules.ad", function()
         before_each(function()
             response = {success=false, error="An error"}
             stub(bridge, "sendAsync", response, call)
-            r, c = subject.show(4)
+            r, c = subject.show(Ad(4))
         end)
 
         it("should have returned the BridgeCall", function()
@@ -202,7 +223,7 @@ describe("modules.ad", function()
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.sendAsync).was.called_with("ad__show", match._)
+            assert.stub(bridge.sendAsync).was.called_with("ad__show", match.is_equal({token= 4}))
         end)
 
         it("should have returned the bridge's response", function()

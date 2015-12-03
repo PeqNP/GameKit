@@ -114,5 +114,55 @@ describe("Signal", function()
             assert.equals("lua", parts[2])
         end)
     end)
+
+    describe("table.quals", function()
+        it("should be equal for hashes", function()
+            local t1 = {key= "value", key2= 1}
+            local t2 = {key= "value", key2= 1}
+            assert.truthy(table.equals(t1, t2))
+        end)
+        
+        it("should be equal for hashes even if the values are in different positions", function()
+            local t1 = {key= "value", key2= 1}
+            local t2 = {key2= 1, key= "value"}
+            assert.truthy(table.equals(t1, t2))
+        end)
+
+        it("should be equal for arrays that have the same values in the same position", function()
+            local t1 = {"value", 1}
+            local t2 = {"value", 1}
+            assert.truthy(table.equals(t1, t2))
+        end)
+
+        it("should NOT be equal for arrays that have the same values but different positions", function()
+            local t1 = {"value", 1}
+            local t2 = {1, "value"}
+            assert.falsy(table.equals(t1, t2))
+        end)
+
+        it("should be equal for tables within tables", function()
+            local t1 = {"value", 1, {key="value", key2=4}}
+            local t2 = {"value", 1, {key="value", key2=4}}
+            assert.truthy(table.equals(t1, t2))
+        end)
+
+        it("should NOT be equal for tables within tables when the values are different", function()
+            local t1 = {1, "value", {key="value", key2=4}}
+            local t2 = {"value", 1, {key="value", key2=4}}
+            assert.falsy(table.equals(t1, t2))
+        end)
+
+        it("should be equal with mixed tables so long as it matches Lua's internal table definition", function()
+            local t1 = {key=1, "value"}
+            local t2 = {"value", key=1}
+            assert.truthy(table.equals(t1, t2))
+        end)
+
+        it("should NOT be equal with mixed tables whehn the values don't line up to Lua's internal table definition", function()
+            local t1 = {key=1, 2, "value"}
+            local t2 = {"value", 2, key=1}
+            assert.falsy(table.equals(t1, t2))
+        end)
+    end)
 end)
 

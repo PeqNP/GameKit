@@ -45,9 +45,9 @@ end
 --
 -- @return AdResponse
 --
-function ad.cache(token)
+function ad.cache(ad)
     -- @return {success:, error:}
-    local payload = {token= token}
+    local payload = {token= ad.getToken()}
     local response, call = bridge.sendAsync("ad__cache", payload)
     return getAdResponse(response), call
 end
@@ -59,9 +59,9 @@ end
 --
 -- @return AdResponse
 --
-function ad.show(token)
+function ad.show(ad)
     -- @return {success:, error:}
-    local payload = {token= token}
+    local payload = {token= ad.getToken()}
     local response, call = bridge.sendAsync("ad__show", payload)
     return getAdResponse(response), call
 end

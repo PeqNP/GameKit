@@ -133,6 +133,19 @@ function table.extend(table1, table2)
     end
 end
 
+function table.equals(t1, t2)
+    for k, v in ipairs(t1) do
+        if type(v) == "table" then
+            if not table.equals(v, t2[k]) then
+                return false
+            end
+        elseif t2[k] ~= v then
+            return false
+        end
+    end
+    return true
+end
+
 integer = {}
 
 --[[ Check if an integer/float value is between two values.
