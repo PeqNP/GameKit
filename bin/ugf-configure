@@ -14,7 +14,7 @@ import shutil
 import sys
 
 from ugf.config import configpath, checkconfig, Config, ProjectConfig
-from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder
+from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder, AdKitPathBuilder
 from ugf.interpolator import Interpolator
 from ugf.mediation import load_mediation_config, pods_for_networks, lua_for_networks
 
@@ -65,6 +65,29 @@ def install_ios_dependencies(networks, project, cocos, stage):
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/ios/Podfile", "frameworks/runtime-src/proj.ios_mac/Podfile")
 
+# Copies AdKit source files for only the mediation networks that have been selected.
+def copy_adkit_sources(networks, cocos, adkit):
+    # Copy entire directory to Frameworks
+    adkitsrc = adkit.sourcedir()
+    if not os.path.isdir(adkitsrc):
+        raise Exception("AdKit source files are expected to be at '{}'".format(adkitsrc))
+    adkitdest = cocos.iosframeworkspath("AdKit")
+    if os.path.isdir(adkitdest):
+        shutil.rmtree(adkitdest)
+    shutil.copytree(adkitsrc, adkitdest)
+    # Remove any network folder that is not in the list of frameworks for this project.
+    networkdir = os.path.join(adkitdest, "Networks")
+    availNetworks = os.listdir(networkdir)
+    for network in availNetworks:
+        found = None
+        for n in networks:
+            if network == n.name:
+                found = network
+                break
+        if not found:
+            removepath = os.path.join(networkdir, network)
+            shutil.rmtree(removepath)
+
 def create_lua_mediation(networks, cocos):
     lua_networks = lua_for_networks(networks)
     lua_require = []
@@ -88,14 +111,18 @@ return networks
     fh.write(lua)
     fh.close()
 
-def configure_dependencies(project, source, cocos):
+def load_networks(source, platform):
+    path = source.mediationpath(platform)
+    return load_mediation_config(path)
+
+def configure_dependencies(project, source, cocos, adkit):
     stage = StagePathBuilder(cocos.basepath())
     if not os.path.exists(stage.basepath()):
         os.makedirs(stage.basepath())
-    path = source.mediationpath("ios")
-    networks = load_mediation_config(path)
+    networks = load_networks(source, "ios")
     install_ios_dependencies(networks, project, cocos, stage)
     create_lua_mediation(networks, cocos)
+    copy_adkit_sources(networks, cocos, adkit)
 
 # Select and make 'project' the active project.
 def configure_ios_targets(project, source, cocos):
@@ -154,10 +181,11 @@ if __name__ == "__main__":
     source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
+    adkit = AdKitPathBuilder(config)
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
 
-    valid_configure_options = ["all", "dependencies"]
+    valid_configure_options = ["all", "dependencies", "adkit"]
     for option in args.configure:
         if option not in valid_configure_options:
             print("Invalid configure option '{}'. Valid options are: {}".format(option, ", ".join(valid_configure_options)))
@@ -165,6 +193,9 @@ if __name__ == "__main__":
 
     if "dependencies" in args.configure:
         configure_dependencies(project, source, cocos)
+    elif "adkit" in args.configure:
+        networks = load_networks(source, "ios")
+        copy_adkit_sources(networks, cocos, adkit)
     elif "all" in args.configure:
         configure_ios_targets(project, source, cocos)
-        configure_dependencies(project, source, cocos)
+        configure_dependencies(project, source, cocos, adkit)

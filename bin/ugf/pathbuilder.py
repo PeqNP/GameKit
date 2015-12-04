@@ -27,6 +27,12 @@ class CocosPathBuilder (object):
     def podfilepath(self):
         return self.path("frameworks/runtime-src/proj.ios_mac/Podfile")
 
+    def iosframeworksdir(self):
+        return self.path("frameworks/runtime-src/proj.ios_mac/Frameworks")
+
+    def iosframeworkspath(self, path):
+        return os.path.join(self.iosframeworksdir(), path)
+
 class StagePathBuilder (object):
     def __init__(self, cocospath):
         self.cocospath = cocospath
@@ -67,3 +73,19 @@ class ProjectPathBuilder (object):
         if not platform or len(platform) < 1:
             raise Exception("'platform' must be a string with a length greater than one.")
         return self.path("platform/{}/mediation.json".format(platform))
+
+# AdKit project path builder.
+class AdKitPathBuilder (object):
+    # @param Config
+    # @param str - project name
+    def __init__(self, config):
+        self.config = config
+
+    def basepath(self):
+        return os.path.join(self.config.basepath, "AdKit")
+
+    def path(self, path):
+        return os.path.join(self.basepath(), path)
+
+    def sourcedir(self):
+        return self.path("AdKit")
