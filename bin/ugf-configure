@@ -59,7 +59,8 @@ def install_ios_dependencies(networks, project, cocos, stage):
     # Add mediation networks to Podfile
     pods = pods_for_networks(networks)
     keys = {
-        "##UGF-MEDIATION-DEPENDENCIES##": "    " + "\n    ".join(pods)
+        "##UGF-EXECUTABLE##": project.executable
+      , "##UGF-MEDIATION-DEPENDENCIES##": "    " + "\n    ".join(pods)
     }
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/ios/Podfile", "frameworks/runtime-src/proj.ios_mac/Podfile")
