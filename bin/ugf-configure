@@ -6,7 +6,7 @@
 #
 
 from datetime import datetime
-from subprocess  import call
+from subprocess import call
 
 import os
 import re
@@ -87,6 +87,8 @@ def copy_adkit_sources(networks, cocos, adkit):
         if not found:
             removepath = os.path.join(networkdir, network)
             shutil.rmtree(removepath)
+    os.chdir(cocos.iosmacprojpath())
+    call(["./add_adkit_files.rb"])
 
 def create_lua_mediation(networks, cocos):
     lua_networks = lua_for_networks(networks)

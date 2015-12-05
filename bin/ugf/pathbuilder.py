@@ -18,7 +18,7 @@ class CocosPathBuilder (object):
     def path(self, path):
         return os.path.join(self.basepath(), path)
 
-    def iosmacprojpath(self, path):
+    def iosmacprojpath(self, path=None):
         iosmacprojpath = self.path("frameworks/runtime-src/proj.ios_mac") 
         if path:
             return os.path.join(iosmacprojpath, path)
