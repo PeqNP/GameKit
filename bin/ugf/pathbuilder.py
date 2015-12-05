@@ -18,6 +18,12 @@ class CocosPathBuilder (object):
     def path(self, path):
         return os.path.join(self.basepath(), path)
 
+    def iosmacprojpath(self, path):
+        iosmacprojpath = self.path("frameworks/runtime-src/proj.ios_mac") 
+        if path:
+            return os.path.join(iosmacprojpath, path)
+        return iosmacprojpath
+
     def iosprojectpath(self):
         return self.path("frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj")
 
@@ -25,13 +31,7 @@ class CocosPathBuilder (object):
         return self.path("src/Mediation-{}.lua".format(platform))
 
     def podfilepath(self):
-        return self.path("frameworks/runtime-src/proj.ios_mac/Podfile")
-
-    def iosframeworksdir(self):
-        return self.path("frameworks/runtime-src/proj.ios_mac/Frameworks")
-
-    def iosframeworkspath(self, path):
-        return os.path.join(self.iosframeworksdir(), path)
+        return self.iosmacprojpath("Podfile")
 
 class StagePathBuilder (object):
     def __init__(self, cocospath):

@@ -71,7 +71,7 @@ def copy_adkit_sources(networks, cocos, adkit):
     adkitsrc = adkit.sourcedir()
     if not os.path.isdir(adkitsrc):
         raise Exception("AdKit source files are expected to be at '{}'".format(adkitsrc))
-    adkitdest = cocos.iosframeworkspath("AdKit")
+    adkitdest = cocos.iosmacprojpath("AdKit")
     if os.path.isdir(adkitdest):
         shutil.rmtree(adkitdest)
     shutil.copytree(adkitsrc, adkitdest)
