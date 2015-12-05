@@ -168,7 +168,7 @@ if __name__ == "__main__":
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
 
-    operations = ["mediation", "lua", "adkit", "projects"]
+    operations = ["mediation", "lua", "adkit", "project"]
     valid_operations = ["all"] + operations
     for option in args.operations:
         if option not in valid_operations:
@@ -202,4 +202,4 @@ if __name__ == "__main__":
             copy_adkit_sources(networks, cocos, adkit)
 
     if "project" in options:
-        configure_ios_targets(project, source, cocos)
+        configure_ios_targets(project, source, cocos, stage)
