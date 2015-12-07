@@ -50,7 +50,6 @@ class Ad (object):
     def toLua(self):
         return "Ad({}, {}, {})".format(LUA_AD_TYPES[self.type], quote(self.zoneId), self.reward and self.reward or "0")
 
-
 def pods_for_networks(networks):
     pods = []
     for network in networks:

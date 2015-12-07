@@ -90,6 +90,16 @@ def copy_adkit_sources(networks, cocos, adkit):
     os.chdir(cocos.iosmacprojpath())
     call(["./add_adkit_files.rb"])
 
+def create_supported_networks_header(networks, cocos):
+    defines = []
+    for network in networks:
+        defines.append("#define UGF_{}".format(network.name))
+    keys = {
+        "##UGF-MEDIATION-DEPENDENCIES##": "\n".join(defines)
+    }
+    interpolator = Interpolator(project, cocos, stage, keys)
+    interpolator.interpolate("templates/project/ios/SupportedNetworks.h", cocos.iosmacprojpath("AdKit/GameTools/SupportedNetworks.h"))
+
 def create_lua_mediation(networks, cocos):
     lua_networks = lua_for_networks(networks)
     lua_require = []
@@ -200,6 +210,7 @@ if __name__ == "__main__":
             create_lua_mediation(networks, cocos)
         if "adkit" in options:
             copy_adkit_sources(networks, cocos, adkit)
+            create_supported_networks_header(networks, cocos)
 
     if "project" in options:
         configure_ios_targets(project, source, cocos, stage)
