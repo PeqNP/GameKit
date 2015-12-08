@@ -7,13 +7,12 @@ describe("Ad", function()
     local subject
 
     before_each(function()
-        subject = Ad(AdType.Interstitial, "MyZoneId", 30)
+        subject = Ad(AdType.Interstitial, "MyZoneId")
     end)
 
     it("should have set properties", function()
         assert.equals(AdType.Interstitial, subject.getAdType())
         assert.equals("MyZoneId", subject.getZoneId())
-        assert.equals(30, subject.getReward())
     end)
 
     describe("setting the network", function()

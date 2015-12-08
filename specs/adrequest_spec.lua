@@ -10,7 +10,7 @@ describe("AdRequest", function()
     local ad
 
     before_each(function()
-        ad = Ad(AdType.Interstitial, "zone", 25)
+        ad = Ad(AdType.Interstitial, "zone")
         ad.setAdNetwork(AdNetwork.AdMob)
         ad.setToken("token")
         subject = AdRequest(ad)
@@ -35,11 +35,6 @@ describe("AdRequest", function()
     it("should return the correct zone", function()
         assert.truthy(subject.getZoneId()) -- sanity. Make sure it is a value and not nil.
         assert.equal("zone", subject.getZoneId())
-    end)
-
-    it("should return the correct reward", function()
-        assert.truthy(subject.getReward()) -- sanity. Make sure it is a value and not nil.
-        assert.equal(25, subject.getReward())
     end)
 
     it("should return the correct token", function()

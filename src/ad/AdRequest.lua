@@ -40,10 +40,6 @@ function AdRequest.new(self)
         return ad.getZoneId()
     end
 
-    function self.getReward()
-        return ad.getReward()
-    end
-
     function self.getToken()
         return ad.getToken()
     end
