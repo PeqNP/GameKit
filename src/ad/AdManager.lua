@@ -23,6 +23,7 @@ function AdManager.new(self)
     local _error
     local requests = {}
     local private = {}
+    --local cachedNextAd
 
     function self.init(_adaptor, _adFactory)
         adaptor = _adaptor
@@ -151,7 +152,7 @@ function AdManager.new(self)
         return false
     end
 
-    function private.getRequestsForType(adType)
+    function private.getAdRequestsForType(adType)
         local _requests = {}
         for _, request in ipairs(requests) do
             if request.getAdType() == adType then
@@ -177,13 +178,42 @@ function AdManager.new(self)
         return promise
     end
 
-    function private.showFirstAvailableAd(adType, _requests)
+    function private.getFirstAvailableAdRequest(_requests)
         for _, request in ipairs(_requests) do
             if request.getState() == AdState.Ready then
-                return private.showAdForRequest(request)
+                return request
             end
         end
         return nil
+    end
+
+    -- Returns the respective AdRequest, for the given Ad, if the request
+    -- is ready to show.
+    function private.getAdRequestForAd(ad, _requests)
+        for _, request in ipairs(_requests) do
+            if request.getAdNetwork() == ad.getAdNetwork() and request.getState() == AdState.Ready then
+                return request
+            end
+        end
+        return nil
+    end
+
+    function self.getNextAdRequest(adType)
+        local _requests = private.getAdRequestsForType(adType)
+        if not adFactory then
+            return private.getFirstAvailableAdRequest(_requests)
+        end
+        -- Attempt to get the previously cached ad type until we can show it?
+        --local nextAd = cachedNextAd and cachedNextAd or adFactory.nextAd(adType)
+        local nextAd = adFactory.nextAd(adType)
+        if nextAd then
+            local request = private.getAdRequestForAd(nextAd, _requests)
+            if request then -- No ad reqeusts, for this given ad type, are available.
+                --cachedNextAd = nil
+                return request
+            end
+        end
+        return private.getFirstAvailableAdRequest(_requests)
     end
 
     --
@@ -194,20 +224,11 @@ function AdManager.new(self)
     -- @return boolean - true when a message is sent to native land to show the ad.
     --
     function self.showAd(adType)
-        local _requests = private.getRequestsForType(adType)
-        if not adFactory then
-            return private.showFirstAvailableAd(adType, _requests)
+        local request = self.getNextAdRequest(adType)
+        if request then
+            return private.showAdForRequest(request)
         end
-        local nextAd = adFactory.nextAd(adType)
-        if nextAd then
-            -- Show the request for this specific network.
-            for _, request in ipairs(_requests) do
-                if request.getAdNetwork() == nextAd.getAdNetwork() and request.getState() == AdState.Ready then
-                    return private.showAdForRequest(request)
-                end
-            end
-        end
-        return private.showFirstAvailableAd(adType, _requests)
+        return nil
     end
 
     function self.getError()
