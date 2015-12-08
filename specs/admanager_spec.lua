@@ -502,7 +502,7 @@ describe("AdManager when no ad factory", function()
             assert.equals(0, #requests)
         end)
 
-        it("should have displayed an AdMob interstitial ad", function()
+        it("should NOT have displayed an AdMob interstitial ad", function()
             assert.falsy(subject.showAd(AdType.Interstitial))
         end)
     end)

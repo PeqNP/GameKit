@@ -216,6 +216,13 @@ function AdManager.new(self)
         return private.getFirstAvailableAdRequest(_requests)
     end
 
+    function self.showAdRequest(request)
+        if request then
+            return private.showAdForRequest(request)
+        end
+        return nil
+    end
+
     --
     -- Show an ad type.
     --
@@ -225,10 +232,7 @@ function AdManager.new(self)
     --
     function self.showAd(adType)
         local request = self.getNextAdRequest(adType)
-        if request then
-            return private.showAdForRequest(request)
-        end
-        return nil
+        return self.showAdRequest(request)
     end
 
     function self.getError()
