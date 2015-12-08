@@ -11,14 +11,16 @@ function MediationAdConfig.new(self)
     local adType
     local adImpressionType
     local frequency
-    local reward
+    local impression
+    local click
 
-    function self.init(_adNetwork, _adType, _adImpressionType, _frequency, _reward)
+    function self.init(_adNetwork, _adType, _adImpressionType, _frequency, _impression, _click)
         adNetwork = _adNetwork
         adType = _adType
         adImpressionType = _adImpressionType
         frequency = _frequency
-        reward = _reward
+        impression = _impression
+        click = _click
     end
 
     function self.getAdNetwork()
@@ -37,8 +39,12 @@ function MediationAdConfig.new(self)
         return frequency
     end
 
-    function self.getReward()
-        return reward
+    function self.getRewardForImpression()
+        return impression
+    end
+
+    function self.getRewardForClick()
+        return click
     end
 end
 
@@ -48,6 +54,7 @@ function MediationAdConfig.fromDictionary(dict)
       , dict["adtype"]
       , dict["adimpressiontype"]
       , dict["frequency"]
-      , dict["reward"]
+      , dict["impression"]
+      , dict["click"]
     )
 end
