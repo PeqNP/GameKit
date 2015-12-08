@@ -201,7 +201,7 @@ function AdManager.new(self)
     function self.getNextAdRequest(adType)
         local _requests = private.getAdRequestsForType(adType)
         if not adFactory then
-            return private.getFirstAvailableAdRequest(_requests)
+            return private.getFirstAvailableAdRequest(_requests), false
         end
         -- Attempt to get the previously cached ad type until we can show it?
         --local nextAd = cachedNextAd and cachedNextAd or adFactory.nextAd(adType)
@@ -210,10 +210,10 @@ function AdManager.new(self)
             local request = private.getAdRequestForAd(nextAd, _requests)
             if request then -- No ad reqeusts, for this given ad type, are available.
                 --cachedNextAd = nil
-                return request
+                return request, nextAd
             end
         end
-        return private.getFirstAvailableAdRequest(_requests)
+        return private.getFirstAvailableAdRequest(_requests), false
     end
 
     function self.showAdRequest(request)

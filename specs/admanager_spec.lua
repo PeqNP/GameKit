@@ -279,6 +279,24 @@ describe("AdManager", function()
                 end)
             end)
 
+            context("when getting the AdMob next request", function()
+                local config
+
+                before_each(function()
+                    local promise = Promise()
+                    stub(bridge, "show", responsei, promise)
+
+                    config = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
+                    stub(adFactory, "nextAd", config)
+                end)
+
+                it("should return the ad config #f", function()
+                    local request, ad = subject.getNextAdRequest(AdType.Interstitial)
+                    assert.equals(AdRequest, request.getClass())
+                    assert.equals(config, ad)
+                end)
+            end)
+
             context("when Leadbolt is configured to be shown but module is not registered", function()
                 local config
 
@@ -293,6 +311,24 @@ describe("AdManager", function()
 
                 it("should show the next available ad type, AdMob", function()
                     assert.stub(bridge.show).was.called_with(requesti)
+                end)
+            end)
+
+            context("when getting the next AdRequest", function()
+                local config
+
+                before_each(function()
+                    local promise = Promise()
+                    stub(bridge, "show", responsei, promise)
+
+                    config = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
+                    stub(adFactory, "nextAd", config)
+                end)
+
+                it("should NOT return the next ad as it doesn't match the config #f", function()
+                    local request, ad = subject.getNextAdRequest(AdType.Interstitial)
+                    assert.equals(AdRequest, request.getClass())
+                    assert.falsy(ad)
                 end)
             end)
         end)
@@ -480,6 +516,20 @@ describe("AdManager when no ad factory", function()
         it("should have displayed an AdMob interstitial ad", function()
             assert.truthy(subject.showAd(AdType.Interstitial))
             assert.spy(bridge.show).was.called_with(request)
+        end)
+
+        it("should return request and no ad", function()
+            local request, ad = subject.getNextAdRequest(AdType.Interstitial)
+            assert.equals(AdRequest, request.getClass())
+            assert.falsy(ad)
+        end)
+
+        context("when the ad type is video (not registered)", function()
+            it("should not return request or ad", function()
+                local request, ad = subject.getNextAdRequest(AdType.Video)
+                assert.falsy(request)
+                assert.falsy(ad)
+            end)
         end)
     end)
 
