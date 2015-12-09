@@ -111,6 +111,19 @@ describe("AdManager", function()
                 assert.stub(subject.registerAd).was.called_with(bannerAd)
                 assert.stub(subject.registerAd).was.called_with(interstitialAd)
             end)
+
+            context("when hiding the banner ad", function()
+                local success, _error
+
+                before_each(function()
+                    stub(adaptor, "hideAd")
+                    success, _error = subject.hideAd(bannerAd)
+                end)
+
+                it("should have made call to hide the ad", function()
+                    assert.stub(adaptor.hideAd).was.called_with(bannerAd)
+                end)
+            end)
         end)
 
         context("when the networks fails to be registered", function()
