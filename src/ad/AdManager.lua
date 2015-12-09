@@ -79,11 +79,13 @@ function AdManager.new(self)
         table.insert(requests, request)
         promise.done(function(response)
             request.setState(AdState.Ready)
+            Log.d("Cached request for network (%s) type (%s)", request.getAdNetwork(), request.getAdType())
         end)
         promise.fail(function(response)
             request.setState(AdState.Complete)
             _error = response.getError()
             private.delayRebuildRequests()
+            Log.d("Failed to cache request for network (%s) type (%s) error (%s)", request.getAdNetwork(), request.getAdType(), _error)
         end)
     end
 
