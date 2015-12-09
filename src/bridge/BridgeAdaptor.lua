@@ -6,7 +6,17 @@ require "Logger"
 
 BridgeAdaptor = Class()
 
-function BridgeAdaptor.new(self, platform, controller, paramFn)
+function BridgeAdaptor.new(self)
+    local platform
+    local controller
+    local paramFn
+
+    function self.init(p, c, pFn)
+        platform = p
+        controller = c
+        paramFn = pFn
+    end
+
     function self.send(method, args, sig)
         local ok, ret = platform.callStaticMethod(controller, method, paramFn(args), sig)
         -- @fixme This needs more definition. The variables returned have no meaning as
@@ -54,6 +64,8 @@ function BridgeAdaptor.getAdaptor(platform)
         platform = require("cocos.cocos2d.luaj")
         controller = "org/cocos2dx/lua/AppActivity"
         paramFn = androidparams
+    else
+        Log.s("Unable to configure BridgeAdaptor for platform '%s'", platform and platform or "None")
     end
 
     return BridgeAdaptor(platform, controller, paramFn)
