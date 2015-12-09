@@ -1,6 +1,9 @@
 require "specs.busted"
 require "specs.Cocos2d-x"
 require "lang.Signal"
+require "Logger"
+
+Log.setLevel(LogLevel.Warning)
 
 require "Common"
 require "ad.Constants"

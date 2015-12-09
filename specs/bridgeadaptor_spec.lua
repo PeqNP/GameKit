@@ -1,4 +1,7 @@
 require "lang.Signal"
+require "Logger"
+
+Log.setLevel(LogLevel.Warning)
 
 require "bridge.BridgeAdaptor"
 
