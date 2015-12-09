@@ -109,7 +109,7 @@ function AdManager.new(self)
     function self.registerNetworks(networks)
         for _, network in ipairs(networks) do
             local success, err = self.registerNetwork(network)
-            Log.d("AdManager.registerNetworks success (%s) err (%s)", success and "true" or "false", err and err.getError() or "None")
+            Log.d("AdManager.registerNetworks success (%s) err (%s)", success and "true" or "false", err and err.getMessage() or "None")
         end
     end
 

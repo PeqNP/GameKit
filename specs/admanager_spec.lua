@@ -9,6 +9,7 @@ require "Common"
 require "ad.Constants"
 require "ad.Ad"
 require "ad.AdManager"
+require "ad.AdError"
 require "ad.response.AdResponse"
 require "ad.response.AdRegisterResponse"
 require "ad.networks.AdMobNetwork"
@@ -155,6 +156,28 @@ describe("AdManager", function()
             adMob = networks[2]
 
             stub(subject, "registerNetwork")
+
+            subject.registerNetworks(networks)
+        end)
+
+        it("should have registered all networks", function()
+            assert.stub(subject.registerNetwork).was.called_with(adColony)
+            assert.stub(subject.registerNetwork).was.called_with(adMob)
+        end)
+    end)
+
+    -- @todo these tests exists only to hit the code that emits the log message.
+    -- In the future this could return a list of errors with the networks.
+    context("when registering more than one network and there is an error", function()
+        local adColony
+        local adMob
+
+        before_each(function()
+            networks = reload("specs.Mediation-test")
+            adColony = networks[1]
+            adMob = networks[2]
+
+            stub(subject, "registerNetwork", false, AdError(100, "admanager_spec failure"))
 
             subject.registerNetworks(networks)
         end)
