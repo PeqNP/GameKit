@@ -162,7 +162,7 @@ function AdManager.new(self)
         return _requests
     end
 
-    function private.showAdForRequest(request)
+    function private.showAdRequest(request)
         local response, promise = adaptor.show(request)
         request.setState(AdState.Presenting)
         promise.done(function(response)
@@ -218,7 +218,7 @@ function AdManager.new(self)
 
     function self.showAdRequest(request)
         if request then
-            return private.showAdForRequest(request)
+            return private.showAdRequest(request)
         end
         return nil
     end

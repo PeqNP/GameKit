@@ -25,44 +25,42 @@ end
 --
 -- Register an ad network and its respective ads with the system.
 --
--- @param AdNetwork
+-- @param id<AdRegisterNetworkRequest>
 --
 -- @return AdRegisterResponse
 --
-function ad.register(network)
+function ad.register(request)
     -- A typical request looks like:
     -- {network: "AdColony", appid: "vcz-123456789", ads: [{"type": AdType.Interstitial, "zoneid": "abcd-12345"}]}
     -- @return {success:, (tokens: OR error:)}
     -- ads[] {token:, zoneId}
-    local response = bridge.send("ad__register", network.getConfig())
+    local response = bridge.send("ad__register", request)
     return AdRegisterResponse(response.success, response.tokens and response.tokens or {}, response.error)
 end
 
 --
 -- Cache an ad.
 --
--- @param int token
+-- @param id<AdRequest>
 --
 -- @return AdResponse
 --
-function ad.cache(ad)
+function ad.cache(request)
     -- @return {success:, error:}
-    local payload = {token= ad.getToken()}
-    local response, call = bridge.sendAsync("ad__cache", payload)
+    local response, call = bridge.sendAsync("ad__cache", request)
     return getAdResponse(response), call
 end
 
 --
 -- Show an ad.
 --
--- @param int token
+-- @param id<AdRequest>
 --
 -- @return AdResponse
 --
-function ad.show(ad)
+function ad.show(request)
     -- @return {success:, error:}
-    local payload = {token= ad.getToken()}
-    local response, call = bridge.sendAsync("ad__show", payload)
+    local response, call = bridge.sendAsync("ad__show", request)
     return getAdResponse(response), call
 end
 

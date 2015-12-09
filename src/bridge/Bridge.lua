@@ -55,7 +55,7 @@ function Bridge.new(self)
     end
 
     function self.send(method, request, sig)
-        return adaptor.send(method, request, sig)
+        return adaptor.send(method, request.toDict(), sig)
     end
 
     --
@@ -66,7 +66,7 @@ function Bridge.new(self)
     -- @return Promise, mixed (response from native layer)
     --
     function self.sendAsync(method, request, sig)
-        local response = adaptor.send(method, request, sig)
+        local response = adaptor.send(method, request.toDict(), sig)
         local req = BridgeCall(request)
         if response then
             table.insert(requests, req)
