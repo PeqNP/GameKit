@@ -48,7 +48,7 @@ describe("AdRequest", function()
     end)
 
     it("should return dictionary with config", function()
-        -- @todo
+        assert.truthy(table.equals({token="token"}, subject.toDict()))
     end)
 
     describe("state", function()

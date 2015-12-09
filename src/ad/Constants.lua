@@ -10,6 +10,7 @@ AdNetwork = enum(1
 )
 
 AdType = enum(1
+  , 'Unknown'
   , 'Banner'
   , 'Interstitial'
   , 'Video'
