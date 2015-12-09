@@ -2,7 +2,7 @@ require "lang.Signal"
 
 require "ad.Constants"
 require "ad.Ad"
-require "ad.AdRequest"
+require "ad.request.AdRequest"
 require "ad.networks.AdMobNetwork"
 
 describe("AdRequest", function()

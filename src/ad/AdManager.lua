@@ -7,7 +7,8 @@
 require("Logger")
 require("Promise")
 require("ad.Constants")
-require("ad.AdRequest")
+require("ad.request.AdRequest")
+require("ad.request.AdRegisterNetworkRequest")
 require("ad.AdError")
 
 AdManager = Class()
@@ -109,7 +110,7 @@ function AdManager.new(self)
     end
 
     function self.registerNetwork(network)
-        local response = adaptor.register(network)
+        local response = adaptor.register(AdRegisterNetworkRequest(network))
         if not response.isSuccess() then
             return false, AdError(100, string.format("Failed to register the %s network", network.getName()), response.getError())
         end

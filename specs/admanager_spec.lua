@@ -15,6 +15,18 @@ require "mediation.MediationAdConfig"
 
 local match = require("luassert.match")
 
+local function is_kind_of(state, arguments)
+    local class = arguments[1]
+    return function(value)
+        if type(value) == "table" and value.getClass and value.getClass() == class then
+            return true
+        end
+        return false
+    end
+end
+
+assert:register("matcher", "is_kind_of", is_kind_of)
+
 function reload(pckg)
     package.loaded[pckg] = nil
     return require(pckg)
@@ -83,7 +95,7 @@ describe("AdManager", function()
             end)
 
             it("should have registered all of the networks", function()
-                assert.stub(bridge.register).was.called_with(adMob)
+                assert.stub(bridge.register).was.called_with(match.is_kind_of(AdRegisterNetworkRequest))
             end)
 
             it("should have associated tokens to respective ads", function()

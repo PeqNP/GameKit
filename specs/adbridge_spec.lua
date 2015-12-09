@@ -35,15 +35,11 @@ describe("modules.ad", function()
     local subject
     local bridge
     local call
-    local network
-    local payload
+    local request -- id<AdRegisterNetworkRequest>
     local response
 
     before_each(function()
-        payload = {}
-        network = AdColonyNetwork("id", {Ad()})
-        stub(network, "getConfig", payload)
-
+        request = {}
         response = {}
 
         bridge = Bridge()
@@ -61,11 +57,11 @@ describe("modules.ad", function()
         before_each(function()
             response = {success=true, tokens={1, 2}}
             stub(bridge, "send", response)
-            r = subject.register(network)
+            r = subject.register(request)
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.send).was.called_with("ad__register", payload)
+            assert.stub(bridge.send).was.called_with("ad__register", request)
         end)
 
         it("should have returned a registered response", function()
@@ -98,11 +94,11 @@ describe("modules.ad", function()
         before_each(function()
             response = {success=false, error="An error"}
             stub(bridge, "send", response)
-            r = subject.register(network)
+            r = subject.register(request)
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.send).was.called_with("ad__register", payload)
+            assert.stub(bridge.send).was.called_with("ad__register", request)
         end)
 
         it("should have returned a registered response", function()
@@ -130,11 +126,11 @@ describe("modules.ad", function()
         before_each(function()
             response = {success=true}
             stub(bridge, "sendAsync", response, call)
-            r, c = subject.cache(Ad(1))
+            r, c = subject.cache(request)
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.sendAsync).was.called_with("ad__cache", match.is_equal({token= 1}))
+            assert.stub(bridge.sendAsync).was.called_with("ad__cache", request)
         end)
 
         it("should have returned the BridgeCall", function()
@@ -157,11 +153,11 @@ describe("modules.ad", function()
         before_each(function()
             response = {success=false, error="An error"}
             stub(bridge, "sendAsync", response, call)
-            r, c = subject.cache(Ad(2))
+            r, c = subject.cache(request)
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.sendAsync).was.called_with("ad__cache", match.is_equal({token= 2}))
+            assert.stub(bridge.sendAsync).was.called_with("ad__cache", request)
         end)
 
         it("should have returned the BridgeCall", function()
@@ -188,11 +184,11 @@ describe("modules.ad", function()
         before_each(function()
             response = {success=true}
             stub(bridge, "sendAsync", response, call)
-            r, c = subject.show(Ad(3))
+            r, c = subject.show(request)
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.sendAsync).was.called_with("ad__show", match.is_equal({token= 3}))
+            assert.stub(bridge.sendAsync).was.called_with("ad__show", request)
         end)
 
         it("should have returned the BridgeCall", function()
@@ -215,7 +211,7 @@ describe("modules.ad", function()
         before_each(function()
             response = {success=false, error="An error"}
             stub(bridge, "sendAsync", response, call)
-            r, c = subject.show(Ad(4))
+            r, c = subject.show(request)
         end)
 
         it("should have returned the BridgeCall", function()
@@ -223,7 +219,7 @@ describe("modules.ad", function()
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.sendAsync).was.called_with("ad__show", match.is_equal({token= 4}))
+            assert.stub(bridge.sendAsync).was.called_with("ad__show", request)
         end)
 
         it("should have returned the bridge's response", function()
