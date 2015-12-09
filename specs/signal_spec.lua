@@ -163,6 +163,12 @@ describe("Signal", function()
             local t2 = {"value", 2, key=1}
             assert.falsy(table.equals(t1, t2))
         end)
+
+        it("should NOT be equal when one table has less values", function()
+            local t1 = {key=1}
+            local t2 = {key=1, key=2}
+            assert.falsy(table.equals(t1, t2))
+        end)
     end)
 end)
 

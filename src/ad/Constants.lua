@@ -1,5 +1,6 @@
 
 AdNetwork = enum(1
+  , 'Unknown'
   , 'AdColony'
   , 'AdMob'
   , 'Chartboost'
