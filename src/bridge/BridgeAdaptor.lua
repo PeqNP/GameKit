@@ -53,20 +53,20 @@ function BridgeAdaptor.getAdaptor(platform)
         return params
     end
 
-    local platform
+    local adaptor
     local controller
     local paramFn
     if platform == "ios" then
-        platform = require("cocos.cocos2d.luaoc")
-        controller = "GameController"
+        adaptor = require("cocos.cocos2d.luaoc")
+        controller = "AKGameRouter"
         paramFn = iosparams
     elseif platform == "android" then
-        platform = require("cocos.cocos2d.luaj")
+        adaptor = require("cocos.cocos2d.luaj")
         controller = "org/cocos2dx/lua/AppActivity"
         paramFn = androidparams
     else
         Log.s("Unable to configure BridgeAdaptor for platform '%s'", platform and platform or "None")
     end
 
-    return BridgeAdaptor(platform, controller, paramFn)
+    return BridgeAdaptor(adaptor, controller, paramFn)
 end
