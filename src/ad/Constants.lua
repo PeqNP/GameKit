@@ -1,5 +1,5 @@
 
-AdNetwork = enum(1
+AdNetwork = enum(0
   , 'Unknown'
   , 'AdColony'
   , 'AdMob'
@@ -9,19 +9,19 @@ AdNetwork = enum(1
   , 'Vungle'
 )
 
-AdType = enum(1
+AdType = enum(0
   , 'Unknown'
   , 'Banner'
   , 'Interstitial'
   , 'Video'
 )
 
-AdImpressionType = enum(1
+AdImpressionType = enum(0
   , 'Regular'
   , 'Premium'
 )
 
-AdState = enum(1
+AdState = enum(0
   , 'Initial'
   , 'Loading'
   , 'Ready'

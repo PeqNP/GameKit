@@ -11,7 +11,7 @@ function AdRegisterResponse.new(self, init)
 
     function self.init(_success, _tokens, _err)
         init(_success, _err)
-        tokens = _tokens
+        tokens = string.split(_tokens, ",")
     end
 
     function self.getTokens()
