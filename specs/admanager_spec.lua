@@ -11,7 +11,7 @@ require "ad.Ad"
 require "ad.AdManager"
 require "ad.AdError"
 require "ad.response.AdResponse"
-require "ad.response.AdRegisterResponse"
+require "ad.response.AdRegisterNetworkResponse"
 require "ad.networks.AdMobNetwork"
 require "ad.networks.AdColonyNetwork"
 require "mediation.MediationAdFactory"
@@ -87,7 +87,7 @@ describe("AdManager", function()
                 bannerAd = adMob.getAds()[1]
                 interstitialAd = adMob.getAds()[2]
 
-                stub(bridge, "register", AdRegisterResponse(true, {100, 200}))
+                stub(bridge, "register", AdRegisterNetworkResponse(true, "100,200"))
                 stub(subject, "registerAd")
 
                 success, _error = subject.registerNetwork(adMob)
@@ -113,15 +113,36 @@ describe("AdManager", function()
             end)
 
             context("when hiding the banner ad", function()
-                local success, _error
+                context("when it fails", function()
+                    before_each(function()
+                        stub(bridge, "hideBannerAd", AdResponse(true))
+                        success = subject.hideBannerAd()
+                    end)
 
-                before_each(function()
-                    stub(adaptor, "hideAd")
-                    success, _error = subject.hideAd(bannerAd)
+                    it("should return success w/ no error", function()
+                        assert.truthy(success)
+                        assert.falsy(subject.getError())
+                    end)
+
+                    it("should have made call to hide the ad", function()
+                        assert.stub(bridge.hideBannerAd).was.called()
+                    end)
                 end)
 
-                it("should have made call to hide the ad", function()
-                    assert.stub(adaptor.hideAd).was.called_with(bannerAd)
+                context("when it fails", function()
+                    before_each(function()
+                        stub(bridge, "hideBannerAd", AdResponse(false, "Error"))
+                        success = subject.hideBannerAd()
+                    end)
+
+                    it("should fail w/ error", function()
+                        assert.falsy(success)
+                        assert.equal("Error", subject.getError())
+                    end)
+
+                    it("should have made call to hide the ad", function()
+                        assert.stub(bridge.hideBannerAd).was.called()
+                    end)
                 end)
             end)
         end)
@@ -133,7 +154,7 @@ describe("AdManager", function()
                 bannerAd = adMob.getAds()[1]
                 interstitialAd = adMob.getAds()[2]
 
-                stub(bridge, "register", AdRegisterResponse(false, {}, "Info"))
+                stub(bridge, "register", AdRegisterNetworkResponse(false, nil, "Info"))
                 stub(subject, "registerAd")
 
                 success, _error = subject.registerNetwork(adMob)

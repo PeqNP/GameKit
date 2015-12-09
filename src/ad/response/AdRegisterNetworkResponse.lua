@@ -4,14 +4,26 @@
 
 require "bridge.BridgeResponse"
 
-AdRegisterResponse = Class(BridgeResponse)
+AdRegisterNetworkResponse = Class(BridgeResponse)
 
-function AdRegisterResponse.new(self, init)
+function AdRegisterNetworkResponse.new(self, init)
     local tokens
+
+    local function getTokens(_tokens)
+        if not _tokens then
+            return {}
+        end
+        local parts = string.split(_tokens, ",")
+        local parsed = {}
+        for _, part in ipairs(parts) do
+            table.insert(parsed, tonumber(part))
+        end
+        return parsed
+    end
 
     function self.init(_success, _tokens, _err)
         init(_success, _err)
-        tokens = string.split(_tokens, ",")
+        tokens = getTokens(_tokens)
     end
 
     function self.getTokens()

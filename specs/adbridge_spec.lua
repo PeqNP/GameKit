@@ -55,7 +55,7 @@ describe("modules.ad", function()
         local r
 
         before_each(function()
-            response = {success=true, tokens={1, 2}}
+            response = {success=true, tokens="1,2"}
             stub(bridge, "send", response)
             r = subject.register(request)
         end)
@@ -65,7 +65,7 @@ describe("modules.ad", function()
         end)
 
         it("should have returned a registered response", function()
-            assert.truthy(r.kindOf(AdRegisterResponse))
+            assert.truthy(r.kindOf(AdRegisterNetworkResponse))
         end)
 
         it("should be a successful response", function()
@@ -102,7 +102,7 @@ describe("modules.ad", function()
         end)
 
         it("should have returned a registered response", function()
-            assert.equals(AdRegisterResponse, r.getClass())
+            assert.equals(AdRegisterNetworkResponse, r.getClass())
         end)
 
         it("should not be a successful response", function()

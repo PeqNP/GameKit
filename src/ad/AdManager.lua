@@ -240,6 +240,12 @@ function AdManager.new(self)
         return self.showAdRequest(request)
     end
 
+    function self.hideBannerAd()
+        local response = adaptor.hideBannerAd()
+        _error = response.getError()
+        return response.isSuccess()
+    end
+
     function self.getError()
         return _error
     end

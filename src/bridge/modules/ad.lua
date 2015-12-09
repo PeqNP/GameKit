@@ -6,7 +6,7 @@ require "ad.AdToken"
 
 require "ad.response.AdCacheResponse"
 require "ad.response.AdCompleteResponse"
-require "ad.response.AdRegisterResponse"
+require "ad.response.AdRegisterNetworkResponse"
 require "ad.response.AdResponse"
 
 local ad = {}
@@ -27,7 +27,7 @@ end
 --
 -- @param id<AdRegisterNetworkRequest>
 --
--- @return AdRegisterResponse
+-- @return AdRegisterNetworkResponse
 --
 function ad.register(request)
     -- A typical request looks like:
@@ -35,7 +35,7 @@ function ad.register(request)
     -- @return {success:, (tokens: OR error:)}
     -- ads[] {token:, zoneId}
     local response = bridge.send("ad__register", request)
-    return AdRegisterResponse(response.success, response.tokens and response.tokens or {}, response.error)
+    return AdRegisterNetworkResponse(response.success, response.tokens, response.error)
 end
 
 --
@@ -62,6 +62,9 @@ function ad.show(request)
     -- @return {success:, error:}
     local response, call = bridge.sendAsync("ad__show", request)
     return getAdResponse(response), call
+end
+
+function ad.hideBannerAd()
 end
 
 --function ad.destroy(ad)
