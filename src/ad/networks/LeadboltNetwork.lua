@@ -26,6 +26,6 @@ function LeadboltNetwork.new(self, init)
     end
 
     function self.getConfig()
-        return {network = self.getName(), appid = appid, ads = self.getAdConfig()}
+        return {appid = appid}
     end
 end

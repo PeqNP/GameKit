@@ -17,6 +17,6 @@ function iAdNetwork.new(self, init)
     end
 
     function self.getConfig()
-        return {network = self.getName(), ads = self.getAdConfig()}
+        return {}
     end
 end

@@ -38,14 +38,14 @@ function BridgeAdaptor.getAdaptor(platform)
             return params
         end
         local ret = {}
-        for k,v in pairs(params) do
+        for k, v in pairs(params) do
             if type(k) == "table" then
-                Log.d("iosparams -> Dictionary passed")
+                Log.d("BridgeAdaptor.iosparams -> Dictionary passed")
                 return params
             end
             ret[tostring(k)] = v
         end
-        Log.d("iosparams -> Returning dictionary")
+        Log.d("BridgeAdaptor.iosparams -> Returning dictionary")
         return ret
     end
 

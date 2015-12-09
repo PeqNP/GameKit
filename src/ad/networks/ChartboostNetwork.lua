@@ -28,6 +28,6 @@ function ChartboostNetwork.new(self, init)
     end
 
     function self.getConfig()
-        return {network = self.getName(), appid = appid, signature = signature, ads = self.getAdConfig()}
+        return {appid = appid, signature = signature}
     end
 end
