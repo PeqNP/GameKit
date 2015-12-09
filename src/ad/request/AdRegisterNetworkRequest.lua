@@ -19,9 +19,9 @@ function AdRegisterNetworkRequest.new(self)
         local ads = network.getAds()
         local values = {}
         for _, ad in ipairs(ads) do
-            table.insert(values, {type=ad.getAdType(), zoneid=ad.getZoneId()})
+            table.insert(values, string.format("%s:%s", ad.getAdType(), ad.getZoneId()))
         end
-        return values
+        return table.concat(values, ",")
     end
 
     function self.toDict()

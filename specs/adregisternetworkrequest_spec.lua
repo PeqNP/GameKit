@@ -29,6 +29,7 @@ describe("AdRegisterNetworkRequest", function()
 
     it("should return correct dictionary", function()
         local dict = subject.toDict()
-        assert.truthy(table.equals(dict, {network="Unknown", appid=1, ads={{type=AdType.Interstitial, zoneid="123"}, {type=AdType.Video, zoneid="456"}}}))
+        local ads = string.format("%s:123,%s:456", AdType.Interstitial, AdType.Video)
+        assert.truthy(table.equals(dict, {network="Unknown", appid=1, ads=ads}))
     end)
 end)
