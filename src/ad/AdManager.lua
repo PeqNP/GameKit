@@ -1,8 +1,8 @@
---[[ Provides interface to display ads.
-
-  @copyright 2015 Upstart Illustration LLC. All rights reserved.
-
---]]
+--
+-- Provides interface to display ads.
+--
+--  @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
+--
 
 require("Logger")
 require("Promise")
@@ -67,6 +67,7 @@ function AdManager.new(self)
     end
 
     function private.cacheAd(ad)
+        Log.d("Caching ad for network (%s) type (%s)", ad.getAdNetwork(), ad.getAdType())
         local request = AdRequest(ad)
         request.setState(AdState.Loading)
         local response, promise = adaptor.cache(request)
@@ -79,13 +80,13 @@ function AdManager.new(self)
         table.insert(requests, request)
         promise.done(function(response)
             request.setState(AdState.Ready)
-            Log.d("Cached request for network (%s) type (%s)", request.getAdNetwork(), request.getAdType())
+            Log.d("Cached ad for network (%s) type (%s)", request.getAdNetwork(), request.getAdType())
         end)
         promise.fail(function(response)
             request.setState(AdState.Complete)
             _error = response.getError()
             private.delayRebuildRequests()
-            Log.d("Failed to cache request for network (%s) type (%s) error (%s)", request.getAdNetwork(), request.getAdType(), _error)
+            Log.d("Failed to cache ad for network (%s) type (%s) error (%s)", request.getAdNetwork(), request.getAdType(), _error)
         end)
     end
 
@@ -107,7 +108,8 @@ function AdManager.new(self)
 
     function self.registerNetworks(networks)
         for _, network in ipairs(networks) do
-            self.registerNetwork(network)
+            local success, err = self.registerNetwork(network)
+            Log.d("AdManager.registerNetworks success (%s) err (%s)", success and "true" or "false", err and err.getError() or "None")
         end
     end
 

@@ -9,7 +9,11 @@ function BridgeResponse.new(self)
     local _error
 
     function self.init(_success, _e)
-        success = _success
+        if _success == 1 or _success == true then
+            success = true
+        else
+            success = false
+        end
         _error = _e
     end
 
