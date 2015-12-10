@@ -65,6 +65,8 @@ function ad.show(request)
 end
 
 function ad.hideBannerAd()
+    local response = bridge.send("ad__hideBanner")
+    return AdResponse(response.success, response.error)
 end
 
 --function ad.destroy(ad)

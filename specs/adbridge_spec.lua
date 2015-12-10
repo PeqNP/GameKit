@@ -365,4 +365,26 @@ describe("modules.ad", function()
             end)
         end)
     end)
+
+    context("when hiding the banner ad", function()
+        local r
+
+        before_each(function()
+            stub(bridge, "send", {success=true, error="Error"})
+            r = subject.hideBannerAd()
+        end)
+
+        it("should have made call to bridge to hide banner ad", function()
+            assert.stub(bridge.send).was.called_with("ad__hideBanner")
+        end)
+
+        it("should have returned response", function()
+            assert.equal(AdResponse, r.getClass())
+        end)
+
+        it("should have set properties on AdResponse", function()
+            assert.truthy(r.isSuccess())
+            assert.equal("Error", r.getError())
+        end)
+    end)
 end)
