@@ -19,7 +19,6 @@ local TIMEOUT = {15, 30, 60, 120, 240, 600}
 function AdManager.new(self)
     local adaptor
     local adFactory
-    local delegate
     local ads = {}
     local _error
     local requests = {}
@@ -92,14 +91,6 @@ function AdManager.new(self)
 
     function self.getAdFactory()
         return adFactory
-    end
-
-    function self.setDelegate(d)
-        delegate = d
-    end
-
-    function self.getDelegate()
-        return delegate
     end
 
     function self.getRequests()

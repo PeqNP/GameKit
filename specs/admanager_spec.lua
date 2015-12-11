@@ -45,25 +45,18 @@ end
 describe("AdManager", function()
     local subject
     local config
-    local delegate
     local bridge
     local adFactory
 
     before_each(function()
-        delegate = {}
         bridge = require("bridge.modules.ad")
         adFactory = mock(MediationAdFactory({}), true)
 
         subject = AdManager(bridge, adFactory)
-        subject.setDelegate(delegate)
     end)
 
     it("should set the ad factory", function()
         assert.equal(adFactory, subject.getAdFactory())
-    end)
-
-    it("should have set the delegate", function()
-        assert.equal(delegate, subject.getDelegate())
     end)
 
     it("should not have an ad available", function()
