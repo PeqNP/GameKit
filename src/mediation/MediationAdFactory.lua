@@ -18,8 +18,8 @@ function MediationAdFactory.new(self)
         lastError = false
 
         local groups = private.getGroupedConfigs()
-        for adType, configs in ipairs(groups) do
-            queues[adType] = private.getQueueForConfigs(configs)
+        for adType, c in ipairs(groups) do
+            queues[adType] = private.getQueueForConfigs(c)
         end
     end
 

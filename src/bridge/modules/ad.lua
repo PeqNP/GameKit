@@ -22,6 +22,9 @@ local function getAdResponse(response)
     return AdResponse(response.success, response.error)
 end
 
+function ad.config(request)
+end
+
 --
 -- Register an ad network and its respective ads with the system.
 --
