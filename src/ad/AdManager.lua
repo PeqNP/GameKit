@@ -8,6 +8,7 @@ require("Logger")
 require("Promise")
 require("ad.Constants")
 require("ad.request.AdRequest")
+require("ad.request.AdConfigureRequest")
 require("ad.request.AdRegisterNetworkRequest")
 require("ad.AdError")
 
@@ -192,6 +193,14 @@ function AdManager.new(self)
             end
         end
         return nil
+    end
+
+    -- ----- Public -----
+
+    function self.configure(config)
+        local response = adaptor.configure(AdConfigureRequest(config))
+        _error = response.getError()
+        return response.isSuccess()
     end
 
     function self.getNextAdRequest(adType)

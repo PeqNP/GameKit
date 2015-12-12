@@ -22,13 +22,20 @@ local function getAdResponse(response)
     return AdResponse(response.success, response.error)
 end
 
-function ad.config(request)
+--
+-- Configure the services.
+--
+-- @param AdConfigureRequest
+--
+function ad.configure(request)
+    local response = bridge.send("ad__configure", request)
+    return AdResponse(response.success, response.error)
 end
 
 --
 -- Register an ad network and its respective ads with the system.
 --
--- @param id<AdRegisterNetworkRequest>
+-- @param AdRegisterNetworkRequest
 --
 -- @return AdRegisterNetworkResponse
 --

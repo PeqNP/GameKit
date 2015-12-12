@@ -29,3 +29,9 @@ AdState = enum(0
   , 'Clicked'
   , 'Complete'
 )
+
+AdOrientation = enum(0
+  , 'AutoDetect'
+  , 'Portrait'
+  , 'Landscape'
+)

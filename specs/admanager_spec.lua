@@ -67,6 +67,47 @@ describe("AdManager", function()
         assert.falsy(subject.getError())
     end)
 
+    context("when configuring the service", function()
+        local request
+        local ret
+
+        context("when successful", function()
+            before_each(function()
+                request = {}
+                stub(bridge, "configure", AdResponse(true))
+                ret = subject.configure(request)
+            end)
+
+            it("should have sent the message to configure", function()
+                assert.stub(bridge.configure).was.called_with(match.is_kind_of(AdConfigureRequest))
+            end)
+
+            it("should have returned true", function()
+                assert.truthy(ret)
+            end)
+        end)
+
+        context("when failure", function()
+            before_each(function()
+                request = {}
+                stub(bridge, "configure", AdResponse(false, "An error"))
+                ret = subject.configure(request)
+            end)
+
+            it("should have sent the message to configure", function()
+                assert.stub(bridge.configure).was.called_with(match.is_kind_of(AdConfigureRequest))
+            end)
+
+            it("should have returned true", function()
+                assert.falsy(ret)
+            end)
+            
+            it("should have set the error", function()
+                assert.equal("An error", subject.getError())
+            end)
+        end)
+    end)
+
     context("when registering networks", function()
         local adMob
         local bannerAd

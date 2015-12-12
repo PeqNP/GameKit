@@ -51,6 +51,54 @@ describe("modules.ad", function()
         subject.init(bridge)
     end)
 
+    describe("configuring the ad service", function()
+        context("when successful", function()
+            local r
+
+            before_each(function()
+                response = {success=true}
+                stub(bridge, "send", response)
+                r = subject.configure(request)
+            end)
+
+            it("should have sent the config", function()
+                assert.stub(bridge.send).was.called_with("ad__configure", request)
+            end)
+
+            it("should have returned an AdResponse", function()
+                assert.equal(AdResponse, r.getClass())
+            end)
+
+            it("should have set properties correctly", function()
+                assert.truthy(r.isSuccess())
+                assert.falsy(r.getError())
+            end)
+        end)
+
+        context("when failure", function()
+            local r
+
+            before_each(function()
+                response = {success=false, error="Error happened"}
+                stub(bridge, "send", response)
+                r = subject.configure(request)
+            end)
+
+            it("should have sent the config", function()
+                assert.stub(bridge.send).was.called_with("ad__configure", request)
+            end)
+
+            it("should have returned an AdResponse", function()
+                assert.equal(AdResponse, r.getClass())
+            end)
+
+            it("should have set properties correctly", function()
+                assert.falsy(r.isSuccess())
+                assert.equal("Error happened", r.getError())
+            end)
+        end)
+    end)
+
     context("successful register", function()
         local r
 
