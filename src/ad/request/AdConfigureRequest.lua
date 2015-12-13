@@ -14,6 +14,6 @@ function AdConfigureRequest.new(self)
     end
 
     function self.toDict()
-        return {testDevices=table.concat(config, ","), automatic=config.isAutomatic(), orientation=config.getOrientation()}
+        return {testDevices=table.concat(config.getTestDevices(), ","), automatic=config.isAutomatic(), orientation=config.getOrientation()}
     end
 end
