@@ -12,7 +12,7 @@ require "lang.Signal"
 require "specs.Cocos2d-x"
 require "Logger"
 
---Log.setLevel(LogLevel.Info)
+Log.setLevel(LogLevel.Info)
 
 require "ad.Constants"
 require "mediation.MediationAdConfig"

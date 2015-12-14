@@ -262,7 +262,7 @@ describe("AdManager", function()
         end)
 
         it("should have returned correct error", function()
-            assert.equal("Ad request is nil", subject.getError())
+            assert.equal("Ad request is nil. This usually means the ad factory could not find an ad to serve.", subject.getError())
         end)
     end)
 

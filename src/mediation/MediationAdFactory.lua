@@ -20,6 +20,7 @@ function MediationAdFactory.new(self)
         local groups = private.getGroupedConfigs()
         for adType, c in ipairs(groups) do
             queues[adType] = private.getQueueForConfigs(c)
+            Log.d("AdType %s has %d config(s)", adType, queues[adType] and #queues[adType] or 0)
         end
     end
 
@@ -142,6 +143,7 @@ function MediationAdFactory.new(self)
     function self.nextAd(adType)
         local queue = queues[adType]
         if #queue < 1 then
+            Log.d("AdType %s has no configs in the queue", adType)
             return nil
         end
 

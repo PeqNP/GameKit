@@ -225,7 +225,7 @@ function AdManager.new(self)
         if request then
             return private.showAdRequest(request)
         end
-        _error = "Ad request is nil"
+        _error = "Ad request is nil. This usually means the ad factory could not find an ad to serve."
         return nil
     end
 
