@@ -225,6 +225,7 @@ function AdManager.new(self)
         if request then
             return private.showAdRequest(request)
         end
+        _error = "Ad request is nil"
         return nil
     end
 

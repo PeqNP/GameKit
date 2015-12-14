@@ -256,6 +256,16 @@ describe("AdManager", function()
         end)
     end)
 
+    describe("show nil ad request", function()
+        before_each(function()
+            subject.showAdRequest(nil)
+        end)
+
+        it("should have returned correct error", function()
+            assert.equal("Ad request is nil", subject.getError())
+        end)
+    end)
+
     describe("adding ad modules", function()
         local requests
         local adi
