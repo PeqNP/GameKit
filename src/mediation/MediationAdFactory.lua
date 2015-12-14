@@ -20,7 +20,7 @@ function MediationAdFactory.new(self)
         local groups = private.getGroupedConfigs()
         for adType, c in ipairs(groups) do
             queues[adType] = private.getQueueForConfigs(c)
-            Log.d("AdType %s has %d config(s)", adType, queues[adType] and #queues[adType] or 0)
+            Log.d("MediationAdFactory.init: AdType %s has %d config(s)", adType, queues[adType] and #queues[adType] or 0)
         end
     end
 
