@@ -198,7 +198,7 @@ describe("AdManager", function()
                 assert.falsy(success)
                 assert.equals(AdError, _error.getClass())
                 assert.equals(100, _error.getCode())
-                assert.equals("Failed to register the AdMob network", _error.getMessage())
+                assert.equals("Failed to register network (AdMob)", _error.getMessage())
                 assert.equals("Info", _error.getInfo())
             end)
 
@@ -268,6 +268,7 @@ describe("AdManager", function()
 
     describe("adding ad modules", function()
         local requests
+        local adb
         local adi
         local requesti
         local responsei
@@ -278,6 +279,7 @@ describe("AdManager", function()
         local promisev
 
         before_each(function()
+            adb = Ad.init4(AdNetwork.AdMob, AdType.Banner, "banner-zone")
             adi = Ad.init4(AdNetwork.AdMob, AdType.Interstitial, "interstitial-zone")
             adv = Ad.init4(AdNetwork.AdColony, AdType.Video, "interstitial-zone")
 
@@ -298,18 +300,20 @@ describe("AdManager", function()
 
             subject.registerAd(adi)
             subject.registerAd(adv)
+            subject.registerAd(adb)
 
             requests = subject.getRequests()
         end)
 
         it("should have added the network module to list of registered modules", function()
             local modules = subject.getRegisteredAds()
-            assert.equal(2, #modules)
+            assert.equal(3, #modules)
             assert.equal(adi, modules[1])
             assert.equal(adv, modules[2])
+            assert.equal(adb, modules[3])
         end)
 
-        it("should have created two requests", function()
+        it("should have created two requests for none banner ads", function()
             assert.equal(2, #requests)
         end)
 

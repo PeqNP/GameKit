@@ -84,7 +84,7 @@ end
 --
 function cu.delayCall(fn, delay)
     local sequence = cu.Sequence(cu.Delay(delay), cu.Call(fn))
-    cu.runAction(action)
+    cu.runAction(sequence)
 end
 
 --[[ Returns a point which represents the position of a heading.

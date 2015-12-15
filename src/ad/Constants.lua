@@ -1,3 +1,6 @@
+--
+-- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
+--
 
 AdNetwork = enum(0
   , 'Unknown'
@@ -34,4 +37,9 @@ AdOrientation = enum(0
   , 'AutoDetect'
   , 'Portrait'
   , 'Landscape'
+)
+
+AdBannerLocation = enum(0
+  , 'Top'
+  , 'Bottom'
 )

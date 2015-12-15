@@ -58,7 +58,10 @@ end
 function ad.cache(request)
     -- @return {success:, error:}
     local response, call = bridge.sendAsync("ad__cache", request)
-    return getAdResponse(response), call
+    if type(response) == "table" then
+        return getAdResponse(response), call
+    end
+    return AdResponse(false, "Failed to cache ad"), call
 end
 
 --

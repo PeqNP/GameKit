@@ -225,6 +225,33 @@ describe("modules.ad", function()
         end)
     end)
 
+    describe("exception cache", function()
+        local r
+        local c
+
+        before_each(function()
+            response = -1
+            stub(bridge, "sendAsync", response, call)
+            r, c = subject.cache(request)
+        end)
+
+        it("should have returned the BridgeCall", function()
+            assert.equals(call, c)
+        end)
+
+        it("should have returned the bridge's response", function()
+            assert.equals(AdResponse, r.getClass())
+        end)
+
+        it("should be a failure", function()
+            assert.falsy(r.isSuccess())
+        end)
+
+        it("should have set error on response", function()
+            assert.equals("Failed to cache ad", r.getError())
+        end)
+    end)
+
     describe("show", function()
         local r
         local c

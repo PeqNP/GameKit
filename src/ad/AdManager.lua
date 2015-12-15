@@ -24,6 +24,7 @@ function AdManager.new(self)
     local _error
     local requests = {}
     local private = {}
+    local networks = {}
     --local cachedNextAd
 
     function self.init(_adaptor, _adFactory)
@@ -67,6 +68,9 @@ function AdManager.new(self)
     end
 
     function private.cacheAd(ad)
+        if ad.getAdType() == AdType.Banner then
+            return
+        end
         Log.d("Caching ad for network (%s) type (%s)", ad.getAdNetwork(), ad.getAdType())
         local request = AdRequest(ad)
         request.setState(AdState.Loading)
@@ -101,22 +105,25 @@ function AdManager.new(self)
     function self.registerNetworks(networks)
         for _, network in ipairs(networks) do
             local success, err = self.registerNetwork(network)
-            Log.d("AdManager.registerNetworks success (%s) err (%s)", success and "true" or "false", err and err.getMessage() or "None")
+            Log.d("AdManager.registerNetworks: Network (%s) success (%s) err (%s)", network.getName(), success and "true" or "false", err and err.getMessage() or "None")
         end
     end
 
     function self.registerNetwork(network)
         local response = adaptor.register(AdRegisterNetworkRequest(network))
         if not response.isSuccess() then
-            return false, AdError(100, string.format("Failed to register the %s network", network.getName()), response.getError())
+            return false, AdError(100, string.format("Failed to register network (%s)", network.getName()), response.getError())
         end
         -- Map token to respective ad.
+        Log.d("AdManager.registerNetwork: Tokens: %s", table.concat(response.getTokens(), ","))
         local ads = network.getAds()
         for i, token in ipairs(response.getTokens()) do
             local ad = ads[i]
             ad.setToken(token)
             self.registerAd(ad)
+            Log.d("Registered network (%s) type (%s) w/ token (%s)", network.getName(), ad.getAdType(), token)
         end
+        table.insert(networks, network)
         return true
     end
 
@@ -239,6 +246,18 @@ function AdManager.new(self)
     function self.showAd(adType)
         local request = self.getNextAdRequest(adType)
         return self.showAdRequest(request)
+    end
+
+    function self.showBannerAd(delegate)
+        for _, network in ipairs(networks) do
+            local ads = network.getAds()
+            for _, ad in ipairs(ads) do
+                if ad.getAdType() == AdType.Banner then
+                    return self.showAdRequest(AdRequest(ad))
+                end
+            end
+        end
+        return nil
     end
 
     function self.hideBannerAd()
