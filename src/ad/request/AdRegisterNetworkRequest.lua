@@ -15,11 +15,16 @@ function AdRegisterNetworkRequest.new(self)
 
     -- BridgeRequestProtocol
 
+    local function getAdString(ad)
+        local location = ad.getLocation() and string.format(":%s", ad.getLocation()) or ""
+        return string.format("%s:%s%s", ad.getAdType(), ad.getZoneId(), location)
+    end
+
     local function getAds()
         local ads = network.getAds()
         local values = {}
         for _, ad in ipairs(ads) do
-            table.insert(values, string.format("%s:%s", ad.getAdType(), ad.getZoneId()))
+            table.insert(values, getAdString(ad))
         end
         return table.concat(values, ",")
     end

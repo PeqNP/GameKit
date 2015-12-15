@@ -24,12 +24,12 @@ describe("AdRegisterNetworkRequest", function()
     local subject
 
     before_each(function()
-        subject = AdRegisterNetworkRequest(TestAdNetwork({Ad(AdType.Interstitial, "123"), Ad(AdType.Video, "456")}))
+        subject = AdRegisterNetworkRequest(TestAdNetwork({Ad(AdType.Banner, "000", AdLocation.Bottom), Ad(AdType.Interstitial, "123"), Ad(AdType.Video, "456")}))
     end)
 
     it("should return correct dictionary", function()
         local dict = subject.toDict()
-        local ads = string.format("%s:123,%s:456", AdType.Interstitial, AdType.Video)
+        local ads = string.format("%s:000:1,%s:123,%s:456", AdType.Banner, AdType.Interstitial, AdType.Video)
         assert.truthy(table.equals(dict, {network="Unknown", appid=1, ads=ads}))
     end)
 end)
