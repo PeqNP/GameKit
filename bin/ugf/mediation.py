@@ -24,7 +24,7 @@ LUA_AD_TYPES = {
 
 def quote(val):
     if not val:
-        return None
+        return "nil"
     return '"' + val + '"'
 
 class Network (object):
@@ -42,13 +42,13 @@ class Network (object):
         return LUA_NETWORKS[self.name].format(**params)
     
 class Ad (object):
-    def __init__(self, _type, zoneId, reward=None):
+    def __init__(self, _type, zoneId, location):
         self.type = _type
         self.zoneId = zoneId
-        self.reward = reward
+        self.location = location
 
     def toLua(self):
-        return "Ad({}, {}, {})".format(LUA_AD_TYPES[self.type], quote(self.zoneId), self.reward and self.reward or "0")
+        return "Ad({}, {}{})".format(LUA_AD_TYPES[self.type], quote(self.zoneId), self.location and ", "+str(self.location) or "")
 
 def pods_for_networks(networks):
     pods = []
@@ -68,7 +68,7 @@ def load_mediation_config(path):
     for network in config:
         ads = []
         for ad in network["ads"]:
-            ads.append(Ad(ad["type"], ad["zoneId"]))
+            ads.append(Ad(ad["type"], ad["zoneId"], ad.get("location", None)))
         networks.append(Network(network["network"], network.get("appId"), network.get("signature"), ads))
     return networks
 

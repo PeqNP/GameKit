@@ -9,7 +9,6 @@ function Ad.new(self)
     local adType
     local zoneId
     local location
-    local reward
     local token
 
     function self.init(_adType, _zoneId, _location)
