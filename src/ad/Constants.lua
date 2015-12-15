@@ -39,7 +39,7 @@ AdOrientation = enum(0
   , 'Landscape'
 )
 
-AdBannerLocation = enum(0
+AdLocation = enum(0
   , 'Top'
   , 'Bottom'
 )

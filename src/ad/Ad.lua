@@ -8,12 +8,14 @@ function Ad.new(self)
     local adNetwork
     local adType
     local zoneId
+    local location
     local reward
     local token
 
-    function self.init(_adType, _zoneId)
+    function self.init(_adType, _zoneId, _location)
         adType = _adType
         zoneId = _zoneId
+        location = _location
     end
 
     function self.getAdType()
@@ -22,6 +24,10 @@ function Ad.new(self)
 
     function self.getZoneId()
         return zoneId
+    end
+
+    function self.getLocation()
+        return location
     end
 
     function self.setAdNetwork(a)
