@@ -69,7 +69,6 @@ function Bridge.new(self)
         local response = adaptor.send(method, request.toDict(), sig)
         local req = BridgeCall(request)
         if response then
-            -- @todo Check to make sure the ID does not already exist.
             requests[tostring(request.getId())] = req
         else
             req.reject(string.format("Failed to call method (%s)", method))
@@ -93,7 +92,7 @@ function Bridge.new(self)
             Log.e("Response (%s) no longer has corresponding request!", response.getId())
             return
         end
-        request.resolve(response)
         requests[id] = nil
+        request.resolve(response)
     end
 end

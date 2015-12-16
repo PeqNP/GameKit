@@ -32,14 +32,18 @@ function AdManager.new(self)
         adFactory = _adFactory
     end
 
+    local function getNextDelay()
+        return TIMEOUT[2]
+    end
+
     -- Prevents the delay from being called more than once.
     local delayInProgress = false
-    function private.delayRebuildRequests()
+    function private.delayRebuildRequests(delay)
         if delayInProgress then
             return
         end
         delayInProgress = true
-        cu.delayCall(private.rebuildRequests, TIMEOUT[2])
+        cu.delayCall(private.rebuildRequests, delay)
     end
 
     function private.cacheAds(ads)
@@ -77,7 +81,7 @@ function AdManager.new(self)
         local response, promise = adaptor.cache(request)
 
         if not response.isSuccess() then
-            private.delayRebuildRequests()
+            private.delayRebuildRequests(getNextDelay())
             Log.i("private.cacheAd: Cache response failed")
             return
         end
@@ -90,7 +94,7 @@ function AdManager.new(self)
         promise.fail(function(response)
             request.setState(AdState.Complete)
             _error = response.getError()
-            private.delayRebuildRequests()
+            private.delayRebuildRequests(getNextDelay())
             Log.d("Failed to cache ad for network (%s) type (%s) error (%s)", request.getAdNetwork(), request.getAdType(), _error)
         end)
     end
@@ -183,7 +187,7 @@ function AdManager.new(self)
         promise.fail(function(response)
             request.setState(AdState.Complete)
             _error = response.getError()
-            private.delayRebuildRequests()
+            private.delayRebuildRequests(getNextDelay())
             deferred.reject(_error)
         end)
         return deferred
