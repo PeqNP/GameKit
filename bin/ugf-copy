@@ -52,7 +52,7 @@ if __name__ == "__main__":
         print("Type: {}".format(config.apptype))
 
     # Validate
-    valid_options = ["all", "platform", "gametools", "source", "resource"]
+    valid_options = ["all", "platform", "gametools", "project", "resource"]
     for opt in args.files:
         if opt not in valid_options:
             print("'{}' is not a valid 'files' option".format(opt))
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     if "gametools" in args.files:
         print "Copying GameTools files."
         copy_gametools(source, cocos)
-    if "source" in args.files:
+    if "project" in args.files:
         print "Copying project source files."
         copy_source(source, cocos)
     if "resource" in args.files:
