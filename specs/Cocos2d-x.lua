@@ -26,6 +26,9 @@ end
 function cc.Scene:addChild(child)
 end
 
+function cc.Scene:runAction(action)
+end
+
 cc.Layer = class()
 
 function cc.Layer:create()

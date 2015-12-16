@@ -88,14 +88,21 @@ function AdManager.new(self)
 
         table.insert(requests, request)
         promise.done(function(response)
-            request.setState(AdState.Ready)
-            Log.d("Cached ad for network (%s) type (%s)", request.getAdNetwork(), request.getAdType())
+            if response.isSuccess() then
+                request.setState(AdState.Ready)
+                Log.d("Cached ad for network (%s) type (%s)", request.getAdNetwork(), request.getAdType())
+            else
+                request.setState(AdState.Complete)
+                _error = response.getError()
+                private.delayRebuildRequests(getNextDelay())
+                Log.d("done: Failed to cache ad for network (%s) type (%s) error (%s)", request.getAdNetwork(), request.getAdType(), _error)
+            end
         end)
         promise.fail(function(response)
             request.setState(AdState.Complete)
             _error = response.getError()
             private.delayRebuildRequests(getNextDelay())
-            Log.d("Failed to cache ad for network (%s) type (%s) error (%s)", request.getAdNetwork(), request.getAdType(), _error)
+            Log.d("fail: Failed to cache ad for network (%s) type (%s) error (%s)", request.getAdNetwork(), request.getAdType(), _error)
         end)
     end
 
@@ -235,6 +242,7 @@ function AdManager.new(self)
                 --cachedNextAd = nil
                 return request, nextAd
             end
+            Log.i("The next ad for network (%s) type (%s) is not ready. Returning first available ad of this type.", nextAd.getAdNetwork(), nextAd.getAdType())
         end
         return private.getFirstAvailableAdRequest(_requests), false
     end

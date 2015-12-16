@@ -279,14 +279,19 @@ describe("AdManager", function()
         local requestv
         local responsev
         local promisev
+        local leadbolt_ad
+        local leadbolt_response
+        local leadbolt_promise 
 
         before_each(function()
             adb = Ad.init4(AdNetwork.AdMob, AdType.Banner, "banner-zone")
             adi = Ad.init4(AdNetwork.AdMob, AdType.Interstitial, "interstitial-zone")
             adv = Ad.init4(AdNetwork.AdColony, AdType.Video, "interstitial-zone")
+            leadbolt_ad = Ad.init4(AdNetwork.Leadbolt, AdType.Interstitial, nil)
 
             responsei = BridgeResponse(true)
             responsev = BridgeResponse(true)
+            leadbolt_response = BridgeResponse(true)
 
             function bridge.cache(request)
                 if request.getAdNetwork() == AdNetwork.AdMob then
@@ -295,6 +300,9 @@ describe("AdManager", function()
                 elseif request.getAdNetwork() == AdNetwork.AdColony then
                     promisev = BridgeCall()
                     return responsev, promisev
+                elseif request.getAdNetwork() == AdNetwork.Leadbolt then
+                    leadbolt_promise = BridgeCall()
+                    return leadbolt_response, leadbolt_promise
                 else
                     assert.truthy(false)
                 end
@@ -412,14 +420,14 @@ describe("AdManager", function()
                     stub(adFactory, "nextAd", config)
                 end)
 
-                it("should return the ad config #f", function()
+                it("should return the ad config", function()
                     local request, ad = subject.getNextAdRequest(AdType.Interstitial)
                     assert.equals(AdRequest, request.getClass())
                     assert.equals(config, ad)
                 end)
             end)
 
-            context("when Leadbolt is configured to be shown but module is not registered", function()
+            context("when showing an ad type that is not registered", function()
                 local config
 
                 before_each(function()
@@ -431,8 +439,43 @@ describe("AdManager", function()
                     assert.truthy(subject.showAd(AdType.Interstitial))
                 end)
 
-                it("should show the next available ad type, AdMob", function()
+                it("should show the next available ad type instead; AdMob", function()
                     assert.stub(bridge.show).was.called_with(requesti)
+                end)
+            end)
+
+            context("when showing an ad type that is registed", function()
+                local config
+
+                before_each(function()
+                    config = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
+                    stub(adFactory, "nextAd", config)
+
+                    local promise = BridgeCall()
+                    stub(bridge, "show", {}, promise)
+
+                    subject.registerAd(leadbolt_ad)
+                end)
+
+                context("when the ad has not yet been cached", function()
+                    before_each(function()
+                        assert.truthy(subject.showAd(AdType.Interstitial))
+                    end)
+
+                    it("should show the next available ad type instead; AdMob", function()
+                        assert.stub(bridge.show).was.called_with(requesti)
+                    end)
+                end)
+
+                context("when the ad fails to be cached", function()
+                    before_each(function()
+                        leadbolt_promise.resolve(AdCacheResponse(false, "Leadbolt error"))
+                        assert.truthy(subject.showAd(AdType.Interstitial))
+                    end)
+
+                    it("should show the next available ad type instead; AdMob", function()
+                        assert.stub(bridge.show).was.called_with(requesti)
+                    end)
                 end)
             end)
 
@@ -447,7 +490,7 @@ describe("AdManager", function()
                     stub(adFactory, "nextAd", config)
                 end)
 
-                it("should NOT return the next ad as it doesn't match the config #f", function()
+                it("should NOT return the next ad as it doesn't match the config", function()
                     local request, ad = subject.getNextAdRequest(AdType.Interstitial)
                     assert.equals(AdRequest, request.getClass())
                     assert.falsy(ad)
@@ -650,8 +693,8 @@ describe("AdManager when no ad factory", function()
     local request
     local promisec
     local promises
-    local responsec
-    local responses
+    local responsec -- 'c' for 'cache'
+    local responses -- 's' for 'show'
 
     before_each(function()
         promisec = BridgeCall()
