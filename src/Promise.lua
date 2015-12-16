@@ -100,7 +100,7 @@ function Promise.new(self)
     -- utility functions
     --
 
-    function self.state(self)
+    function self.state()
         return _state
     end
 end

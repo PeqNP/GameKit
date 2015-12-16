@@ -2,6 +2,8 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
+require "Promise"
+
 BridgeCall = Class(Promise)
 
 function BridgeCall.new(self)
