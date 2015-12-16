@@ -38,12 +38,12 @@ function AdManager.new(self)
 
     -- Prevents the delay from being called more than once.
     local delayInProgress = false
-    function private.delayRebuildRequests(delay)
+    function private.delayRebuildRequests()
         if delayInProgress then
             return
         end
         delayInProgress = true
-        cu.delayCall(private.rebuildRequests, delay)
+        cu.delayCall(private.rebuildRequests, getNextDelay())
     end
 
     function private.cacheAds(ads)
@@ -71,6 +71,13 @@ function AdManager.new(self)
         private.cacheAds(ads)
     end
 
+    function private.cacheFailed(request, response)
+        request.setState(AdState.Complete)
+        _error = response.getError()
+        Log.d("Failed to cache ad for network (%s) type (%s) error (%s)", request.getAdNetwork(), request.getAdType(), _error)
+        private.delayRebuildRequests()
+    end
+
     function private.cacheAd(ad)
         if ad.getAdType() == AdType.Banner then
             return
@@ -81,7 +88,7 @@ function AdManager.new(self)
         local response, promise = adaptor.cache(request)
 
         if not response.isSuccess() then
-            private.delayRebuildRequests(getNextDelay())
+            private.delayRebuildRequests()
             Log.i("private.cacheAd: Cache response failed")
             return
         end
@@ -92,17 +99,11 @@ function AdManager.new(self)
                 request.setState(AdState.Ready)
                 Log.d("Cached ad for network (%s) type (%s)", request.getAdNetwork(), request.getAdType())
             else
-                request.setState(AdState.Complete)
-                _error = response.getError()
-                private.delayRebuildRequests(getNextDelay())
-                Log.d("done: Failed to cache ad for network (%s) type (%s) error (%s)", request.getAdNetwork(), request.getAdType(), _error)
+                private.cacheFailed(request, response)
             end
         end)
         promise.fail(function(response)
-            request.setState(AdState.Complete)
-            _error = response.getError()
-            private.delayRebuildRequests(getNextDelay())
-            Log.d("fail: Failed to cache ad for network (%s) type (%s) error (%s)", request.getAdNetwork(), request.getAdType(), _error)
+            private.cacheFailed(request, response)
         end)
     end
 
@@ -194,7 +195,7 @@ function AdManager.new(self)
         promise.fail(function(response)
             request.setState(AdState.Complete)
             _error = response.getError()
-            private.delayRebuildRequests(getNextDelay())
+            private.delayRebuildRequests()
             deferred.reject(_error)
         end)
         return deferred
