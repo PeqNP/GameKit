@@ -76,8 +76,9 @@ function AdManager.new(self)
         request.setState(AdState.Loading)
         local response, promise = adaptor.cache(request)
 
-        if not response.success then
+        if not response.isSuccess() then
             private.delayRebuildRequests()
+            Log.i("private.cacheAd: Cache response failed")
             return
         end
 
