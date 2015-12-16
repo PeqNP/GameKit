@@ -347,7 +347,7 @@ describe("modules.ad", function()
             end)
 
             it("should not have an error", function()
-                assert.falsy(response.isFailure())
+                assert.truthy(response.isSuccess())
             end)
         end)
 
@@ -367,7 +367,7 @@ describe("modules.ad", function()
             end)
 
             it("should have an error", function()
-                assert.truthy(response.isFailure())
+                assert.falsy(response.isSuccess())
             end)
 
             it("should have set the error", function()
@@ -418,7 +418,7 @@ describe("modules.ad", function()
             end)
 
             it("should not have an error", function()
-                assert.falsy(response.isFailure())
+                assert.truthy(response.isSuccess())
             end)
         end)
 
@@ -438,7 +438,7 @@ describe("modules.ad", function()
             end)
 
             it("should have an error", function()
-                assert.truthy(response.isFailure())
+                assert.falsy(response.isSuccess())
                 assert.equals("An error", response.getError())
             end)
         end)

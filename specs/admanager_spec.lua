@@ -523,15 +523,32 @@ describe("AdManager", function()
             context("when there is no config for the video", function()
                 describe("show the ad", function()
                     local promise
+                    local ad_promise
+                    local ad_clicked
+                    local ad_reward
+                    local ad_error
 
                     before_each(function()
+                        ad_clicked = nil
+                        ad_reward = nil
+                        ad_error = nil
+
                         promise = Promise()
                         stub(adFactor, nextAd, nil)
                         stub(bridge, "show", responsei, promise)
                         stub(cu, "delayCall")
 
+                        show_promise = subject.showAd(AdType.Video)
+                        show_promise.done(function(clicked, reward)
+                            ad_clicked = clicked
+                            ad_reward = reward
+                        end)
+                        show_promise.fail(function(_error)
+                            ad_error = _error
+                        end)
+
                         assert.falsy(subject.showAd(AdType.Interstitial))
-                        assert.truthy(subject.showAd(AdType.Video))
+                        assert.truthy(show_promise)
                     end)
 
                     it("should show the video ad", function()
@@ -542,23 +559,67 @@ describe("AdManager", function()
                         assert.equal(AdState.Presenting, requestv.getState())
                     end)
 
-                    describe("when the ad is completed", function()
+                    describe("when the ad completes successfully", function()
                         before_each(function()
-                            promise.resolve(AdResponse(true))
+                            stub(bridge, "cache", {success=true}, Promise())
+                            promise.resolve(AdCompleteResponse(1, 10, true))
+                        end)
+
+                        it("should have set the click and reward", function()
+                            assert.truthy(ad_clicked)
+                            assert.equal(10, ad_reward)
                         end)
 
                         it("should have updated the state of the ad request", function()
                             assert.equal(AdState.Complete, requestv.getState())
                         end)
 
-                        it("should cache module", function()
-                            assert.stub(cu.delayCall).was.called()
+                        it("should cache ad immediately", function()
+                            assert.stub(bridge.cache).was.called()
+                        end)
+                    end)
+
+                    describe("when the ad completes successfully but has an error", function()
+                        before_each(function()
+                            stub(bridge, "cache", {success=true}, Promise())
+                            promise.resolve(AdCompleteResponse(1, 10, false, "An error"))
+                        end)
+
+                        it("should have set the click and reward", function()
+                            assert.equal("An error", ad_error)
+                        end)
+
+                        it("should have updated the state of the ad request", function()
+                            assert.equal(AdState.Complete, requestv.getState())
+                        end)
+
+                        it("should cache ad immediately", function()
+                            assert.stub(bridge.cache).was.called()
+                        end)
+                    end)
+
+                    describe("when the ad fails to complete successfully but has an error", function()
+                        before_each(function()
+                            stub(bridge, "cache", {success=true}, Promise())
+                            promise.resolve(AdCompleteResponse(1, 10, false, "An error"))
+                        end)
+
+                        it("should have rejected the promise with an error", function()
+                            assert.equal("An error", ad_error)
+                        end)
+
+                        it("should have updated the state of the ad request", function()
+                            assert.equal(AdState.Complete, requestv.getState())
+                        end)
+
+                        it("should cache ad immediately", function()
+                            assert.stub(bridge.cache).was.called()
                         end)
                     end)
 
                     describe("when the request fails", function()
                         before_each(function()
-                            promise.reject(AdResponse(false, "Failure"))
+                            promise.reject(AdCompleteResponse(1, 0, false, "Failure"))
                         end)
 
                         it("should have updated the state of the ad request", function()
@@ -567,6 +628,7 @@ describe("AdManager", function()
 
                         it("should have an error", function()
                             assert.equal("Failure", subject.getError())
+                            assert.equal("Failure", ad_error)
                         end)
 
                         it("should attempt to cache module", function()

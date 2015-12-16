@@ -20,8 +20,11 @@ function AdCompleteResponse.new(self)
         _error = _err
     end
 
-    function self.isFailure()
-        return _error and true or false
+    function self.isSuccess()
+        if _error then
+            return false
+        end
+        return true
     end
 
     function self.getReward()

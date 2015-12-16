@@ -167,19 +167,25 @@ function AdManager.new(self)
     end
 
     function private.showAdRequest(request)
+        local deferred = Promise()
         local response, promise = adaptor.show(request)
         request.setState(AdState.Presenting)
         promise.done(function(response)
             request.setState(AdState.Complete)
+            private.rebuildRequests()
+            if response.isSuccess() then
+                deferred.resolve(response.isClicked(), response.getReward())
+            else
+                deferred.reject(response.getError())
+            end
         end)
         promise.fail(function(response)
             request.setState(AdState.Complete)
             _error = response.getError()
-        end)
-        promise.always(function(response)
             private.delayRebuildRequests()
+            deferred.reject(_error)
         end)
-        return promise
+        return deferred
     end
 
     function private.getFirstAvailableAdRequest(_requests)
