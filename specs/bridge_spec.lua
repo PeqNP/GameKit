@@ -1,5 +1,8 @@
 require "lang.Signal"
 require "specs.busted"
+require "Logger"
+
+Log.setLevel(LogLevel.Warning)
 
 require "ad.Constants"
 

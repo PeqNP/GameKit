@@ -14,6 +14,7 @@ require "ad.response.AdResponse"
 require "ad.response.AdRegisterNetworkResponse"
 require "ad.networks.AdMobNetwork"
 require "ad.networks.AdColonyNetwork"
+require "bridge.BridgeCall"
 require "mediation.MediationAdFactory"
 require "mediation.MediationAdConfig"
 
@@ -288,10 +289,10 @@ describe("AdManager", function()
 
             function bridge.cache(request)
                 if request.getAdNetwork() == AdNetwork.AdMob then
-                    promisei = Promise()
+                    promisei = BridgeCall()
                     return responsei, promisei
                 elseif request.getAdNetwork() == AdNetwork.AdColony then
-                    promisev = Promise()
+                    promisev = BridgeCall()
                     return responsev, promisev
                 else
                     assert.truthy(false)
@@ -361,7 +362,7 @@ describe("AdManager", function()
 
                 describe("show the ad", function()
                     before_each(function()
-                        local promise = Promise()
+                        local promise = BridgeCall()
                         stub(bridge, "show", responsei, promise)
 
                         assert.falsy(subject.showAd(AdType.Video))
@@ -386,7 +387,7 @@ describe("AdManager", function()
                 local config
 
                 before_each(function()
-                    local promise = Promise()
+                    local promise = BridgeCall()
                     stub(bridge, "show", responsei, promise)
 
                     config = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
@@ -403,7 +404,7 @@ describe("AdManager", function()
                 local config
 
                 before_each(function()
-                    local promise = Promise()
+                    local promise = BridgeCall()
                     stub(bridge, "show", responsei, promise)
 
                     config = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
@@ -421,7 +422,7 @@ describe("AdManager", function()
                 local config
 
                 before_each(function()
-                    local promise = Promise()
+                    local promise = BridgeCall()
                     stub(bridge, "show", responsei, promise)
 
                     config = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
@@ -438,7 +439,7 @@ describe("AdManager", function()
                 local config
 
                 before_each(function()
-                    local promise = Promise()
+                    local promise = BridgeCall()
                     stub(bridge, "show", responsei, promise)
 
                     config = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
@@ -533,7 +534,7 @@ describe("AdManager", function()
                         ad_reward = nil
                         ad_error = nil
 
-                        promise = Promise()
+                        promise = BridgeCall()
                         stub(adFactor, nextAd, nil)
                         stub(bridge, "show", responsei, promise)
                         stub(cu, "delayCall")
@@ -561,7 +562,7 @@ describe("AdManager", function()
 
                     describe("when the ad completes successfully", function()
                         before_each(function()
-                            stub(bridge, "cache", {success=true}, Promise())
+                            stub(bridge, "cache", {success=true}, BridgeCall())
                             promise.resolve(AdCompleteResponse(1, 10, true))
                         end)
 
@@ -581,7 +582,7 @@ describe("AdManager", function()
 
                     describe("when the ad completes successfully but has an error", function()
                         before_each(function()
-                            stub(bridge, "cache", {success=true}, Promise())
+                            stub(bridge, "cache", {success=true}, BridgeCall())
                             promise.resolve(AdCompleteResponse(1, 10, false, "An error"))
                         end)
 
@@ -600,7 +601,7 @@ describe("AdManager", function()
 
                     describe("when the ad fails to complete successfully but has an error", function()
                         before_each(function()
-                            stub(bridge, "cache", {success=true}, Promise())
+                            stub(bridge, "cache", {success=true}, BridgeCall())
                             promise.resolve(AdCompleteResponse(1, 10, false, "An error"))
                         end)
 
@@ -652,8 +653,8 @@ describe("AdManager when no ad factory", function()
     local responses
 
     before_each(function()
-        promisec = Promise()
-        promises = Promise()
+        promisec = BridgeCall()
+        promises = BridgeCall()
 
         bridge = require("bridge.modules.ad")
         function bridge.cache(request)
