@@ -69,7 +69,8 @@ function Bridge.new(self)
         local response = adaptor.send(method, request.toDict(), sig)
         local req = BridgeCall(request)
         if response then
-            table.insert(requests, req)
+            -- @todo Check to make sure the ID does not already exist.
+            requests[tostring(request.getId())] = req
         else
             req.reject(string.format("Failed to call method (%s)", method))
         end
@@ -77,22 +78,22 @@ function Bridge.new(self)
     end
 
     function private.getRequestForResponse(response)
-        for idx, request in ipairs(requests) do
-            if request.getId() == response.getId() then
-                return idx, request
-            end
+        local id = tostring(response.getId())
+        local request = requests[id]
+        if request then
+            return id, request
         end
         return nil, nil
     end
 
     -- @param id<BridgeResponseProtocol>
     function self.receive(response)
-        local idx, request = private.getRequestForResponse(response)
+        local id, request = private.getRequestForResponse(response)
         if not request then
             Log.e("Response (%s) no longer has corresponding request!", response.getId())
             return
         end
         request.resolve(response)
-        table.remove(requests, idx)
+        requests[id] = nil
     end
 end
