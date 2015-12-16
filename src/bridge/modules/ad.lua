@@ -2,7 +2,7 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "ad.AdToken"
+require "json"
 
 require "ad.response.AdCacheResponse"
 require "ad.response.AdCompleteResponse"
@@ -91,11 +91,14 @@ end
 -- Receive
 --
 
-function ad__cached(response)
-    bridge.receive(AdCacheResponse(response["token"], response["error"]))
+function ad__cached(payload)
+    local response = json.decode(payload)
+    Log.i("ad__cached: token=%s error=%s", response.token, response.error and response.error or "nil")
+    bridge.receive(AdCacheResponse(response.token, response.error))
 end
 
-function ad__completed(response)
+function ad__completed(payload)
+    local response = json.decode(payload)
     bridge.receive(AdCompleteResponse(response["token"], response["reward"], response["clicked"], response["error"]))
 end
 

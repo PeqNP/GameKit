@@ -1,5 +1,8 @@
 require "lang.Signal"
 require "specs.busted"
+require "Logger"
+
+Log.setLevel(LogLevel.Warning)
 
 require "bridge.Bridge"
 require "bridge.modules.ad"
@@ -330,7 +333,7 @@ describe("modules.ad", function()
 
         context("when caching is successful", function()
             before_each(function()
-                c_response = {token= 10}
+                c_response = "{\"token\": 10}"
                 ad__cached(c_response)
             end)
 
@@ -350,7 +353,7 @@ describe("modules.ad", function()
 
         context("when caching is unsuccessful", function()
             before_each(function()
-                c_response = {token= 10, error="An error"}
+                c_response = "{\"token\": 10, \"error\": \"An error\"}"
                 ad__cached(c_response)
             end)
 
@@ -393,7 +396,7 @@ describe("modules.ad", function()
 
         context("when showing is successful", function()
             before_each(function()
-                c_response = {token= 10, reward=20, clicked=true}
+                c_response = "{\"token\": 10, \"reward\": 20, \"clicked\": true}"
                 ad__completed(c_response)
             end)
 
@@ -421,7 +424,7 @@ describe("modules.ad", function()
 
         context("when caching is unsuccessful", function()
             before_each(function()
-                c_response = {token= 10, error="An error"}
+                c_response = "{\"token\": 10, \"error\": \"An error\"}"
                 ad__completed(c_response)
             end)
 
