@@ -99,7 +99,8 @@ end
 
 function ad__completed(payload)
     local response = json.decode(payload)
-    bridge.receive(AdCompleteResponse(response["token"], response["reward"], response["clicked"], response["error"]))
+    Log.i("ad__completed: token=%s error=%s", response.token, response.error and response.error or "nil")
+    bridge.receive(AdCompleteResponse(response.token, response.reward, response.clicked, response.error))
 end
 
 return ad
