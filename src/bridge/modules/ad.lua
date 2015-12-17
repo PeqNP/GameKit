@@ -93,13 +93,13 @@ end
 
 function ad__cached(payload)
     local response = json.decode(payload)
-    Log.i("ad__cached: token=%s error=%s", response.token, response.error and response.error or "nil")
+    --Log.d("ad__cached: token=%s error=%s", response.token, response.error and response.error or "nil")
     bridge.receive(AdCacheResponse(response.token, response.error))
 end
 
 function ad__completed(payload)
     local response = json.decode(payload)
-    Log.i("ad__completed: token=%s error=%s", response.token, response.error and response.error or "nil")
+    --Log.d("ad__completed: token=%s error=%s", response.token, response.error and response.error or "nil")
     bridge.receive(AdCompleteResponse(response.token, response.reward, response.clicked, response.error))
 end
 
