@@ -481,6 +481,7 @@ describe("AdManager", function()
 
             context("when getting the next AdRequest", function()
                 local config
+                local adConfig
 
                 before_each(function()
                     local promise = BridgeCall()
@@ -488,12 +489,15 @@ describe("AdManager", function()
 
                     config = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
                     stub(adFactory, "nextAd", config)
+
+                    adConfig = {}
+                    stub(adFactory, "getConfigForAd", adConfig)
                 end)
 
-                it("should NOT return the next ad as it doesn't match the config", function()
-                    local request, ad = subject.getNextAdRequest(AdType.Interstitial)
-                    assert.equals(AdRequest, request.getClass())
-                    assert.falsy(ad)
+                it("should return an AdMob request and config", function()
+                    local request, config = subject.getNextAdRequest(AdType.Interstitial)
+                    assert.equal(AdNetwork.AdMob, request.getAdNetwork())
+                    assert.equal(adConfig, config)
                 end)
             end)
         end)

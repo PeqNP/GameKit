@@ -58,6 +58,16 @@ describe("MediationAdFactory", function()
             assert.equals(videoAd, queue[1])
         end)
 
+        it("should return the correct config for ad", function()
+            local config = subject.getConfigForAd(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular)
+            assert.equals(regularAd, config)
+        end)
+
+        it("should not return a config for an ad that is not registered", function()
+            local config = subject.getConfigForAd(AdNetwork.Unknown, AdType.Interstitial, AdImpressionType.Regular)
+            assert.falsy(config)
+        end)
+
         describe("next interstitial", function()
             it("should return correct values", function()
                 assert.equals(admobAd, subject.nextAd(AdType.Interstitial))

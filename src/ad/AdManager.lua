@@ -245,7 +245,12 @@ function AdManager.new(self)
             end
             Log.i("The next ad for network (%s) type (%s) is not ready. Returning first available ad of this type.", nextAd.getAdNetwork(), nextAd.getAdType())
         end
-        return private.getFirstAvailableAdRequest(_requests), false
+        local request = private.getFirstAvailableAdRequest(_requests)
+        if request then
+            local config = adFactory.getConfigForAd(request.getAdNetwork(), adType, AdImpressionType.Regular)
+            return request, config
+        end
+        return nil, nil
     end
 
     function self.showAdRequest(request)

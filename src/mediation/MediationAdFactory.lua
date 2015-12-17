@@ -131,6 +131,15 @@ function MediationAdFactory.new(self)
         return configs
     end
 
+    function self.getConfigForAd(adNetwork, adType, adImpressionType)
+        for _, config in ipairs(configs) do
+            if config.getAdNetwork() == adNetwork and config.getAdType() == adType and config.getAdImpressionType() then
+                return config
+            end
+        end
+        return nil
+    end
+
     function self.getLastError()
         return lastError
     end
