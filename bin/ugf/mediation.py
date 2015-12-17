@@ -27,6 +27,15 @@ def quote(val):
         return "nil"
     return '"' + val + '"'
 
+class Config (object):
+    def __init__(self, deviceIds, automatic, orientation):
+        self.deviceIds = deviceIds
+        self.automatic = automatic
+        self.orientation = orientation
+
+    def toLua(self):
+        return "AdConfig({{\"{}\"}}, {}, {})".format("\", \"".join(self.deviceIds), self.automatic and "true" or "false", self.orientation)
+
 class Network (object):
     def __init__(self, name, appId, signature, ads):
         self.name = name
@@ -65,12 +74,12 @@ def load_mediation_config(path):
     fh.close()
     config = json.loads(json_blob)
     networks = []
-    for network in config:
+    for network in config["networks"]:
         ads = []
         for ad in network["ads"]:
             ads.append(Ad(ad["type"], ad["zoneId"], ad.get("location", None)))
         networks.append(Network(network["network"], network.get("appId"), network.get("signature"), ads))
-    return networks
+    return Config(config["config"]["devices"], config["config"]["automatic"], config["config"]["orientation"]), networks
 
 def lua_for_networks(networks):
     code = []

@@ -100,7 +100,7 @@ def configure_supported_networks_header(networks, cocos):
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/ios/SupportedNetworks.h", cocos.iosmacprojpath("AdKit/GameTools/SupportedNetworks.h"))
 
-def create_lua_mediation(networks, cocos):
+def create_lua_mediation(mediation, networks, cocos):
     lua_networks = lua_for_networks(networks)
     lua_require = []
     for network in networks:
@@ -114,21 +114,23 @@ require "ad.Constants"
 require "ad.Ad"
 {}
 
+local adConfig = {}
 local networks = {{
     {}
 }}
-return networks
-    """.format(VERSION, datetime.now(), "\n".join(lua_require), ",\n    ".join(lua_networks))
+return adConfig, networks
+    """.format(VERSION, datetime.now(), "\n".join(lua_require), mediation.toLua(), ",\n    ".join(lua_networks))
     fh = open(cocos.mediationluapath("ios"), "w")
     fh.write(lua)
     fh.close()
 
-def load_networks(source, platform):
+def load_mediation(source, platform):
     path = source.mediationpath(platform)
     try:
         return load_mediation_config(path)
-    except:
-        return None
+    except Exception, exc:
+        print(exc)
+        return None, None
 
 # Select and make 'project' the active project.
 def configure_ios_targets(project, source, cocos, stage):
@@ -195,22 +197,21 @@ if __name__ == "__main__":
     cocos = CocosPathBuilder(config, project.cocos)
     adkit = AdKitPathBuilder(config)
     stage = StagePathBuilder(cocos.basepath())
-    networks = load_networks(source, "ios")
+    mediation, networks = load_mediation(source, "ios")
 
     if not os.path.exists(stage.basepath()):
         os.makedirs(stage.basepath())
 
-    if not networks:
-        print("No mediation networks configured for project. Skipping all mediation network related configuration.")
-
-    if networks:
+    if mediation and networks:
         if "mediation" in options:
             configure_ios_pods(networks, project, cocos, stage)
         if "lua" in options:
-            create_lua_mediation(networks, cocos)
+            create_lua_mediation(mediation, networks, cocos)
         if "adkit" in options:
             copy_adkit_sources(networks, cocos, adkit)
             configure_supported_networks_header(networks, cocos)
+    else:
+        print("No mediation networks configured for project. Skipping all mediation network related configuration.")
 
     if "project" in options:
         configure_ios_targets(project, source, cocos, stage)
