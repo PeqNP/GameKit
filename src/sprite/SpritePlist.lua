@@ -51,7 +51,7 @@ function SpritePlist.new(self)
     end
 
     local function loadPlist()
-        Log.i("Loading texture (%s)...", textureName)
+        Log.i("Plist: Loading texture (%s)...", textureName)
         cc.SpriteFrameCache:getInstance():addSpriteFrames(plistName)
     end
 
@@ -60,7 +60,7 @@ function SpritePlist.new(self)
         local promise = Promise()
         if #frames == 0 then
             Log.s("No frames provided for texture (%s)!", textureName)
-            promise.reject()
+            promise.reject(string.format("No frames provided for texture (%s)!", textureName))
             return promise
         end
         local texture = cc.Director:getInstance():getTextureCache():getTextureForKey(imageName)

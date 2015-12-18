@@ -80,7 +80,7 @@ function SpriteSheet.new(self)
         local texture = cc.Director:getInstance():getTextureCache():getTextureForKey(textureName)
         -- Synchronously load texture.
         if not texture then
-            Log.i("Loading texture (%s)...", textureName)
+            Log.i("Sheet: Loading texture (%s)...", textureName)
             texture = cc.Director:getInstance():getTextureCache():addImage(textureName)
         end
         self.width = texture:getPixelsWide() / cols

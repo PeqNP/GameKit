@@ -20,7 +20,9 @@ Direction = bitmask(0x01
   , 'Right'
 )
 
-Heading = enum(1
+-- Locations are also used for to determine a heading. Headings do not factor in
+-- the Center or Random location.
+Location = enum(1
   , 'TopLeft'
   , 'Top'
   , 'TopRight'
