@@ -89,7 +89,7 @@ end
 
 --[[ Returns a point which represents the position of a location.
 
-  For instance, if provided Heading.TopLeft this will produce a point
+  For instance, if provided Location.TopLeft this will produce a point
   that is near the top left of the screen.
 
   This is generally used for rolling credits at the ending of a game.
@@ -98,8 +98,8 @@ end
 function cu.getPointForLocation(location, sprite, padding)
     local size = cu.getVisibleSize()
     local x, y
-    if location == Heading.Random then
-        location = math.random(Heading.MIN, Heading.MAX-1) -- -1 to remove 'Random'
+    if location == Location.Random then
+        location = math.random(Location.MIN, Location.MAX-1) -- -1 to remove 'Random'
     end
     if not padding then
         padding = 0
@@ -107,31 +107,31 @@ function cu.getPointForLocation(location, sprite, padding)
     local bbox = sprite:getBoundingBox()
     local wpad = (bbox.width / 2) + padding -- Width padding
     local hpad = (bbox.height / 2) + padding -- height padding
-    if location == Heading.TopLeft then
+    if location == Location.TopLeft then
         x = wpad
         y = size.height - hpad
-    elseif location == Heading.Top then
+    elseif location == Location.Top then
         x = size.width / 2
         y = size.height - hpad
-    elseif location == Heading.TopRight then
+    elseif location == Location.TopRight then
         x = size.width - wpad
         y = size.height - hpad
-    elseif location == Heading.Right then
+    elseif location == Location.Right then
         x = size.width - wpad
         y = size.height / 2
-    elseif location == Heading.BottomRight then
+    elseif location == Location.BottomRight then
         x = size.width - wpad
         y = hpad + BOTTOM_AD_HEIGHT + BUTTON_PADDING
-    elseif location == Heading.Bottom then
+    elseif location == Location.Bottom then
         x = size.width / 2
         y = hpad + BOTTOM_AD_HEIGHT + BUTTON_PADDING
-    elseif location == Heading.BottomLeft then
+    elseif location == Location.BottomLeft then
         x = wpad
         y = hpad + BOTTOM_AD_HEIGHT + BUTTON_PADDING
-    elseif location == Heading.Left then
+    elseif location == Location.Left then
         x = wpad
         y = size.height / 2
-    elseif location == Heading.Center then
+    elseif location == Location.Center then
         x = size.width / 2
         y = (size.height / 2) + BOTTOM_AD_HEIGHT
     else
@@ -147,33 +147,33 @@ end
 function cu.getPointForHeading(heading)
     local size = cu.getVisibleSize()
     local x, y
-    if heading == Heading.Random then
+    if heading == Location.Random then
         -- Do not factor in Center or Random locations as they are
         -- not considered valid headings.
-        heading = math.random(Heading.MIN, Heading.MAX-2)
+        heading = math.random(Location.MIN, Location.MAX-2)
     end
-    if heading == Heading.Top then
+    if heading == Location.Top then
         x = size.width / 2
         y = size.height
-    elseif heading == Heading.TopRight then
+    elseif heading == Location.TopRight then
         x = size.width
         y = size.height
-    elseif heading == Heading.Right then
+    elseif heading == Location.Right then
         x = size.width
         y = size.height / 2
-    elseif heading == Heading.BottomRight then
+    elseif heading == Location.BottomRight then
         x = size.width
         y = 0
-    elseif heading == Heading.Bottom then
+    elseif heading == Location.Bottom then
         x = size.width / 2
         y = 0
-    elseif heading == Heading.BottomLeft then
+    elseif heading == Location.BottomLeft then
         x = 0
         y = 0
-    elseif heading == Heading.Left then
+    elseif heading == Location.Left then
         x = 0
         y = size.height / 2
-    elseif heading == Heading.TopLeft then
+    elseif heading == Location.TopLeft then
         x = 0
         y = size.height
     else
