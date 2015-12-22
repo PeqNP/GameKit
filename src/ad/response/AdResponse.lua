@@ -6,6 +6,9 @@ require "bridge.BridgeResponse"
 
 AdResponse = Class(BridgeResponse)
 
-function AdResponse.new(self)
+function AdResponse.new(self, init)
+    function self.init(success, err)
+        init(success, nil, err)
+    end
 end
 

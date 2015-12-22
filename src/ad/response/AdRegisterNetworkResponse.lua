@@ -22,7 +22,7 @@ function AdRegisterNetworkResponse.new(self, init)
     end
 
     function self.init(_success, _tokens, _err)
-        init(_success, _err)
+        init(_success, nil, _err)
         tokens = getTokens(_tokens)
     end
 
