@@ -2,10 +2,6 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-BridgeResponseProtocol= Protocol(
-    Method("getId")
-)
-
 BridgeResponse = Class()
 
 function BridgeResponse.new(self)
