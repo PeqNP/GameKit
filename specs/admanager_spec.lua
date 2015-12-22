@@ -10,7 +10,6 @@ require "ad.Constants"
 require "ad.Ad"
 require "ad.AdManager"
 require "ad.AdError"
-require "ad.response.AdResponse"
 require "ad.response.AdRegisterNetworkResponse"
 require "ad.networks.AdMobNetwork"
 require "ad.networks.AdColonyNetwork"
@@ -76,7 +75,7 @@ describe("AdManager", function()
         context("when successful", function()
             before_each(function()
                 request = {}
-                stub(bridge, "configure", AdResponse(true))
+                stub(bridge, "configure", BridgeResponse(true))
                 ret = subject.configure(request)
             end)
 
@@ -92,7 +91,7 @@ describe("AdManager", function()
         context("when failure", function()
             before_each(function()
                 request = {}
-                stub(bridge, "configure", AdResponse(false, "An error"))
+                stub(bridge, "configure", BridgeResponse(false, nil, "An error"))
                 ret = subject.configure(request)
             end)
 
@@ -151,7 +150,7 @@ describe("AdManager", function()
             context("when hiding the banner ad", function()
                 context("when it fails", function()
                     before_each(function()
-                        stub(bridge, "hideBannerAd", AdResponse(true))
+                        stub(bridge, "hideBannerAd", BridgeResponse(true))
                         success = subject.hideBannerAd()
                     end)
 
@@ -167,7 +166,7 @@ describe("AdManager", function()
 
                 context("when it fails", function()
                     before_each(function()
-                        stub(bridge, "hideBannerAd", AdResponse(false, "Error"))
+                        stub(bridge, "hideBannerAd", BridgeResponse(false, nil, "Error"))
                         success = subject.hideBannerAd()
                     end)
 
@@ -353,7 +352,7 @@ describe("AdManager", function()
             before_each(function()
                 requesti = requests[1]
                 requestv = requests[2]
-                promisei.resolve(AdResponse(true))
+                promisei.resolve(BridgeResponse(true))
             end)
 
             it("should have an available interstitial", function()
@@ -515,7 +514,7 @@ describe("AdManager", function()
                 spy.on(cu, "delayCall")
 
                 requesti = requests[1]
-                promisei.reject(AdResponse(false, "Cache failure"))
+                promisei.reject(BridgeResponse(false, nil, "Cache failure"))
             end)
 
             it("should have completed request", function()
@@ -558,7 +557,7 @@ describe("AdManager", function()
             before_each(function()
                 requesti = requests[1]
                 requestv = requests[2]
-                promisev.resolve(AdResponse(true))
+                promisev.resolve(BridgeResponse(true))
             end)
 
             it("should NOT have an available interstitial", function()
@@ -730,7 +729,7 @@ describe("AdManager when no ad factory", function()
             subject.registerAd(ad)
 
             request = subject.getRequests()[1]
-            promisec.resolve(AdResponse(true))
+            promisec.resolve(BridgeResponse(true))
         end)
 
         it("should have created a request", function()
@@ -768,8 +767,8 @@ describe("AdManager when no ad factory", function()
         local request
 
         before_each(function()
-            responsec = BridgeResponse(false, "cache error")
-            responses = BridgeResponse(false, "show error")
+            responsec = BridgeResponse(false, nil, "cache error")
+            responses = BridgeResponse(false, nil, "show error")
 
             subject.registerAd(ad)
         end)

@@ -68,8 +68,8 @@ describe("modules.ad", function()
                 assert.stub(bridge.send).was.called_with("ad__configure", request)
             end)
 
-            it("should have returned an AdResponse", function()
-                assert.equal(AdResponse, r.getClass())
+            it("should have returned an BridgeResponse", function()
+                assert.equal(BridgeResponse, r.getClass())
             end)
 
             it("should have set properties correctly", function()
@@ -91,8 +91,8 @@ describe("modules.ad", function()
                 assert.stub(bridge.send).was.called_with("ad__configure", request)
             end)
 
-            it("should have returned an AdResponse", function()
-                assert.equal(AdResponse, r.getClass())
+            it("should have returned an BridgeResponse", function()
+                assert.equal(BridgeResponse, r.getClass())
             end)
 
             it("should have set properties correctly", function()
@@ -189,7 +189,7 @@ describe("modules.ad", function()
         end)
 
         it("should have returned the bridge's response", function()
-            assert.equals(AdResponse, r.getClass())
+            assert.equals(BridgeResponse, r.getClass())
         end)
 
         it("should be a success", function()
@@ -216,7 +216,7 @@ describe("modules.ad", function()
         end)
 
         it("should have returned the bridge's response", function()
-            assert.equals(AdResponse, r.getClass())
+            assert.equals(BridgeResponse, r.getClass())
         end)
 
         it("should be a failure", function()
@@ -243,7 +243,7 @@ describe("modules.ad", function()
         end)
 
         it("should have returned the bridge's response", function()
-            assert.equals(AdResponse, r.getClass())
+            assert.equals(BridgeResponse, r.getClass())
         end)
 
         it("should be a failure", function()
@@ -274,7 +274,7 @@ describe("modules.ad", function()
         end)
 
         it("should have returned the bridge's response", function()
-            assert.equals(AdResponse, r.getClass())
+            assert.equals(BridgeResponse, r.getClass())
         end)
 
         it("should be a successful response", function()
@@ -301,7 +301,7 @@ describe("modules.ad", function()
         end)
 
         it("should have returned the bridge's response", function()
-            assert.equals(AdResponse, r.getClass())
+            assert.equals(BridgeResponse, r.getClass())
         end)
 
         it("should be a failure", function()
@@ -457,10 +457,10 @@ describe("modules.ad", function()
         end)
 
         it("should have returned response", function()
-            assert.equal(AdResponse, r.getClass())
+            assert.equal(BridgeResponse, r.getClass())
         end)
 
-        it("should have set properties on AdResponse", function()
+        it("should have set properties on BridgeResponse", function()
             assert.truthy(r.isSuccess())
             assert.equal("Error", r.getError())
         end)

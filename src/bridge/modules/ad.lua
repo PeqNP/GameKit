@@ -4,10 +4,11 @@
 
 require "json"
 
+require "bridge.BridgeResponse"
+
 require "ad.response.AdCacheResponse"
 require "ad.response.AdCompleteResponse"
 require "ad.response.AdRegisterNetworkResponse"
-require "ad.response.AdResponse"
 
 local ad = {}
 
@@ -18,8 +19,8 @@ end
 
 -- Send
 
-local function getAdResponse(response)
-    return AdResponse(response.success, response.error)
+local function getBridgeResponse(response)
+    return BridgeResponse(response.success, nil, response.error)
 end
 
 --
@@ -29,7 +30,7 @@ end
 --
 function ad.configure(request)
     local response = bridge.send("ad__configure", request)
-    return AdResponse(response.success, response.error)
+    return BridgeResponse(response.success, nil, response.error)
 end
 
 --
@@ -53,15 +54,15 @@ end
 --
 -- @param id<AdRequest>
 --
--- @return AdResponse
+-- @return BridgeResponse
 --
 function ad.cache(request)
     -- @return {success:, error:}
     local response, call = bridge.sendAsync("ad__cache", request)
     if type(response) == "table" then
-        return getAdResponse(response), call
+        return getBridgeResponse(response), call
     end
-    return AdResponse(false, "Failed to cache ad"), call
+    return BridgeResponse(false, nil, "Failed to cache ad"), call
 end
 
 --
@@ -69,17 +70,17 @@ end
 --
 -- @param id<AdRequest>
 --
--- @return AdResponse
+-- @return BridgeResponse
 --
 function ad.show(request)
     -- @return {success:, error:}
     local response, call = bridge.sendAsync("ad__show", request)
-    return getAdResponse(response), call
+    return getBridgeResponse(response), call
 end
 
 function ad.hideBannerAd()
     local response = bridge.send("ad__hideBanner")
-    return AdResponse(response.success, response.error)
+    return BridgeResponse(response.success, nil, response.error)
 end
 
 --function ad.destroy(ad)
