@@ -5,9 +5,9 @@ require "Logger"
 Log.setLevel(LogLevel.Warning)
 
 require "bridge.Bridge"
+require "bridge.BridgeResponse"
 require "bridge.modules.iap"
 TransactionRequest = require("iap.request.TransactionRequest")
-TransactionResponse = require("iap.response.TransactionResponse")
 
 describe("modules.iap", function()
     local subject

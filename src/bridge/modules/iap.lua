@@ -3,9 +3,9 @@
 --
 
 require "json"
+require "bridge.BridgeResponse"
 
 TransactionRequest = require("iap.request.TransactionRequest")
-TransactionResponse = require("iap.response.TransactionResponse")
 TransactionCompletedResponse = require("iap.response.TransactionCompletedResponse")
 TransactionFailedResponse = require("iap.response.TransactionFailedResponse")
 
@@ -18,12 +18,12 @@ end
 
 function iap.purchase(request)
     local response = bridge.send("iap__purchase", request)
-    return TransactionResponse(response.id, response.success, response.error)
+    return BridgeResponse(response.success, response.id, response.error)
 end
 
 function iap.restore(request)
     local response = bridge.send("iap__restore", request)
-    return TransactionResponse(response.id, response.success, response.error)
+    return BridgeResponse(response.success, response.id, response.error)
 end
 
 function iap__completed(payload)
@@ -38,7 +38,7 @@ end
 
 function iap__failed(payload)
     local response = json.decode(payload)
-    bridge.receive(TransactionFailedResponse(response.id, response.success, response.error))
+    bridge.receive(TransactionFailedResponse(response.id, response.error))
 end
 
 return iap
