@@ -7,13 +7,13 @@ require "bridge.BridgeResponse"
 AdRegisterNetworkResponse = Class(BridgeResponse)
 
 function AdRegisterNetworkResponse.new(self, init)
-    local tokens
+    local adIds
 
-    local function getTokens(_tokens)
-        if not _tokens then
+    local function getAdIds(_adIds)
+        if not _adIds then
             return {}
         end
-        local parts = string.split(_tokens, ",")
+        local parts = string.split(_adIds, ",")
         local parsed = {}
         for _, part in ipairs(parts) do
             table.insert(parsed, tonumber(part))
@@ -21,12 +21,12 @@ function AdRegisterNetworkResponse.new(self, init)
         return parsed
     end
 
-    function self.init(_success, _tokens, _err)
+    function self.init(_success, _adIds, _err)
         init(_success, nil, _err)
-        tokens = getTokens(_tokens)
+        adIds = getAdIds(_adIds)
     end
 
-    function self.getTokens()
-        return tokens
+    function self.getAdIds()
+        return adIds
     end
 end

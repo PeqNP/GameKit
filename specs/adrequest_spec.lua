@@ -12,7 +12,7 @@ describe("AdRequest", function()
     before_each(function()
         ad = Ad(AdType.Interstitial, "zone")
         ad.setAdNetwork(AdNetwork.AdMob)
-        ad.setToken("token")
+        ad.setAdId("adId")
         subject = AdRequest(ad)
     end)
 
@@ -37,18 +37,18 @@ describe("AdRequest", function()
         assert.equal("zone", subject.getZoneId())
     end)
 
-    it("should return the correct token", function()
-        assert.equals("token", subject.getToken())
+    it("should return the correct ad ID", function()
+        assert.equals("adId", subject.getAdId())
     end)
 
     -- BridgeRequestProtocol
 
     it("should return the correct ID", function()
-        assert.equals("token", subject.getId())
+        assert.equals("adId", subject.getId())
     end)
 
     it("should return dictionary with config", function()
-        assert.truthy(table.equals({token="token"}, subject.toDict()))
+        assert.truthy(table.equals({adid="adId"}, subject.toDict()))
     end)
 
     describe("state", function()

@@ -9,7 +9,7 @@ function Ad.new(self)
     local adType
     local zoneId
     local location
-    local token
+    local adId
 
     function self.init(_adType, _zoneId, _location)
         adType = _adType
@@ -37,11 +37,11 @@ function Ad.new(self)
         return adNetwork
     end
 
-    function self.setToken(t)
-        token = t
+    function self.setAdId(id)
+        adId = id
     end
 
-    function self.getToken()
-        return token
+    function self.getAdId()
+        return adId
     end
 end

@@ -127,14 +127,14 @@ function AdManager.new(self)
         if not response.isSuccess() then
             return false, AdError(100, string.format("Failed to register network (%s)", network.getName()), response.getError())
         end
-        -- Map token to respective ad.
-        Log.d("AdManager.registerNetwork: Tokens: %s", table.concat(response.getTokens(), ","))
+        -- Map ad ID to respective ad.
+        Log.d("AdManager.registerNetwork: IDs: %s", table.concat(response.getAdIds(), ","))
         local ads = network.getAds()
-        for i, token in ipairs(response.getTokens()) do
+        for i, adId in ipairs(response.getAdIds()) do
             local ad = ads[i]
-            ad.setToken(token)
+            ad.setAdId(adId)
             self.registerAd(ad)
-            Log.d("Registered network (%s) type (%s) w/ token (%s)", network.getName(), ad.getAdType(), token)
+            Log.d("Registered network (%s) type (%s) w/ ad ID (%s)", network.getName(), ad.getAdType(), adId)
         end
         table.insert(networks, network)
         return true

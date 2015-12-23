@@ -43,10 +43,10 @@ end
 function ad.register(request)
     -- A typical request looks like:
     -- {network: "AdColony", appid: "vcz-123456789", ads: [{"type": AdType.Interstitial, "zoneid": "abcd-12345"}]}
-    -- @return {success:, (tokens: OR error:)}
-    -- ads[] {token:, zoneId}
+    -- @return {success:, (adids: OR error:)}
+    -- ads[] {adid:, zoneId}
     local response = bridge.send("ad__register", request)
-    return AdRegisterNetworkResponse(response.success, response.tokens, response.error)
+    return AdRegisterNetworkResponse(response.success, response.adids, response.error)
 end
 
 --
@@ -94,14 +94,14 @@ end
 
 function ad__cached(payload)
     local response = json.decode(payload)
-    --Log.d("ad__cached: token=%s error=%s", response.token, response.error and response.error or "nil")
-    bridge.receive(AdCacheResponse(response.token, response.error))
+    --Log.d("ad__cached: adid=%s error=%s", response.adid, response.error and response.error or "nil")
+    bridge.receive(AdCacheResponse(response.adid, response.error))
 end
 
 function ad__completed(payload)
     local response = json.decode(payload)
-    --Log.d("ad__completed: token=%s error=%s", response.token, response.error and response.error or "nil")
-    bridge.receive(AdCompleteResponse(response.token, response.reward, response.clicked, response.error))
+    --Log.d("ad__completed: adid=%s error=%s", response.adid, response.error and response.error or "nil")
+    bridge.receive(AdCompleteResponse(response.adid, response.reward, response.clicked, response.error))
 end
 
 return ad

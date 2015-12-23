@@ -37,7 +37,7 @@ function reload(pckg)
     return require(pckg)
 end
 
-function Ad.init4(adNetwork, adType, zoneId, reward, token)
+function Ad.init4(adNetwork, adType, zoneId, reward, adId)
     local ad = Ad(adType, zoneId, reward)
     ad.setAdNetwork(adNetwork)
     return ad
@@ -137,9 +137,9 @@ describe("AdManager", function()
                 assert.stub(bridge.register).was.called_with(match.is_kind_of(AdRegisterNetworkRequest))
             end)
 
-            it("should have associated tokens to respective ads", function()
-                assert.equals(100, bannerAd.getToken())
-                assert.equals(200, interstitialAd.getToken())
+            it("should have associated ad IDs to respective ads", function()
+                assert.equals(100, bannerAd.getAdId())
+                assert.equals(200, interstitialAd.getAdId())
             end)
 
             it("should have registered all ads", function()
@@ -203,9 +203,9 @@ describe("AdManager", function()
                 assert.equals("Info", _error.getInfo())
             end)
 
-            it("should NOT have associated tokens to respective ads", function()
-                assert.falsy(bannerAd.getToken())
-                assert.falsy(interstitialAd.getToken())
+            it("should NOT have associated ad IDs to respective ads", function()
+                assert.falsy(bannerAd.getAdId())
+                assert.falsy(interstitialAd.getAdId())
             end)
 
             it("should have registered all ads", function()
@@ -716,7 +716,7 @@ describe("AdManager when no ad factory", function()
 
         subject = AdManager(bridge)
 
-        ad = Ad.init4(AdNetwork.AdMob, AdType.Interstitial, "token", 5)
+        ad = Ad.init4(AdNetwork.AdMob, AdType.Interstitial, "adid", 5)
     end)
 
     context("when the ad is cached successfully", function()

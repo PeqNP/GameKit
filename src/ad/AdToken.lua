@@ -5,16 +5,16 @@
 AdToken = Class()
 
 function AdToken.new(self)
-    local token
+    local adId
     local zoneId
 
-    function self.init(_token, _zoneId)
-        token = _token
+    function self.init(_adId, _zoneId)
+        adId = _adId
         zoneId = _zoneId
     end
 
-    function self.getToken()
-        return token
+    function self.getAdId()
+        return adId
     end
 
     function self.getZoneId()

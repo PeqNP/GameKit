@@ -23,12 +23,12 @@ assert:register("matcher", "equal", is_equal)
 
 Ad = Class()
 function Ad.new(self)
-    local token
-    function self.init(_token)
-        token = _token
+    local adId
+    function self.init(_adId)
+        adId = _adId
     end
-    function self.getToken()
-        return token
+    function self.getAdId()
+        return adId
     end
     function self.setAdNetwork(network)
     end
@@ -106,7 +106,7 @@ describe("modules.ad", function()
         local r
 
         before_each(function()
-            response = {success=true, tokens="1,2"}
+            response = {success=true, adids="1,2"}
             stub(bridge, "send", response)
             r = subject.register(request)
         end)
@@ -123,21 +123,21 @@ describe("modules.ad", function()
             assert.truthy(r.isSuccess())
         end)
 
-        it("should have created two tokens", function()
-            local tokens = r.getTokens()
-            assert.equals(2, #tokens)
+        it("should have created two ad IDs", function()
+            local adIds = r.getAdIds()
+            assert.equals(2, #adIds)
         end)
 
-        it("should have created ad token 1 correctly", function()
-            local tokens = r.getTokens()
-            local token = tokens[1]
-            assert.equals(1, token)
+        it("should have created ad ID 1 correctly", function()
+            local adIds = r.getAdIds()
+            local adId = adIds[1]
+            assert.equals(1, adId)
         end)
 
-        it("should have created ad token 2 correctly", function()
-            local tokens = r.getTokens()
-            local token = tokens[2]
-            assert.equals(2, token)
+        it("should have created ad ID 2 correctly", function()
+            local adIds = r.getAdIds()
+            local adId = adIds[2]
+            assert.equals(2, adId)
         end)
     end)
 
@@ -160,9 +160,9 @@ describe("modules.ad", function()
             assert.falsy(r.isSuccess())
         end)
 
-        it("should not have created any tokens", function()
-            local tokens = r.getTokens()
-            assert.equals(0, #tokens)
+        it("should not have created any ad IDs", function()
+            local adIds = r.getAdIds()
+            assert.equals(0, #adIds)
         end)
 
         it("should have an error", function()
@@ -333,7 +333,7 @@ describe("modules.ad", function()
 
         context("when caching is successful", function()
             before_each(function()
-                c_response = "{\"token\": 10}"
+                c_response = "{\"adid\": 10}"
                 ad__cached(c_response)
             end)
 
@@ -353,7 +353,7 @@ describe("modules.ad", function()
 
         context("when caching is unsuccessful", function()
             before_each(function()
-                c_response = "{\"token\": 10, \"error\": \"An error\"}"
+                c_response = "{\"adid\": 10, \"error\": \"An error\"}"
                 ad__cached(c_response)
             end)
 
@@ -396,7 +396,7 @@ describe("modules.ad", function()
 
         context("when showing is successful", function()
             before_each(function()
-                c_response = "{\"token\": 10, \"reward\": 20, \"clicked\": true}"
+                c_response = "{\"adid\": 10, \"reward\": 20, \"clicked\": true}"
                 ad__completed(c_response)
             end)
 
@@ -424,7 +424,7 @@ describe("modules.ad", function()
 
         context("when caching is unsuccessful", function()
             before_each(function()
-                c_response = "{\"token\": 10, \"error\": \"An error\"}"
+                c_response = "{\"adid\": 10, \"error\": \"An error\"}"
                 ad__completed(c_response)
             end)
 

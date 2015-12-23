@@ -40,8 +40,8 @@ function AdRequest.new(self)
         return ad.getZoneId()
     end
 
-    function self.getToken()
-        return ad.getToken()
+    function self.getAdId()
+        return ad.getAdId()
     end
 
     function self.isComplete()
@@ -51,10 +51,10 @@ function AdRequest.new(self)
     -- BridgeRequest
 
     function self.getId()
-        return ad.getToken()
+        return ad.getAdId()
     end
 
     function self.toDict()
-        return {token=ad.getToken()}
+        return {adid=ad.getAdId()}
     end
 end
