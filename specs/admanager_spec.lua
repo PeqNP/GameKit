@@ -468,7 +468,7 @@ describe("AdManager", function()
 
                 context("when the ad fails to be cached", function()
                     before_each(function()
-                        leadbolt_promise.resolve(AdCacheResponse(false, "Leadbolt error"))
+                        leadbolt_promise.resolve(BridgeResponse(false, nil, "Leadbolt error"))
                         assert.truthy(subject.showAd(AdType.Interstitial))
                     end)
 
@@ -610,7 +610,7 @@ describe("AdManager", function()
                     describe("when the ad completes successfully", function()
                         before_each(function()
                             stub(bridge, "cache", BridgeResponse(true), BridgeCall())
-                            promise.resolve(AdCompleteResponse(1, 10, true))
+                            promise.resolve(AdCompleteResponse(true, 1, 10, true))
                         end)
 
                         it("should have set the click and reward", function()
@@ -627,47 +627,9 @@ describe("AdManager", function()
                         end)
                     end)
 
-                    describe("when the ad completes successfully but has an error", function()
-                        before_each(function()
-                            stub(bridge, "cache", BridgeResponse(true), BridgeCall())
-                            promise.resolve(AdCompleteResponse(1, 10, false, "An error"))
-                        end)
-
-                        it("should have set the click and reward", function()
-                            assert.equal("An error", ad_error)
-                        end)
-
-                        it("should have updated the state of the ad request", function()
-                            assert.equal(AdState.Complete, requestv.getState())
-                        end)
-
-                        it("should cache ad immediately", function()
-                            assert.stub(bridge.cache).was.called()
-                        end)
-                    end)
-
-                    describe("when the ad fails to complete successfully but has an error", function()
-                        before_each(function()
-                            stub(bridge, "cache", BridgeResponse(true), BridgeCall())
-                            promise.resolve(AdCompleteResponse(1, 10, false, "An error"))
-                        end)
-
-                        it("should have rejected the promise with an error", function()
-                            assert.equal("An error", ad_error)
-                        end)
-
-                        it("should have updated the state of the ad request", function()
-                            assert.equal(AdState.Complete, requestv.getState())
-                        end)
-
-                        it("should cache ad immediately", function()
-                            assert.stub(bridge.cache).was.called()
-                        end)
-                    end)
-
                     describe("when the request fails", function()
                         before_each(function()
-                            promise.reject(AdCompleteResponse(1, 0, false, "Failure"))
+                            promise.reject(AdCompleteResponse(false, 1, 0, false, "Failure"))
                         end)
 
                         it("should have updated the state of the ad request", function()
