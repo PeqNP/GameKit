@@ -6,7 +6,6 @@ Log.setLevel(LogLevel.Warning)
 
 require "bridge.Bridge"
 require "bridge.modules.ad"
-require "ad.response.AdCacheResponse"
 require "ad.response.AdCompleteResponse"
 require "ad.networks.AdColonyNetwork"
 
@@ -260,7 +259,7 @@ describe("modules.ad", function()
         local c
 
         before_each(function()
-            response = {success=true}
+            response = {success=true, id=23}
             stub(bridge, "sendAsync", response, call)
             r, c = subject.show(request)
         end)
@@ -279,6 +278,10 @@ describe("modules.ad", function()
 
         it("should be a successful response", function()
             assert.truthy(r.isSuccess())
+        end)
+
+        it("should have set the ID on the response", function()
+            assert.equal(23, r.getId())
         end)
     end)
 
@@ -333,17 +336,17 @@ describe("modules.ad", function()
 
         context("when caching is successful", function()
             before_each(function()
-                c_response = "{\"adid\": 10}"
+                c_response = "{\"success\": true, \"id\": 54}"
                 ad__cached(c_response)
             end)
 
             it("should have created a cached response", function()
                 assert.truthy(response)
-                assert.truthy(response.kindOf(AdCacheResponse))
+                assert.truthy(response.kindOf(BridgeResponse))
             end)
 
             it("should have set the correct ID", function()
-                assert.equals(10, response.getId())
+                assert.equals(54, response.getId())
             end)
 
             it("should not have an error", function()
@@ -353,13 +356,13 @@ describe("modules.ad", function()
 
         context("when caching is unsuccessful", function()
             before_each(function()
-                c_response = "{\"adid\": 10, \"error\": \"An error\"}"
+                c_response = "{\"success\": false, \"id\": 10, \"error\": \"An error\"}"
                 ad__cached(c_response)
             end)
 
             it("should have created a cached response", function()
                 assert.truthy(response)
-                assert.truthy(response.kindOf(AdCacheResponse))
+                assert.truthy(response.kindOf(BridgeResponse))
             end)
 
             it("should have set the correct ID", function()
@@ -396,7 +399,7 @@ describe("modules.ad", function()
 
         context("when showing is successful", function()
             before_each(function()
-                c_response = "{\"adid\": 10, \"reward\": 20, \"clicked\": true}"
+                c_response = "{\"success\": true, \"id\": 11, \"reward\": 20, \"clicked\": true}"
                 ad__completed(c_response)
             end)
 
@@ -406,7 +409,7 @@ describe("modules.ad", function()
             end)
 
             it("should have set the correct ID", function()
-                assert.equals(10, response.getId())
+                assert.equals(11, response.getId())
             end)
 
             it("should have set correct reward", function()
@@ -424,7 +427,7 @@ describe("modules.ad", function()
 
         context("when caching is unsuccessful", function()
             before_each(function()
-                c_response = "{\"adid\": 10, \"error\": \"An error\"}"
+                c_response = "{\"success\": false, \"id\": 21, \"error\": \"An error\"}"
                 ad__completed(c_response)
             end)
 
@@ -434,7 +437,7 @@ describe("modules.ad", function()
             end)
 
             it("should have set the correct ID", function()
-                assert.equals(10, response.getId())
+                assert.equals(21, response.getId())
             end)
 
             it("should have an error", function()

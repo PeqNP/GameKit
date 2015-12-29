@@ -6,7 +6,6 @@ require "json"
 
 require "bridge.BridgeResponse"
 
-require "ad.response.AdCacheResponse"
 require "ad.response.AdCompleteResponse"
 require "ad.response.AdRegisterNetworkResponse"
 
@@ -20,7 +19,7 @@ end
 -- Send
 
 local function getBridgeResponse(response)
-    return BridgeResponse(response.success, nil, response.error)
+    return BridgeResponse(response.success, response.id, response.error)
 end
 
 --
@@ -59,7 +58,7 @@ end
 function ad.cache(request)
     -- @return {success:, error:}
     local response, call = bridge.sendAsync("ad__cache", request)
-    if type(response) == "table" then
+    if type(response) == "table" then -- Occurs when call failed.
         return getBridgeResponse(response), call
     end
     return BridgeResponse(false, nil, "Failed to cache ad"), call
@@ -80,7 +79,7 @@ end
 
 function ad.hideBannerAd()
     local response = bridge.send("ad__hideBanner")
-    return BridgeResponse(response.success, nil, response.error)
+    return getBridgeResponse(response)
 end
 
 --function ad.destroy(ad)
@@ -95,13 +94,13 @@ end
 function ad__cached(payload)
     local response = json.decode(payload)
     --Log.d("ad__cached: adid=%s error=%s", response.adid, response.error and response.error or "nil")
-    bridge.receive(AdCacheResponse(response.adid, response.error))
+    bridge.receive(getBridgeResponse(response))
 end
 
 function ad__completed(payload)
     local response = json.decode(payload)
     --Log.d("ad__completed: adid=%s error=%s", response.adid, response.error and response.error or "nil")
-    bridge.receive(AdCompleteResponse(response.adid, response.reward, response.clicked, response.error))
+    bridge.receive(AdCompleteResponse(response.success, response.id, response.reward, response.clicked, response.error))
 end
 
 return ad

@@ -4,27 +4,16 @@
 
 require "bridge.BridgeResponseProtocol"
 
-AdCompleteResponse = Class()
-AdCompleteResponse.implements(BridgeResponseProtocol)
+AdCompleteResponse = Class(BridgeResponse)
 
-function AdCompleteResponse.new(self)
-    local id
+function AdCompleteResponse.new(self, init)
     local reward
     local clicked
-    local _error
 
-    function self.init(_id, _reward, _clicked, _err)
-        id = _id
+    function self.init(_success, _id, _reward, _clicked, _err)
+        init(_success, _id, _err)
         reward = _reward
         clicked = _clicked
-        _error = _err
-    end
-
-    function self.isSuccess()
-        if _error then
-            return false
-        end
-        return true
     end
 
     function self.getReward()
@@ -33,15 +22,5 @@ function AdCompleteResponse.new(self)
 
     function self.isClicked()
         return clicked
-    end
-
-    function self.getError()
-        return _error
-    end
-
-    -- BridgeResponseProtocol
-
-    function self.getId()
-        return id
     end
 end
