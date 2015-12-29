@@ -119,7 +119,7 @@ local adConfig = {}
 local networks = {{
     {}
 }}
-return adConfig, networks
+return {{adConfig, networks}}
     """.format(VERSION, datetime.now(), "\n".join(lua_require), mediation.toLua(), ",\n    ".join(lua_networks))
     fh = open(cocos.mediationluapath("ios"), "w")
     fh.write(lua)
