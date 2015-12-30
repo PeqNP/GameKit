@@ -148,7 +148,7 @@ describe("AdManager", function()
             end)
 
             context("when hiding the banner ad", function()
-                context("when it fails", function()
+                context("when it succeeds", function()
                     before_each(function()
                         stub(bridge, "hideBannerAd", BridgeResponse(true))
                         success = subject.hideBannerAd()
@@ -288,9 +288,9 @@ describe("AdManager", function()
             adv = Ad.init4(AdNetwork.AdColony, AdType.Video, "interstitial-zone")
             leadbolt_ad = Ad.init4(AdNetwork.Leadbolt, AdType.Interstitial, nil)
 
-            responsei = BridgeResponse(true)
-            responsev = BridgeResponse(true)
-            leadbolt_response = BridgeResponse(true)
+            responsei = BridgeResponse(true, 100)
+            responsev = BridgeResponse(true, 110)
+            leadbolt_response = BridgeResponse(true, 120)
 
             function bridge.cache(request)
                 if request.getAdNetwork() == AdNetwork.AdMob then
@@ -352,7 +352,7 @@ describe("AdManager", function()
             before_each(function()
                 requesti = requests[1]
                 requestv = requests[2]
-                promisei.resolve(BridgeResponse(true))
+                promisei.resolve(BridgeResponse(true, 100))
             end)
 
             it("should have an available interstitial", function()
@@ -395,16 +395,32 @@ describe("AdManager", function()
                 local config
 
                 before_each(function()
-                    local promise = BridgeCall()
-                    stub(bridge, "show", responsei, promise)
-
                     config = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
                     stub(adFactory, "nextAd", config)
-                    assert.truthy(subject.showAd(AdType.Interstitial))
                 end)
 
-                it("should have shown an AdMob ad", function()
-                    assert.stub(bridge.show).was.called_with(requesti)
+                context("when showing the ad is successful", function()
+                    before_each(function()
+                        local promise = BridgeCall()
+                        stub(bridge, "show", responsei, promise)
+                        assert.truthy(subject.showAd(AdType.Interstitial))
+                    end)
+
+                    it("should have shown an AdMob ad", function()
+                        assert.stub(bridge.show).was.called_with(requesti)
+                    end)
+                end)
+
+                context("when showing the ad fails", function()
+                    before_each(function()
+                        local promise = BridgeCall()
+                        stub(bridge, "show", BridgeResponse(false, 50), promise)
+                        assert.falsy(subject.showAd(AdType.Interstitial))
+                    end)
+
+                    it("should have shown an AdMob ad", function()
+                        assert.stub(bridge.show).was.called_with(requesti)
+                    end)
                 end)
             end)
 
@@ -426,7 +442,7 @@ describe("AdManager", function()
                 end)
             end)
 
-            context("when showing an ad type that is not registered", function()
+            context("when showing an ad type that is NOT registered", function()
                 local config
 
                 before_each(function()
@@ -451,7 +467,7 @@ describe("AdManager", function()
                     stub(adFactory, "nextAd", config)
 
                     local promise = BridgeCall()
-                    stub(bridge, "show", {}, promise)
+                    stub(bridge, "show", leadbolt_response, promise)
 
                     subject.registerAd(leadbolt_ad)
                 end)
@@ -468,7 +484,7 @@ describe("AdManager", function()
 
                 context("when the ad fails to be cached", function()
                     before_each(function()
-                        leadbolt_promise.resolve(BridgeResponse(false, nil, "Leadbolt error"))
+                        leadbolt_promise.resolve(BridgeResponse(false, 120, "Leadbolt error"))
                         assert.truthy(subject.showAd(AdType.Interstitial))
                     end)
 
@@ -514,7 +530,7 @@ describe("AdManager", function()
                 spy.on(cu, "delayCall")
 
                 requesti = requests[1]
-                promisei.reject(BridgeResponse(false, nil, "Cache failure"))
+                promisei.reject(BridgeResponse(false, 100, "Cache failure"))
             end)
 
             it("should have completed request", function()
@@ -557,7 +573,7 @@ describe("AdManager", function()
             before_each(function()
                 requesti = requests[1]
                 requestv = requests[2]
-                promisev.resolve(BridgeResponse(true))
+                promisev.resolve(BridgeResponse(true, 110))
             end)
 
             it("should NOT have an available interstitial", function()
@@ -609,7 +625,7 @@ describe("AdManager", function()
 
                     describe("when the ad completes successfully", function()
                         before_each(function()
-                            stub(bridge, "cache", BridgeResponse(true), BridgeCall())
+                            stub(bridge, "cache", BridgeResponse(true, 100), BridgeCall())
                             promise.resolve(AdCompleteResponse(true, 1, 10, true))
                         end)
 
@@ -685,13 +701,14 @@ describe("AdManager when no ad factory", function()
         local request
 
         before_each(function()
-            responsec = BridgeResponse(true)
-            responses = BridgeResponse(true)
+            -- @note These vars are used in first before_each when bridge.* methods are called.
+            responsec = BridgeResponse(true, 50)
+            responses = BridgeResponse(true, 60)
 
             subject.registerAd(ad)
 
             request = subject.getRequests()[1]
-            promisec.resolve(BridgeResponse(true))
+            promisec.resolve(BridgeResponse(true, 50))
         end)
 
         it("should have created a request", function()
@@ -716,12 +733,10 @@ describe("AdManager when no ad factory", function()
             assert.falsy(ad)
         end)
 
-        context("when the ad type is video (not registered)", function()
-            it("should not return request or ad", function()
-                local request, ad = subject.getNextAdRequest(AdType.Video)
-                assert.falsy(request)
-                assert.falsy(ad)
-            end)
+        it("should not return request or ad if the add type is not registered", function()
+            local request, ad = subject.getNextAdRequest(AdType.Video)
+            assert.falsy(request)
+            assert.falsy(ad)
         end)
     end)
 
@@ -729,8 +744,8 @@ describe("AdManager when no ad factory", function()
         local request
 
         before_each(function()
-            responsec = BridgeResponse(false, nil, "cache error")
-            responses = BridgeResponse(false, nil, "show error")
+            responsec = BridgeResponse(false, 50, "cache error")
+            responses = BridgeResponse(false, 60, "show error")
 
             subject.registerAd(ad)
         end)
@@ -744,7 +759,7 @@ describe("AdManager when no ad factory", function()
             assert.equals(0, #requests)
         end)
 
-        it("should NOT have displayed an AdMob interstitial ad", function()
+        it("should NOT allow AdMob interstitial ad to be displayed", function()
             assert.falsy(subject.showAd(AdType.Interstitial))
         end)
     end)

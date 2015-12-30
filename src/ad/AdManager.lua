@@ -93,6 +93,8 @@ function AdManager.new(self)
             return
         end
 
+        Log.d("Cache request success w/ request ID (%s)", response.getId())
+
         table.insert(requests, request)
         promise.done(function(response)
             if response.isSuccess() then
@@ -180,9 +182,15 @@ function AdManager.new(self)
     end
 
     function private.showAdRequest(request)
-        local deferred = Promise()
         local response, promise = adaptor.show(request)
+
+        Log.d("Response request success w/ request ID (%s)", response.getId())
+        if not response.isSuccess() then
+            return nil
+        end
+
         request.setState(AdState.Presenting)
+        local deferred = Promise()
         promise.done(function(response)
             request.setState(AdState.Complete)
             private.rebuildRequests()
