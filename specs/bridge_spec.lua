@@ -2,11 +2,12 @@ require "lang.Signal"
 require "specs.busted"
 require "Logger"
 
-Log.setLevel(LogLevel.Warning)
+Log.setLevel(LogLevel.Severe)
 
 require "ad.Constants"
 
 require "bridge.Bridge"
+require "bridge.BridgeCall"
 require "bridge.BridgeAdaptor"
 require "bridge.BridgeRequestProtocol"
 
@@ -111,8 +112,9 @@ describe("Bridge", function()
         local nativeResponse
         local response
 
+        -- TODO: Test when native response is false and not just true w/ ID.
         before_each(function()
-            nativeResponse = {}
+            nativeResponse = {success=true, id=54}
 
             stub(adaptor, "send", nativeResponse)
 
@@ -128,7 +130,18 @@ describe("Bridge", function()
             assert.equals(nativeResponse, response)
         end)
 
-        context("when the request fails", function()
+        it("should have returned the correct call", function()
+            assert.equal(BridgeCall, call.getClass())
+            assert.equal(request, call.getRequest())
+        end)
+
+        it("should be tracking the request", function()
+            local requests = subject.getRequests()
+            assert.equal(call, requests["54"])
+            assert.equal(1, subject.getNumRequests())
+        end)
+
+        context("when the async request is received", function()
             local t_response
             local p_response
 
@@ -137,18 +150,39 @@ describe("Bridge", function()
                 call.done(function(r)
                     p_response = r
                 end)
-                t_response = BridgeResponse(false, request.getId())
+                t_response = BridgeResponse(false, 54)
                 subject.receive(t_response)
             end)
 
-            it("should have returned the response", function()
-                assert.truthy(p_response)
+            it("should have returned the response in the form of an object from native layer", function()
                 assert.equals(t_response, p_response)
             end)
 
             it("should no longer be tracking any requests", function()
                 local requests = subject.getRequests()
                 assert.equal(0, #requests)
+            end)
+        end)
+
+        context("when a non-existant async request is received", function()
+            local t_response
+            local p_response
+
+            before_each(function()
+                p_response = false
+                call.done(function(r)
+                    p_response = r
+                end)
+                t_response = BridgeResponse(true, 21)
+                subject.receive(t_response)
+            end)
+
+            it("should NOT have completed the existing request", function()
+                assert.falsy(p_response)
+            end)
+
+            it("should still be tracking our existing request", function()
+                assert.equal(1, subject.getNumRequests())
             end)
         end)
     end)

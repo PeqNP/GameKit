@@ -11,6 +11,7 @@ function Bridge.new(self)
     local adaptor
     local private = {}
     local requests = {}
+    local numRequests = 0
     local modules = {}
     local registeredModules = {}
 
@@ -24,6 +25,10 @@ function Bridge.new(self)
 
     function self.getRequests()
         return requests
+    end
+
+    function self.getNumRequests()
+        return numRequests
     end
 
     function private.isModuleRegistered(module)
@@ -69,7 +74,8 @@ function Bridge.new(self)
         local response = adaptor.send(method, request.toDict(), sig)
         local req = BridgeCall(request)
         if response then
-            requests[tostring(request.getId())] = req
+            requests[tostring(response["id"])] = req
+            numRequests = numRequests + 1
         else
             req.reject(string.format("Failed to call method (%s)", method))
         end
@@ -93,6 +99,7 @@ function Bridge.new(self)
             return
         end
         requests[id] = nil
+        numRequests = numRequests - 1
         request.resolve(response)
     end
 end
