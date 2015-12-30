@@ -43,10 +43,6 @@ describe("AdRequest", function()
 
     -- BridgeRequestProtocol
 
-    it("should return the correct ID", function()
-        assert.equals("adId", subject.getId())
-    end)
-
     it("should return dictionary with config", function()
         assert.truthy(table.equals({adid="adId"}, subject.toDict()))
     end)

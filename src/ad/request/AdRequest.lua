@@ -2,10 +2,11 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeRequest"
+require "bridge.BridgeRequestProtocol"
 require "ad.Constants"
 
-AdRequest = Class(BridgeRequest)
+AdRequest = Class()
+AdRequest.implements(BridgeRequestProtocol)
 
 function AdRequest.new(self)
     local ad
@@ -48,11 +49,7 @@ function AdRequest.new(self)
         return table.contains({AdState.Complete, AdState.Clicked}, state)
     end
 
-    -- BridgeRequest
-
-    function self.getId()
-        return ad.getAdId()
-    end
+    -- BridgeRequestProtocol
 
     function self.toDict()
         return {adid=ad.getAdId()}

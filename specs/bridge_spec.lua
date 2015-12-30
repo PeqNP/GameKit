@@ -8,13 +8,7 @@ require "ad.Constants"
 
 require "bridge.Bridge"
 require "bridge.BridgeAdaptor"
-require "bridge.BridgeRequest"
-
-local id = 0
-function get_id()
-    id = id + 1
-    return id
-end
+require "bridge.BridgeRequestProtocol"
 
 describe("Bridge", function()
     local subject
@@ -29,26 +23,11 @@ describe("Bridge", function()
         subject.registerModule("bridge.modules.ad")
 
         message = {}
-        TestRequest = Class(BridgeRequest)
+        TestRequest = Class()
+        TestRequest.implements(BridgeRequestProtocol)
         function TestRequest.new(self)
-            local id = get_id()
-            function self.getId()
-                return id
-            end
             function self.toDict()
                 return message
-            end
-        end
-
-        TestResponse = Class()
-        TestResponse.protocol(BridgeResponseProtocol)
-        function TestResponse.new(self)
-            local id
-            function self.init(_id)
-                id = _id
-            end
-            function self.getId()
-                return id
             end
         end
     end)
@@ -158,7 +137,7 @@ describe("Bridge", function()
                 call.done(function(r)
                     p_response = r
                 end)
-                t_response = TestResponse(request.getId())
+                t_response = BridgeResponse(false, request.getId())
                 subject.receive(t_response)
             end)
 
