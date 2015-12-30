@@ -128,7 +128,7 @@ function AdManager.new(self)
             return nil
         end
 
-        if request.adType ~= AdType.Banner then
+        if request.getAdType() ~= AdType.Banner then
             cu.pause()
         end
 
