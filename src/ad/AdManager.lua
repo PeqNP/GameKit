@@ -127,7 +127,10 @@ function AdManager.new(self)
         if not response.isSuccess() then
             return nil
         end
-        cu.pause()
+
+        if request.adType ~= AdType.Banner then
+            cu.pause()
+        end
 
         request.setState(AdState.Presenting)
         local deferred = Promise()

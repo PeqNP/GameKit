@@ -42,12 +42,20 @@ function cu.getRandomPoint(sprite)
     return cc.p(x, y)
 end
 
+function cu.isPaused()
+    return cc.Director:getInstance():isPaused()
+end
+
 function cu.pause()
-    cc.Director:getInstance():pause()
+    if not cu.isPaused() then
+        cc.Director:getInstance():pause()
+    end
 end
 
 function cu.resume()
-    cc.Director:getInstance():resume()
+    if cu.isPaused() then
+        cc.Director:getInstance():resume()
+    end
 end
 
 function cu.getVisibleSize()
