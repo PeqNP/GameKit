@@ -86,20 +86,12 @@ function Bridge.new(self)
         return response, req
     end
 
-    function private.getRequestForResponse(response)
-        local id = tostring(response.getId())
-        local request = requests[id]
-        if request then
-            return id, request
-        end
-        return nil, nil
-    end
-
     -- @param id<BridgeResponseProtocol>
     function self.receive(response)
-        local id, request = private.getRequestForResponse(response)
+        local id = tostring(response.getId())
+        local request = requests[id]
         if not request then
-            Log.e("Response (%s) no longer has corresponding request!", response.getId())
+            Log.e("Response (%s) no longer has corresponding request!", id)
             return
         end
         requests[id] = nil
