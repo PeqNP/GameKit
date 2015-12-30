@@ -6,6 +6,7 @@
 
 require("Logger")
 require("Promise")
+require("Common")
 require("ad.Constants")
 require("ad.request.AdRequest")
 require("ad.request.AdConfigureRequest")
@@ -126,6 +127,7 @@ function AdManager.new(self)
         if not response.isSuccess() then
             return nil
         end
+        cu.pause()
 
         request.setState(AdState.Presenting)
         local deferred = Promise()
@@ -143,6 +145,9 @@ function AdManager.new(self)
             _error = response.getError()
             private.delayRebuildRequests()
             deferred.reject(_error)
+        end)
+        promise.always(function(response)
+            cu.resume()
         end)
         return deferred
     end

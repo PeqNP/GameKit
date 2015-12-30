@@ -1,7 +1,8 @@
---[[ Provides ability to turn on/off and fade music in/out.
-
-  @copyright 2015 Upstart Illustration LLC. All rights reserved.
---]]
+--
+-- Provides ability to turn on/off and fade music in/out.
+--
+-- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
+--
 
 require("Logger")
 

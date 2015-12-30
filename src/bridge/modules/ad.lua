@@ -93,13 +93,13 @@ end
 
 function ad__cached(payload)
     local response = json.decode(payload)
-    --Log.d("ad__cached: adid=%s error=%s", response.adid, response.error and response.error or "nil")
+    Log.d("ad__cached: success=%s id=%s error=%s", response.success, response.id, response.error and response.error or "nil")
     bridge.receive(getBridgeResponse(response))
 end
 
 function ad__completed(payload)
     local response = json.decode(payload)
-    --Log.d("ad__completed: adid=%s error=%s", response.adid, response.error and response.error or "nil")
+    Log.d("ad__completed: success=%s id=%s error=%s", response.success, response.id, response.error and response.error or "nil")
     bridge.receive(AdCompleteResponse(response.success, response.id, response.reward, response.clicked, response.error))
 end
 

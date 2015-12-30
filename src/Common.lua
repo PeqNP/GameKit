@@ -42,6 +42,14 @@ function cu.getRandomPoint(sprite)
     return cc.p(x, y)
 end
 
+function cu.pause()
+    cc.Director:getInstance():pause()
+end
+
+function cu.resume()
+    cc.Director:getInstance():resume()
+end
+
 function cu.getVisibleSize()
     return cc.Director:getInstance():getVisibleSize()
 end
