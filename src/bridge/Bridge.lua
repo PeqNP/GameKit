@@ -74,8 +74,12 @@ function Bridge.new(self)
         local response = adaptor.send(method, request.toDict(), sig)
         local req = BridgeCall(request)
         if response then
-            requests[tostring(response["id"])] = req
-            numRequests = numRequests + 1
+            if response.success then
+                requests[tostring(response.id)] = req
+                numRequests = numRequests + 1
+            else
+                req.reject(string.format("Response failed w/ error (%s)", response.error))
+            end
         else
             req.reject(string.format("Failed to call method (%s)", method))
         end

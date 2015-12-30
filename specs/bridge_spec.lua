@@ -187,6 +187,39 @@ describe("Bridge", function()
         end)
     end)
 
+    context("when async requests success is false", function()
+        local request
+        local call
+        local nativeResponse
+        local response
+        local _error
+
+        before_each(function()
+            nativeResponse = {success=false, error="My failure"}
+
+            stub(adaptor, "send", nativeResponse)
+
+            request = TestRequest()
+            response, call = subject.sendAsync("test", request, nil)
+            call.fail(function(e)
+                _error = e
+            end)
+        end)
+
+        it("should have returned the correct values", function()
+            assert.equal(nativeResponse, response)
+            assert.equal(BridgeCall, call.getClass())
+        end)
+
+        it("should NOT have tracked the request", function()
+            assert.equal(0, subject.getNumRequests())
+        end)
+
+        it("should have rejected immediately", function()
+            assert.equals("Response failed w/ error (My failure)", _error)
+        end)
+    end)
+
     context("when async request fails", function()
         local request
         local call
@@ -212,6 +245,10 @@ describe("Bridge", function()
 
         it("should have returned native response", function()
             assert.falsy(response)
+        end)
+
+        it("should not have tracked the request", function()
+            assert.equal(0, subject.getNumRequests())
         end)
     end)
 end)
