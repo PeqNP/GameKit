@@ -109,6 +109,66 @@ function AdManager.new(self)
         end)
     end
 
+    function private.getAdRequestsForType(adType)
+        local _requests = {}
+        for _, request in ipairs(requests) do
+            if request.getAdType() == adType then
+                table.insert(_requests, request)
+            end
+        end
+        return _requests
+    end
+
+    function private.showAdRequest(request)
+        local response, promise = adaptor.show(request)
+
+        Log.d("Response request success w/ request ID (%s)", response.getId())
+        if not response.isSuccess() then
+            return nil
+        end
+
+        request.setState(AdState.Presenting)
+        local deferred = Promise()
+        promise.done(function(response)
+            request.setState(AdState.Complete)
+            private.rebuildRequests()
+            if response.isSuccess() then
+                deferred.resolve(response.isClicked(), response.getReward())
+            else
+                deferred.reject(response.getError())
+            end
+        end)
+        promise.fail(function(response)
+            request.setState(AdState.Complete)
+            _error = response.getError()
+            private.delayRebuildRequests()
+            deferred.reject(_error)
+        end)
+        return deferred
+    end
+
+    function private.getFirstAvailableAdRequest(_requests)
+        for _, request in ipairs(_requests) do
+            if request.getState() == AdState.Ready then
+                return request
+            end
+        end
+        return nil
+    end
+
+    -- Returns the respective AdRequest, for the given Ad, if the request
+    -- is ready to show.
+    function private.getAdRequestForAd(ad, _requests)
+        for _, request in ipairs(_requests) do
+            if request.getAdNetwork() == ad.getAdNetwork() and request.getState() == AdState.Ready then
+                return request
+            end
+        end
+        return nil
+    end
+
+    -- ----- Public -----
+
     function self.getAdFactory()
         return adFactory
     end
@@ -170,66 +230,6 @@ function AdManager.new(self)
         end
         return false
     end
-
-    function private.getAdRequestsForType(adType)
-        local _requests = {}
-        for _, request in ipairs(requests) do
-            if request.getAdType() == adType then
-                table.insert(_requests, request)
-            end
-        end
-        return _requests
-    end
-
-    function private.showAdRequest(request)
-        local response, promise = adaptor.show(request)
-
-        Log.d("Response request success w/ request ID (%s)", response.getId())
-        if not response.isSuccess() then
-            return nil
-        end
-
-        request.setState(AdState.Presenting)
-        local deferred = Promise()
-        promise.done(function(response)
-            request.setState(AdState.Complete)
-            private.rebuildRequests()
-            if response.isSuccess() then
-                deferred.resolve(response.isClicked(), response.getReward())
-            else
-                deferred.reject(response.getError())
-            end
-        end)
-        promise.fail(function(response)
-            request.setState(AdState.Complete)
-            _error = response.getError()
-            private.delayRebuildRequests()
-            deferred.reject(_error)
-        end)
-        return deferred
-    end
-
-    function private.getFirstAvailableAdRequest(_requests)
-        for _, request in ipairs(_requests) do
-            if request.getState() == AdState.Ready then
-                return request
-            end
-        end
-        return nil
-    end
-
-    -- Returns the respective AdRequest, for the given Ad, if the request
-    -- is ready to show.
-    function private.getAdRequestForAd(ad, _requests)
-        for _, request in ipairs(_requests) do
-            if request.getAdNetwork() == ad.getAdNetwork() and request.getState() == AdState.Ready then
-                return request
-            end
-        end
-        return nil
-    end
-
-    -- ----- Public -----
 
     function self.configure(config)
         local response = adaptor.configure(AdConfigureRequest(config))

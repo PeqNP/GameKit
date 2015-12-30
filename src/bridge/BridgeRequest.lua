@@ -9,13 +9,4 @@ BridgeRequest.abstract(Protocol(
 ))
 
 function BridgeRequest.new(self)
-    local id
-
-    function self.setId(_id)
-        id = _id
-    end
-
-    function self.getId()
-        return id
-    end
 end
