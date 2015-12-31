@@ -175,13 +175,14 @@ def configure_ios_targets(project, source, cocos, stage):
 if __name__ == "__main__":
     import argparse
 
+    operations = ["mediation", "lua", "adkit", "project"]
+
     parser = argparse.ArgumentParser(description="Upstart Game Framework - Configures a project into a Cocos2d-x project")
-    parser.add_argument('operations', help="Configuration processes to perform on project", nargs="*", default=["all"])
+    parser.add_argument('operations', help="Configuration processes to perform on project: {}".format(", ".join(operations)), nargs="*", default=["all"])
     args = parser.parse_args()
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
 
-    operations = ["mediation", "lua", "adkit", "project"]
     valid_operations = ["all"] + operations
     for option in args.operations:
         if option not in valid_operations:
