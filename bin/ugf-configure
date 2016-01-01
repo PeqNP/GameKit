@@ -43,7 +43,11 @@ def interpolate_iosplist(project, blob):
         c = """<string>UIInterfaceOrientationLandscapeRight</string>
         <string>UIInterfaceOrientationLandscapeLeft</string>"""
     else:
-        c = """<string>UIInterfaceOrientationPortrait</string>"""
+        # @fixme Portrait is required to support landscape in order for AdColony
+        # ad SDK to not crash the app after an ad has been displayed.
+        c = """<string>UIInterfaceOrientationLandscapeRight</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationPortrait</string>"""
     blob = re.sub("##UGF-ORIENTATION##", c, blob)
     return blob
 

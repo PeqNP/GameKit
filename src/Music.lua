@@ -30,6 +30,14 @@ function Music.new(self)
     function self.setVolume(to)
         engine:setMusicVolume(to)
     end
+    
+    function self.pause()
+        engine:pauseMusic()
+    end
+
+    function self.resume()
+        engine:resumeMusic()
+    end
 
     function self.turnOn(vol)
         Log.i("Music.on(%d)", vol)

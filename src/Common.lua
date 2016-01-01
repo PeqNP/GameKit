@@ -48,14 +48,16 @@ end
 
 function cu.pause()
     if not cu.isPaused() then
-        cc.Director:getInstance():stopAnimation()
         cc.Director:getInstance():pause()
+        cc.Director:getInstance():stopAnimation()
+        Music.singleton.pause()
     end
 end
 
 function cu.resume()
     if cu.isPaused() then
         cc.Director:getInstance():startAnimation()
+        Music.singleton.resume()
         cc.Director:getInstance():resume()
     end
 end
