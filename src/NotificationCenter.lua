@@ -1,12 +1,12 @@
---[[
-  Provides notification center which allows actors to broadcast messages
-  to observers.
-
-  @copyright 2014 Upstart Illustration LLC. All rights reserved.
-
---]]
+--
+-- Provides notification center which allows actors to broadcast messages
+--  to observers.
+--
+-- @copyright 2014 Upstart Illustration LLC. All rights reserved.
+--
 
 require "NotificationObserver"
+require "Logger"
 
 NotificationCenter = Class()
 
@@ -34,7 +34,6 @@ function NotificationCenter.new(self)
         end
         for _, obs in ipairs(observers[eventId]) do
             if obs.observer == observer then
-                --cclog("-> Aldready listening")
                 return -- Already listening.
             end
         end
@@ -43,7 +42,6 @@ function NotificationCenter.new(self)
     end
 
     function self.removeObserverForEvent(observer, eventId)
-        --cclog("--->removeObserverForEvent: "..tostring(observer)..", eventId: "..eventId)
         -- There are no observers for this event.
         if not observers[eventId] then
             return
@@ -51,9 +49,7 @@ function NotificationCenter.new(self)
         -- Remove observer from event list.
         local tObs = observers[eventId]
         for id, obs in ipairs(tObs) do
-            --cclog("-> curr: "..tostring(observer).." obs: "..tostring(obs.observer))
             if obs.observer == observer then
-                --cclog("->removeObserverForEvent removed! id: "..id)
                 table.remove(observers[eventId], id)
                 --print("-> # left: "..#observers[eventId])
                 return
@@ -71,16 +67,14 @@ function NotificationCenter.new(self)
 
     --[[ Post event to all observers observing eventId. ]]--
     function self.postNotification(eventId, obj)
-        --cclog("-->postNotification: "..eventId)
         -- Cleanup
         if observers[eventId] and #observers[eventId] < 1 then
-            cclog("Cleaned up eventId: "..tostring(eventId))
+            Log.d("Cleaned up eventId: ", eventId)
             observers[eventId] = nil
         end
         if not observers[eventId] then
             return
         end
-        --cclog("-->postNotification: #"..#observers[eventId])
         -- Inform all observers of event.
         for _, obs in ipairs(observers[eventId]) do
             --print("calling:", tostring(obs), eventId)
