@@ -60,9 +60,9 @@ function ad.cache(request)
     -- @return {success:, error:}
     local response, call = bridge.sendAsync("ad__cache", request)
     if type(response) == "table" then -- Occurs when call failed.
-        return AdCacheResponse(response.success, response.id, response.reward, response.error), call
+        return BridgeResponse(response.success, response.id, response.error), call
     end
-    return AdCacheResponse(false, nil, nil, "Failed to cache ad"), call
+    return BridgeResponse(false, nil, "Failed to cache ad"), call
 end
 
 --
@@ -94,8 +94,8 @@ end
 
 function ad__cached(payload)
     local response = json.decode(payload)
-    Log.d("ad__cached: success=%s id=%s error=%s", response.success, response.id, response.error and response.error or "nil")
-    bridge.receive(getBridgeResponse(response))
+    Log.d("ad__cached: success=%s id=%s reward=%s error=%s", response.success, response.id, response.reward and response.reward or 0, response.error and response.error or "nil")
+    bridge.receive(AdCacheResponse(response.success, response.id, response.reward, response.error))
 end
 
 function ad__completed(payload)

@@ -174,7 +174,7 @@ describe("modules.ad", function()
         local c
 
         before_each(function()
-            response = {success=true, reward=21}
+            response = {success=true}
             stub(bridge, "sendAsync", response, call)
             r, c = subject.cache(request)
         end)
@@ -188,11 +188,7 @@ describe("modules.ad", function()
         end)
 
         it("should have returned the bridge's response", function()
-            assert.equals(AdCacheResponse, r.getClass())
-        end)
-
-        it("should have set the reward", function()
-            assert.equal(21, r.getReward())
+            assert.equals(BridgeResponse, r.getClass())
         end)
 
         it("should be a success", function()
@@ -219,7 +215,7 @@ describe("modules.ad", function()
         end)
 
         it("should have returned the bridge's response", function()
-            assert.equals(AdCacheResponse, r.getClass())
+            assert.equals(BridgeResponse, r.getClass())
         end)
 
         it("should be a failure", function()
@@ -246,7 +242,7 @@ describe("modules.ad", function()
         end)
 
         it("should have returned the bridge's response", function()
-            assert.equals(AdCacheResponse, r.getClass())
+            assert.equals(BridgeResponse, r.getClass())
         end)
 
         it("should be a failure", function()
@@ -340,17 +336,21 @@ describe("modules.ad", function()
 
         context("when caching is successful", function()
             before_each(function()
-                c_response = "{\"success\": true, \"id\": 54}"
+                c_response = "{\"success\": true, \"id\": 54, \"reward\": 66}"
                 ad__cached(c_response)
             end)
 
             it("should have created a cached response", function()
                 assert.truthy(response)
-                assert.truthy(response.kindOf(BridgeResponse))
+                assert.truthy(response.kindOf(AdCacheResponse))
             end)
 
             it("should have set the correct ID", function()
                 assert.equals(54, response.getId())
+            end)
+
+            it("should have set the correct reward", function()
+                assert.equal(66, response.getReward())
             end)
 
             it("should not have an error", function()
@@ -371,6 +371,10 @@ describe("modules.ad", function()
 
             it("should have set the correct ID", function()
                 assert.equals(10, response.getId())
+            end)
+
+            it("should not have set the reward", function()
+                assert.falsy(response.getReward())
             end)
 
             it("should have an error", function()
