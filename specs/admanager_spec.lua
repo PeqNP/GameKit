@@ -18,6 +18,9 @@ require "bridge.BridgeResponse"
 require "mediation.MediationAdFactory"
 require "mediation.MediationAdConfig"
 
+require "Music"
+Singleton(Music)
+
 local match = require("luassert.match")
 
 local function is_kind_of(state, arguments)
@@ -603,6 +606,7 @@ describe("AdManager", function()
                         stub(cu, "delayCall")
 
                         show_promise = subject.showAd(AdType.Video)
+                        assert.truthy(show_promise) -- sanity
                         show_promise.done(function(clicked, reward)
                             ad_clicked = clicked
                             ad_reward = reward
@@ -610,9 +614,10 @@ describe("AdManager", function()
                         show_promise.fail(function(_error)
                             ad_error = _error
                         end)
+                    end)
 
+                    it("should not show interstitial (it is not cached)", function()
                         assert.falsy(subject.showAd(AdType.Interstitial))
-                        assert.truthy(show_promise)
                     end)
 
                     it("should show the video ad", function()

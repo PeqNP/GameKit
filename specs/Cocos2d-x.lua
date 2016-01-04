@@ -184,6 +184,21 @@ end
 function cc.Director:runWithScene(scene)
 end
 
+function cc.Director:isPaused()
+end
+
+function cc.Director:pause()
+end
+
+function cc.Director:resume()
+end
+
+function cc.Director:startAnimation()
+end
+
+function cc.Director:stopAnimation()
+end
+
 cc.TMXTiledMap = class()
 
 function cc.TMXTiledMap:create()
@@ -396,6 +411,12 @@ function cc.SimpleAudioEngine:getEffectPan(sourceId)
 end
 
 function cc.SimpleAudioEngine:setMusicVolume(vol)
+end
+
+function cc.SimpleAudioEngine:pauseMusic(vol)
+end
+
+function cc.SimpleAudioEngine:resumeMusic(vol)
 end
 
 cc.XMLHttpRequest = class(function(self)
