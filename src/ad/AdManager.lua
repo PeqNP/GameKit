@@ -100,6 +100,7 @@ function AdManager.new(self)
         promise.done(function(response)
             if response.isSuccess() then
                 request.setState(AdState.Ready)
+                request.setReward(response.getReward())
                 Log.d("Cached ad for network (%s) type (%s)", request.getAdNetwork(), request.getAdType())
             else
                 private.cacheFailed(request, response)

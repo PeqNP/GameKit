@@ -6,6 +6,7 @@ require "json"
 
 require "bridge.BridgeResponse"
 
+require "ad.response.AdCacheResponse"
 require "ad.response.AdCompleteResponse"
 require "ad.response.AdRegisterNetworkResponse"
 
@@ -59,9 +60,9 @@ function ad.cache(request)
     -- @return {success:, error:}
     local response, call = bridge.sendAsync("ad__cache", request)
     if type(response) == "table" then -- Occurs when call failed.
-        return getBridgeResponse(response), call
+        return AdCacheResponse(response.success, response.id, response.reward, response.error), call
     end
-    return BridgeResponse(false, nil, "Failed to cache ad"), call
+    return AdCacheResponse(false, nil, nil, "Failed to cache ad"), call
 end
 
 --

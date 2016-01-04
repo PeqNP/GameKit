@@ -11,6 +11,7 @@ AdRequest.implements(BridgeRequestProtocol)
 function AdRequest.new(self)
     local ad
     local state
+    local reward
 
     function self.init(_ad, _state)
         ad = _ad
@@ -23,6 +24,14 @@ function AdRequest.new(self)
 
     function self.getState()
         return state
+    end
+
+    function self.setReward(r)
+        reward = r
+    end
+
+    function self.getReward()
+        return reward
     end
 
     function self.getAd()

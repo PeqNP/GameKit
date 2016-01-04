@@ -174,7 +174,7 @@ describe("modules.ad", function()
         local c
 
         before_each(function()
-            response = {success=true}
+            response = {success=true, reward=21}
             stub(bridge, "sendAsync", response, call)
             r, c = subject.cache(request)
         end)
@@ -188,7 +188,11 @@ describe("modules.ad", function()
         end)
 
         it("should have returned the bridge's response", function()
-            assert.equals(BridgeResponse, r.getClass())
+            assert.equals(AdCacheResponse, r.getClass())
+        end)
+
+        it("should have set the reward", function()
+            assert.equal(21, r.getReward())
         end)
 
         it("should be a success", function()
@@ -215,7 +219,7 @@ describe("modules.ad", function()
         end)
 
         it("should have returned the bridge's response", function()
-            assert.equals(BridgeResponse, r.getClass())
+            assert.equals(AdCacheResponse, r.getClass())
         end)
 
         it("should be a failure", function()
@@ -242,7 +246,7 @@ describe("modules.ad", function()
         end)
 
         it("should have returned the bridge's response", function()
-            assert.equals(BridgeResponse, r.getClass())
+            assert.equals(AdCacheResponse, r.getClass())
         end)
 
         it("should be a failure", function()

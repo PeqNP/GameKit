@@ -11,6 +11,7 @@ require "ad.Ad"
 require "ad.AdManager"
 require "ad.AdError"
 require "ad.response.AdRegisterNetworkResponse"
+require "ad.response.AdCacheResponse"
 require "ad.networks.AdMobNetwork"
 require "ad.networks.AdColonyNetwork"
 require "bridge.BridgeCall"
@@ -348,14 +349,14 @@ describe("AdManager", function()
             assert.falsy(subject.showAd(AdType.Video))
         end)
 
-        describe("when the interstitial ad is ready", function()
+        describe("when the interstitial ad is cached", function()
             local requesti
             local requestv
 
             before_each(function()
                 requesti = requests[1]
                 requestv = requests[2]
-                promisei.resolve(BridgeResponse(true, 100))
+                promisei.resolve(AdCacheResponse(true, 100))
             end)
 
             it("should have an available interstitial", function()
@@ -572,11 +573,23 @@ describe("AdManager", function()
             end)
         end)
 
+        context("when the video ad is ready w/ a reward", function()
+            before_each(function()
+                requesti = requests[1]
+                requestv = requests[2]
+                promisev.resolve(AdCacheResponse(true, 110, 44))
+            end)
+
+            it("should have set the reward on the request", function()
+                assert.equal(44, requestv.getReward())
+            end)
+        end)
+
         context("when the video ad is ready", function()
             before_each(function()
                 requesti = requests[1]
                 requestv = requests[2]
-                promisev.resolve(BridgeResponse(true, 110))
+                promisev.resolve(AdCacheResponse(true, 110))
             end)
 
             it("should NOT have an available interstitial", function()
@@ -585,7 +598,11 @@ describe("AdManager", function()
 
             it("should have an available video", function()
                 assert.truthy(subject.isAdAvailable(AdType.Video))
-            end)    
+            end)
+
+            it("should not have set the reward, as none was given", function()
+                assert.falsy(requestv.getReward())
+            end)
 
             context("when there is no config for the video", function()
                 describe("show the ad", function()
@@ -616,7 +633,7 @@ describe("AdManager", function()
                         end)
                     end)
 
-                    it("should not show interstitial (it is not cached)", function()
+                    it("should not show interstitial, as it is not cached (sanity)", function()
                         assert.falsy(subject.showAd(AdType.Interstitial))
                     end)
 
@@ -713,7 +730,7 @@ describe("AdManager when no ad factory", function()
             subject.registerAd(ad)
 
             request = subject.getRequests()[1]
-            promisec.resolve(BridgeResponse(true, 50))
+            promisec.resolve(AdCacheResponse(true, 50, 66))
         end)
 
         it("should have created a request", function()
@@ -721,6 +738,10 @@ describe("AdManager when no ad factory", function()
             assert.equals(1, #requests) -- sanity
             local request = requests[1]
             assert.truthy(request) -- should have created a request
+        end)
+
+        it("should have set the reward", function()
+            assert.equal(66, request.getReward())
         end)
 
         it("should have cached the ad", function()
@@ -749,7 +770,7 @@ describe("AdManager when no ad factory", function()
         local request
 
         before_each(function()
-            responsec = BridgeResponse(false, 50, "cache error")
+            responsec = AdCacheResponse(false, 50, nil, "cache error")
             responses = BridgeResponse(false, 60, "show error")
 
             subject.registerAd(ad)
