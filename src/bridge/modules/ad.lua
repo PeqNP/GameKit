@@ -60,7 +60,7 @@ function ad.cache(request)
     -- @return {success:, error:}
     local response, call = bridge.sendAsync("ad__cache", request)
     if type(response) == "table" then -- Occurs when call failed.
-        return BridgeResponse(response.success, response.id, response.error), call
+        return getBridgeResponse(response), call
     end
     return BridgeResponse(false, nil, "Failed to cache ad"), call
 end
