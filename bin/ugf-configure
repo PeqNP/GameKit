@@ -130,7 +130,7 @@ def configure_supported_networks_header(networks, cocos):
         "##UGF-MEDIATION-DEPENDENCIES##": "\n".join(defines)
     }
     interpolator = Interpolator(project, cocos, stage, keys)
-    interpolator.interpolate("templates/project/ios/SupportedNetworks.h", cocos.iosmacprojpath("AdKit/GameTools/SupportedNetworks.h"))
+    interpolator.interpolate("templates/project/ios/SupportedNetworks.h", cocos.iosmacprojpath("AdKit/GameTools/AdKit/SupportedNetworks.h"))
 
 def create_lua_mediation(mediation, networks, cocos):
     lua_networks = lua_for_networks(networks)
