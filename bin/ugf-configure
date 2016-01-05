@@ -49,6 +49,22 @@ def interpolate_iosplist(project, blob):
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationPortrait</string>"""
     blob = re.sub("##UGF-ORIENTATION##", c, blob)
+    # Facebook ID
+    if project.facebookid:
+        c = """<key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>fb{}</string>
+                </array>
+            </dict>
+        </array>
+        <key>FacebookAppID</key>
+        <string>{}</string>
+        <key>FacebookDisplayName</key>
+        <string>Blobfish Evolution</string>""".format(project.facebookid, project.facebookid)
+        blob = re.sub("##UGF-FACEBOOK##", c, blob)
     return blob
 
 def interpolate_configjson(project, blob):
@@ -58,6 +74,18 @@ def interpolate_configjson(project, blob):
 
 def interpolate_projectconfig(project, blob):
     return re.sub("##UGF-ORIENTATION##", project.orientation, blob)
+
+def configure_sdk_dependencies(project, cocos, stage):
+    defines = []
+    if project.facebookid:
+        defines.append("#define FACEBOOK_ENABLED")
+    if project.hockeyappid:
+        defines.append("#define HOCKEYAPP_ENABLED")
+    keys = {
+        "##UGF-SDK-DEPENDENCIES##": "\n".join(defines)
+    }
+    interpolator = Interpolator(project, cocos, stage, keys)
+    interpolator.interpolate("templates/project/ios/GKConfig.h", cocos.iosmacprojpath("AdKit/GameTools/GKConfig.h"))
 
 def configure_ios_pods(networks, project, cocos, stage):
     # Add mediation networks to Podfile
@@ -165,11 +193,11 @@ def configure_ios_targets(project, source, cocos, stage):
     shutil.copyfile(cocos.iosprojectpath(), stage.path("project.pbxproj"))
 
     interpolator = Interpolator(project, cocos, stage, keys)
-    interpolator.interpolate("templates/project/ios/Info.plist", "frameworks/runtime-src/proj.ios_mac/ios/Info.plist", interpolate_iosplist)
-    interpolator.interpolate("templates/project/ios/AppConfig.h", "frameworks/runtime-src/proj.ios_mac/ios/AppConfig.h")
+    interpolator.interpolate("templates/project/ios/Info.plist", cocos.iosmacprojpath("ios/Info.plist"), interpolate_iosplist)
     interpolator.interpolate("templates/config.json", "config.json", interpolate_configjson)
     interpolator.interpolate("templates/project/config.lua", "src/config.lua", interpolate_projectconfig)
-    interpolator.interpolate("stage/project.pbxproj", "frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj", interpolate_iospbxproj)
+    interpolator.interpolate("stage/project.pbxproj", cocos.iosmacprojpath("GameTools.xcodeproj/project.pbxproj"), interpolate_iospbxproj)
+    interpolator.interpolate("templates/project/ios/GKConfig.m", cocos.iosmacprojpath("AdKit/GameTools/GKConfig.m"))
 
     # @todo Cleanup stage directory
 
@@ -216,6 +244,7 @@ if __name__ == "__main__":
         if "adkit" in options:
             copy_adkit_sources(networks, cocos, adkit)
             configure_supported_networks_header(networks, cocos)
+            configure_sdk_dependencies(project, cocos, stage)
     else:
         print("No mediation networks configured for project. Skipping all mediation network related configuration.")
 
