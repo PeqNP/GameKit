@@ -72,6 +72,7 @@ function Bridge.new(self)
     --
     function self.sendAsync(method, request, sig)
         local response = adaptor.send(method, request.toDict(), sig)
+        -- @todo response will be a number value when an exception happened in native land.
         local req = BridgeCall(request)
         if response then
             if response.success then
