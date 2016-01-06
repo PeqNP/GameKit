@@ -88,21 +88,36 @@ describe("Bridge", function()
     end)
 
     context("when sending a request failed", function()
-        local request
-        local promise
         local response
 
         before_each(function()
-            response = nil
-
             stub(adaptor, "send", false)
 
-            request = TestRequest()
+            local request = TestRequest()
             response = subject.send("test", request, nil)
         end)
 
         it("should have failed immediately", function()
             assert.falsy(response)
+        end)
+    end)
+
+    context("when sending a request w/ no parameters", function()
+        local response
+        local nativeResponse
+
+        before_each(function()
+            nativeResponse = {}
+            stub(adaptor, "send", nativeResponse)
+            response = subject.send("method")
+        end)
+
+        it("should succeed", function()
+            assert.equal(nativeResponse, response)
+        end)
+
+        it("should have called the adaptor with correct parameters", function()
+            assert.stub(adaptor.send).was.called_with("method", nil, nil)
         end)
     end)
 

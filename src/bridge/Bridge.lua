@@ -1,4 +1,6 @@
 --
+-- Provides interface to communicate between native and script environment.
+--
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
@@ -8,7 +10,7 @@ require "bridge.BridgeCall"
 Bridge = Class()
 
 function Bridge.new(self)
-    local adaptor
+    local adaptor -- BridgeAdaptor
     local private = {}
     local requests = {}
     local numRequests = 0
@@ -60,7 +62,8 @@ function Bridge.new(self)
     end
 
     function self.send(method, request, sig)
-        return adaptor.send(method, request.toDict(), sig)
+        local payload = request and request.toDict() or nil
+        return adaptor.send(method, payload, sig)
     end
 
     --
