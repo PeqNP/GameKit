@@ -13,10 +13,20 @@ function AppManager.new(self)
     end
 
     function self.getNotifications()
+        local response = bridge.getNotifications()
+        if response.isSuccess() then
+            return response.getNotifications()
+        end
+        _error = response.getError()
         return 0
     end
 
     function self.setupNotification(message, interval)
+        local response = bridge.setupNotification(AppSetupNotificationRequest(message, interval))
+        if response.isSuccess() then
+            return true
+        end
+        _error = response.getError()
         return false
     end
     
