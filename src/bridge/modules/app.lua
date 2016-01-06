@@ -18,6 +18,7 @@ function app.getNotifications()
     return getBridgeResponse(bridge.send("app__getNotifications"))
 end
 
+-- @param AppSetupNotificationRequest
 function app.setupNotification(request)
     return getBridgeResponse(bridge.send("app__setupNotifiation", request))
 end
