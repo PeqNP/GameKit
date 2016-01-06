@@ -2,8 +2,6 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeResponseProtocol"
-
 AdCacheResponse = Class(BridgeResponse)
 
 function AdCacheResponse.new(self, init)
