@@ -2,6 +2,8 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
+require "app.request.AppSetupNotificationRequest"
+
 local AppManager = Class()
 
 function AppManager.new(self)

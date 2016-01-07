@@ -20,7 +20,7 @@ end
 
 -- @param AppSetupNotificationRequest
 function app.setupNotification(request)
-    local response = bridge.send("app__setupNotifiation", request)
+    local response = bridge.send("app__setupNotification", request)
     return BridgeResponse(response.success, nil, response.error)
 end
 
