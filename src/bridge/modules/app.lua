@@ -1,3 +1,5 @@
+require "bridge.BridgeResponse"
+
 local app = {}
 
 local bridge
