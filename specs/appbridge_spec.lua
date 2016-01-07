@@ -36,7 +36,7 @@ describe("modules.app", function()
         local response
 
         before_each(function()
-            stub(bridge, "send", {success=true})
+            stub(bridge, "send", {success=true, notifications=23})
             response = subject.getNotifications()
         end)
 
@@ -46,6 +46,7 @@ describe("modules.app", function()
 
         it("should return a BridgeResponse", function()
             assert.equal(AppNotificationResponse, response.getClass())
+            assert.equal(23, response.getNotifications())
         end)
     end)
 end)

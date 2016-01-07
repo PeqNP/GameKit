@@ -238,3 +238,7 @@ function ripairs(t)
   end
   return ripairs_it, t, #t + 1
 end
+
+function get(value, default)
+    return value or default
+end
