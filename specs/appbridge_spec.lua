@@ -45,7 +45,7 @@ describe("modules.app", function()
         end)
 
         it("should return a BridgeResponse", function()
-            assert.equal(BridgeResponse, response.getClass())
+            assert.equal(AppNotificationResponse, response.getClass())
         end)
     end)
 end)
