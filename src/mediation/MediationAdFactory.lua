@@ -151,6 +151,9 @@ function MediationAdFactory.new(self)
     local interval = 0
     function self.nextAd(adType)
         local queue = queues[adType]
+        if not queue then
+            return nil
+        end
         if #queue < 1 then
             Log.w("AdType %s has no configs in the queue", adType)
             return nil

@@ -231,6 +231,32 @@ describe("MediationAdFactory", function()
         end)
     end)
 
+    describe("when the video is 100%", function()
+        before_each(function()
+            videoAd = MediationAdConfig(AdNetwork.AdColony, AdType.Video, AdImpressionType.Regular, 100, 20)
+            subject = MediationAdFactory({videoAd})
+        end)
+
+        it("should always provide an ad", function()
+            for i=1, 10 do
+                local ad = subject.nextAd(AdType.Video)
+                assert.truthy(ad)
+            end
+        end)
+
+        context("when no ad type is provided", function()
+            local ad
+
+            before_each(function()
+                ad = subject.nextAd()
+            end)
+
+            it("should return nil", function()
+                assert.falsy(ad)
+            end)
+        end)
+    end)
+
     --[[ Fix: last regularAd is in position 5.
     describe("Intersitial 50/50, w/ two premium at different interval", function()
         local premiumAd2
