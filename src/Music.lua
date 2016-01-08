@@ -40,14 +40,15 @@ function Music.new(self)
     end
 
     function self.turnOn(vol)
-        Log.i("Music.on(%d)", vol)
+        Log.i("Music.on(%f)", vol)
         isOn = true
-        self.fadeTo(vol, 0.5, nil, _bgPath)
+        self.fadeTo(vol, 0.5, _bgPath)
     end
 
     function self.turnOff()
         Log.i("Music.off()")
-        self.fadeTo(0, 0.5, function()
+        local promise = self.fadeTo(0, 0.5)
+        promise.done(function()
             self.stop(true)
         end)
         isOn = false
