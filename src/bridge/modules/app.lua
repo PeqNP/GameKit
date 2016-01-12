@@ -24,4 +24,12 @@ function app.setupNotification(request)
     return BridgeResponse(response.success, nil, response.error)
 end
 
+function app__didBecomeActive()
+    Log.i("Application did become active")
+end
+
+function app__willBecomeInactive()
+    Log.i("Application will become inactive")
+end
+
 return app
