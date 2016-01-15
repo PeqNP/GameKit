@@ -13,10 +13,6 @@ function BridgeCall.new(self)
         request = _request
     end
 
-    function self.getId()
-        return request.getId()
-    end
-
     function self.getRequest()
         return request
     end

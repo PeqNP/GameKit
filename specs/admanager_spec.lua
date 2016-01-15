@@ -19,22 +19,11 @@ require "bridge.BridgeResponse"
 require "mediation.MediationAdFactory"
 require "mediation.MediationAdConfig"
 
+local match = require("specs.matchers")
+matchers_assert(assert)
+
 require "Music"
 Singleton(Music)
-
-local match = require("luassert.match")
-
-local function is_kind_of(state, arguments)
-    local class = arguments[1]
-    return function(value)
-        if type(value) == "table" and value.getClass and value.getClass() == class then
-            return true
-        end
-        return false
-    end
-end
-
-assert:register("matcher", "is_kind_of", is_kind_of)
 
 function reload(pckg)
     package.loaded[pckg] = nil

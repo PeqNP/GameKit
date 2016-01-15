@@ -9,16 +9,7 @@ require "bridge.modules.ad"
 require "ad.response.AdCompleteResponse"
 require "ad.networks.AdColonyNetwork"
 
-local match = require("luassert.match")
-
-local function is_equal(state, arguments)
-    local expected = arguments[1]
-    return function(value)
-        return table.equals(expected, value)
-    end
-end
-
-assert:register("matcher", "equal", is_equal)
+local match = require("specs.matchers")
 
 Ad = Class()
 function Ad.new(self)

@@ -2,26 +2,20 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeResponseProtocol"
+require "bridge.BridgeResponse"
 
-local TransactionFailedResponse = Class()
-TransactionFailedResponse.implements(BridgeResponseProtocol)
+local TransactionFailedResponse = Class(BridgeResponse)
 
-function TransactionFailedResponse.new(self)
-    local id
-    local _error
+function TransactionFailedResponse.new(self, init)
+    local sku
 
-    function self.init(_id, _e)
-        id = _id
-        _error = _e
+    function self.init(_id, _sku, _e)
+        init(false, _id, _e)
+        sku = _sku
     end
 
-    function self.getId()
-        return id
-    end
-
-    function self.getError()
-        return _error
+    function self.getSKU()
+        return sku
     end
 end
 

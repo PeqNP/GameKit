@@ -6,6 +6,7 @@ require "json"
 require "bridge.BridgeResponse"
 
 TransactionRequest = require("iap.request.TransactionRequest")
+QueryResponse = require("iap.response.QueryResponse")
 TransactionCompletedResponse = require("iap.response.TransactionCompletedResponse")
 TransactionFailedResponse = require("iap.response.TransactionFailedResponse")
 
@@ -16,29 +17,39 @@ function iap.init(b)
     bridge = b 
 end
 
+function iap.query(request)
+    local response, call = bridge.sendAsync("iap__query", request)
+    return BridgeResponse(response.success, response.id, response.error), call
+end
+
 function iap.purchase(request)
-    local response = bridge.send("iap__purchase", request)
-    return BridgeResponse(response.success, response.id, response.error)
+    local response, call = bridge.sendAsync("iap__purchase", request)
+    return BridgeResponse(response.success, response.id, response.error), call
 end
 
 function iap.restore(request)
-    local response = bridge.send("iap__restore", request)
-    return BridgeResponse(response.success, response.id, response.error)
+    local response, call = bridge.sendAsync("iap__restore", request)
+    return BridgeResponse(response.success, response.id, response.error), call
+end
+
+function iap__queried(payload)
+    local response = json.decode(payload)
+    bridge.receive(QueryResponse(response.id, response.skus))
 end
 
 function iap__completed(payload)
     local response = json.decode(payload)
-    bridge.receive(TransactionCompletedResponse(response.id, response.productid, response.receipt))
+    bridge.receive(TransactionCompletedResponse(response.id, response.sku, response.receipt))
 end
 
 function iap__restored(payload)
     local response = json.decode(payload)
-    bridge.receive(TransactionCompletedResponse(response.id, response.productid, response.receipt))
+    bridge.receive(TransactionCompletedResponse(response.id, response.sku, response.receipt))
 end
 
 function iap__failed(payload)
     local response = json.decode(payload)
-    bridge.receive(TransactionFailedResponse(response.id, response.error))
+    bridge.receive(TransactionFailedResponse(response.id, response.sku, response.error))
 end
 
 return iap

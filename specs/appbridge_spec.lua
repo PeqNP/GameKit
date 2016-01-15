@@ -4,16 +4,7 @@ require "Logger"
 
 require "bridge.Bridge"
 
-local match = require("luassert.match")
-
-local function is_equal(state, arguments)
-    local expected = arguments[1]
-    return function(value)
-        return table.equals(expected, value)
-    end
-end
-
-assert:register("matcher", "equal", is_equal)
+local match = require("specs.matchers")
 
 describe("modules.app", function()
     local subject
