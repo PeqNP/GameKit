@@ -2,9 +2,12 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
-local IAPManager = Class()
+require "Promise"
+require "iap.Product"
 
-function IAPManager.new(self)
+local Manager = Class()
+
+function Manager.new(self)
     local bridge
 
     function self.init(_bridge)
@@ -12,8 +15,14 @@ function IAPManager.new(self)
     end
 
     function self.querySKUs(skus)
-        return bridge.
         local promise = Promise()
+        local response, call = bridge.query(TransactionQueryRequest(skus))
+        response.done(function(response)
+            promise.done(response.getProducts(), response.getInvalid())
+        end)
+        response.fail(function(response)
+            promise.fail(response)
+        end)
         return promise
     end
 
@@ -24,4 +33,4 @@ function IAPManager.new(self)
     end
 end
 
-return IAPManager
+return Manager

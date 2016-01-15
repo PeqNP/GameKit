@@ -9,7 +9,8 @@ require "bridge.BridgeResponse"
 local TransactionCompletedResponse = require("iap.response.TransactionCompletedResponse")
 local TransactionFailedResponse = require("iap.response.TransactionFailedResponse")
 local TransactionRequest = require("iap.request.TransactionRequest")
-local IAPManager = require("iap.IAPManager")
+local IAPManager = require("iap.Manager")
+local IAPProduct = require("iap.product")
 
 require("specs.helpers")
 local match = require("specs.matchers")
@@ -23,10 +24,10 @@ describe("IAPManager", function()
         subject = IAPManager(bridge)
     end)
 
-    describe("registering SKUs", function()
+    describe("query SKUs", function()
         local response
         local promise
-        local blockResponse
+        local blockProducts
         local errorResponse
 
         before_each(function()
@@ -34,8 +35,9 @@ describe("IAPManager", function()
             stub(bridge, "query", BridgeResponse(true, 10), response)
 
             promise = subject.querySKUs({"sku-1", "sku-2", "sku-3"})
-            promise.done(function(_r)
-                blockResponse = _r
+            promise.done(function(_products, _invalid)
+                blockProducts = _p
+                
             end)
             promise.fail(function(_r)
                 errorResponse = _r
@@ -50,12 +52,13 @@ describe("IAPManager", function()
             local nativeResponse
 
             before_each(function()
-                nativeResponse = {}
+                nativeResponse = QueryResponse(10, "sku-1:title-1:description-1:price-1,sku-2:title-2:description-2:price-2,sku-3:title-3:description-3:price-3")
                 response.resolve(nativeResponse)
             end)
 
-            it("should have returned the response", function()
-                assert.equal(nativeResponse, blockResponse)
+            it("should return products", function()
+                assert.equal(3, #blockProducts)
+                assert.equal(IAPProduct, blockProducts[1].getClass())
             end)
         end)
 
