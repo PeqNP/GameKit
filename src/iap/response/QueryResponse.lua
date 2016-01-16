@@ -12,7 +12,7 @@ function QueryResponse.new(self)
     local invalidSKUs
 
     local function getProducts(_products)
-        if not _products then
+        if not _products or _products == "" then
             return {}
         end
         local products = string.split(_products, ",")
@@ -26,6 +26,9 @@ function QueryResponse.new(self)
     end
 
     local function getInvalidSKUs(_skus)
+        if not _skus or _skus == "" then
+            return {}
+        end
         local skus = string.split(_skus, ",")
         local parsed = {}
         for _, sku in ipairs(skus) do
