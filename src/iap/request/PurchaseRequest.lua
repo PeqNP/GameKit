@@ -8,16 +8,16 @@ local TransactionRequest = Class()
 TransactionRequest.implements(BridgeRequestProtocol)
 
 function TransactionRequest.new(self)
-    local productId
+    local sku
 
-    function self.init(_productId)
-        productId = _productId
+    function self.init(_sku)
+        sku = _sku
     end
 
     -- BridgeRequestProtocol
 
     function self.toDict()
-        return {productid=productId}
+        return {sku=sku}
     end
 end
 

@@ -11,7 +11,7 @@ matchers_assert(assert)
 
 local QueryRequest = require("iap.request.QueryRequest")
 local QueryResponse = require("iap.response.QueryResponse")
-local TransactionCompletedResponse = require("iap.response.TransactionCompletedResponse")
+local TransactionResponse = require("iap.response.TransactionResponse")
 local TransactionFailedResponse = require("iap.response.TransactionFailedResponse")
 local TransactionRequest = require("iap.request.TransactionRequest")
 local IAPManager = require("iap.Manager")
@@ -87,25 +87,46 @@ describe("IAPManager", function()
     end)
 
     describe("purchase SKU", function()
+        local promise
+        local transaction
+        local _error
+
         before_each(function()
             response = BridgeCall()
             stub(bridge, "purchase", BridgeResponse(true, 20), response)
-            subject.purchaseSKU("sku-1")
+            promise = subject.purchaseSKU("sku-1")
+            promise.done(function(_t)
+                transaction = _t
+            end)
+            promise.fail(function(_e)
+                _error = _e
+            end)
+        end)
+
+        it("should have made call to bridge", function()
+            assert.stub(bridge.purchase).was.called_with(match.is_kind_of(TransactionRequest))
         end)
 
         context("when the response is successful", function()
             before_each(function()
+                promise.resolve(TransactionResponse(20, "sku-1", "receipt-1"))
             end)
 
             it("should return SKU w/ receipt", function()
+                assert.equal(Transaction, transaction.getClass())
+                assert.equal("sku-1", transaction.getSKU())
+                assert.equal("receipt-1", transaction.getReceipt())
             end)
         end)
 
         context("when the response fails", function()
             before_each(function()
+                promise.reject(TransactionFailedResponse(20, "An error occurred"))
             end)
 
             it("should return error", function()
+                assert.equal(Error, _error.getClass())
+                assert.equal("An error occurred", _error.getMessage())
             end)
         end)
     end)

@@ -7,7 +7,7 @@ require "bridge.BridgeResponse"
 
 TransactionRequest = require("iap.request.TransactionRequest")
 QueryResponse = require("iap.response.QueryResponse")
-TransactionCompletedResponse = require("iap.response.TransactionCompletedResponse")
+TransactionResponse = require("iap.response.TransactionResponse")
 TransactionFailedResponse = require("iap.response.TransactionFailedResponse")
 
 local iap = {}
@@ -37,14 +37,14 @@ function iap__queried(payload)
     bridge.receive(QueryResponse(response.id, response.skus))
 end
 
-function iap__completed(payload)
+function iap__purchased(payload)
     local response = json.decode(payload)
-    bridge.receive(TransactionCompletedResponse(response.id, response.sku, response.receipt))
+    bridge.receive(TransactionResponse(response.id, response.sku, response.receipt))
 end
 
 function iap__restored(payload)
     local response = json.decode(payload)
-    bridge.receive(TransactionCompletedResponse(response.id, response.sku, response.receipt))
+    bridge.receive(TransactionResponse(response.id, response.sku, response.receipt))
 end
 
 function iap__failed(payload)
