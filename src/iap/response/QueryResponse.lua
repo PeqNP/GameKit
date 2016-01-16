@@ -9,6 +9,7 @@ local QueryResponse = Class()
 function QueryResponse.new(self)
     local id
     local products
+    local invalidSKUs
 
     local function getProducts(_products)
         if not _products then
@@ -17,16 +18,34 @@ function QueryResponse.new(self)
         local products = string.split(_products, ",")
         local parsed = {}
         for _, product in ipairs(products) do
-            local parts = strig.split(product, ":")
+            local parts = string.split(product, ":")
             -- @note Products params: SKU, Title, Description, Price
             table.insert(parsed, Product(parts[1], parts[2], parts[3], parts[4]))
         end
         return parsed
     end
 
-    function self.init(_id, _products)
+    local function getInvalidSKUs(_skus)
+        local skus = string.split(_skus, ",")
+        local parsed = {}
+        for _, sku in ipairs(skus) do
+            table.insert(parsed, sku)
+        end
+        return parsed
+    end
+
+    function self.init(_id, _products, _invalidSKUs)
         id = _id
         products = getProducts(_products)
+        invalidSKUs = getInvalidSKUs(_invalidSKUs)
+    end
+
+    function self.getProducts()
+        return products
+    end
+
+    function self.getInvalidSKUs()
+        return invalidSKUs
     end
 end
 

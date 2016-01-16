@@ -6,11 +6,16 @@ require "Common"
 require "bridge.BridgeCall"
 require "bridge.BridgeResponse"
 
+local match = require("specs.matchers")
+matchers_assert(assert)
+
+local QueryRequest = require("iap.request.QueryRequest")
+local QueryResponse = require("iap.response.QueryResponse")
 local TransactionCompletedResponse = require("iap.response.TransactionCompletedResponse")
 local TransactionFailedResponse = require("iap.response.TransactionFailedResponse")
 local TransactionRequest = require("iap.request.TransactionRequest")
 local IAPManager = require("iap.Manager")
-local IAPProduct = require("iap.product")
+local IAPProduct = require("iap.Product")
 
 require("specs.helpers")
 local match = require("specs.matchers")
@@ -28,16 +33,17 @@ describe("IAPManager", function()
         local response
         local promise
         local blockProducts
+        local blockInvalid
         local errorResponse
 
         before_each(function()
             response = BridgeCall()
             stub(bridge, "query", BridgeResponse(true, 10), response)
 
-            promise = subject.querySKUs({"sku-1", "sku-2", "sku-3"})
+            promise = subject.querySKUs({"sku-1", "sku-2", "sku-3, sku-4"})
             promise.done(function(_products, _invalid)
-                blockProducts = _p
-                
+                blockProducts = _products
+                blockInvalid = _invalid
             end)
             promise.fail(function(_r)
                 errorResponse = _r
@@ -45,20 +51,24 @@ describe("IAPManager", function()
         end)
 
         it("should have made call to bridge", function()
-            assert.stub(bridge.query).was.called_with(match.is_kind_of(TransactionQueryRequest))
+            assert.stub(bridge.query).was.called_with(match.is_kind_of(QueryRequest))
         end)
 
         context("when the response is successful", function()
             local nativeResponse
 
             before_each(function()
-                nativeResponse = QueryResponse(10, "sku-1:title-1:description-1:price-1,sku-2:title-2:description-2:price-2,sku-3:title-3:description-3:price-3")
+                nativeResponse = QueryResponse(10, "sku-1:title-1:description-1:price-1,sku-2:title-2:description-2:price-2", "sku-3,sku-4")
                 response.resolve(nativeResponse)
             end)
 
             it("should return products", function()
-                assert.equal(3, #blockProducts)
+                assert.equal(2, #blockProducts)
                 assert.equal(IAPProduct, blockProducts[1].getClass())
+            end)
+
+            it("should return array of invalid SKUs", function()
+                assert.truthy(table.equals({"sku-3", "sku-4"}, blockInvalid))
             end)
         end)
 

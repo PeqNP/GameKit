@@ -3,7 +3,9 @@
 --
 
 require "Promise"
-require "iap.Product"
+
+local Product = require("iap.Product")
+local QueryRequest = require("iap.request.QueryRequest")
 
 local Manager = Class()
 
@@ -16,12 +18,12 @@ function Manager.new(self)
 
     function self.querySKUs(skus)
         local promise = Promise()
-        local response, call = bridge.query(TransactionQueryRequest(skus))
-        response.done(function(response)
-            promise.done(response.getProducts(), response.getInvalid())
+        local response, call = bridge.query(QueryRequest(skus))
+        call.done(function(response)
+            promise.resolve(response.getProducts(), response.getInvalidSKUs())
         end)
-        response.fail(function(response)
-            promise.fail(response)
+        call.fail(function(response)
+            promise.reject(response)
         end)
         return promise
     end
