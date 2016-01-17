@@ -5,7 +5,7 @@
 require "json"
 require "bridge.BridgeResponse"
 
-TransactionRequest = require("iap.request.TransactionRequest")
+PurchaseRequest = require("iap.request.PurchaseRequest")
 QueryResponse = require("iap.response.QueryResponse")
 TransactionResponse = require("iap.response.TransactionResponse")
 TransactionFailedResponse = require("iap.response.TransactionFailedResponse")

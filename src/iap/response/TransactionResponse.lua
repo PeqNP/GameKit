@@ -9,12 +9,12 @@ TransactionResponse.implements(BridgeResponseProtocol)
 
 function TransactionResponse.new(self)
     local id
-    local productId
+    local sku
     local receipt
 
-    function self.init(_id, _productId, _receipt)
+    function self.init(_id, _sku, _receipt)
         id = _id
-        productId = _productId
+        sku = _sku
         receipt = _receipt
     end
 
@@ -22,8 +22,8 @@ function TransactionResponse.new(self)
         return id
     end
 
-    function self.getProductId()
-        return productId
+    function self.getSKU()
+        return sku
     end
 
     function self.getReceipt()

@@ -4,10 +4,10 @@
 
 require "bridge.BridgeRequestProtocol"
 
-local TransactionRequest = Class()
-TransactionRequest.implements(BridgeRequestProtocol)
+local PurchaseRequest = Class()
+PurchaseRequest.implements(BridgeRequestProtocol)
 
-function TransactionRequest.new(self)
+function PurchaseRequest.new(self)
     local sku
 
     function self.init(_sku)
@@ -21,4 +21,4 @@ function TransactionRequest.new(self)
     end
 end
 
-return TransactionRequest
+return PurchaseRequest
