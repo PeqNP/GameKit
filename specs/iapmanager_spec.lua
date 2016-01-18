@@ -9,11 +9,12 @@ require "bridge.BridgeResponse"
 local match = require("specs.matchers")
 matchers_assert(assert)
 
+require "bridge.BridgeResponse"
+
 local QueryRequest = require("iap.request.QueryRequest")
 local QueryResponse = require("iap.response.QueryResponse")
 local RestorePurchaseResponse = require("iap.response.RestorePurchaseResponse")
 local PurchaseResponse = require("iap.response.PurchaseResponse")
-local TransactionFailedResponse = require("iap.response.TransactionFailedResponse")
 local PurchaseRequest = require("iap.request.PurchaseRequest")
 local Manager = require("iap.Manager")
 local Product = require("iap.Product")
@@ -109,7 +110,7 @@ describe("iap.Manager", function()
 
                 context("when the response fails", function()
                     before_each(function()
-                        purchasec.reject(TransactionFailedResponse(20, "sku-1", "An error occurred"))
+                        purchasec.reject(BridgeResponse(false, 20, "An error occurred"))
                     end)
 
                     it("should return error", function()

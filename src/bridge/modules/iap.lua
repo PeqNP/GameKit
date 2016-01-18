@@ -7,8 +7,8 @@ require "bridge.BridgeResponse"
 
 PurchaseRequest = require("iap.request.PurchaseRequest")
 QueryResponse = require("iap.response.QueryResponse")
-TransactionResponse = require("iap.response.TransactionResponse")
-TransactionFailedResponse = require("iap.response.TransactionFailedResponse")
+PurchaseResponse = require("iap.response.PurchaseResponse")
+RestorePurchaseResponse = require("iap.response.RestorePurchaseResponse")
 
 local iap = {}
 
@@ -44,12 +44,12 @@ end
 
 function iap__restored(payload)
     local response = json.decode(payload)
-    bridge.receive(TransactionResponse(response.id, response.sku, response.receipt))
+    bridge.receive(RestorePurchaseResponse(response.id, response.skus))
 end
 
 function iap__failed(payload)
     local response = json.decode(payload)
-    bridge.receive(TransactionFailedResponse(response.id, response.sku, response.error))
+    bridge.receive(BridgeResponse(false, response.id, response.error))
 end
 
 return iap
