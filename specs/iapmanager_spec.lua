@@ -9,8 +9,6 @@ require "bridge.BridgeResponse"
 local match = require("specs.matchers")
 matchers_assert(assert)
 
-require "bridge.BridgeResponse"
-
 local QueryRequest = require("iap.request.QueryRequest")
 local QueryResponse = require("iap.response.QueryResponse")
 local RestorePurchaseResponse = require("iap.response.RestorePurchaseResponse")
