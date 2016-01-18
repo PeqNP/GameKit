@@ -4,10 +4,10 @@
 
 require "bridge.BridgeResponseProtocol"
 
-local TransactionResponse = Class()
-TransactionResponse.implements(BridgeResponseProtocol)
+local PurchaseResponse = Class()
+PurchaseResponse.implements(BridgeResponseProtocol)
 
-function TransactionResponse.new(self)
+function PurchaseResponse.new(self)
     local id
     local sku
     local receipt
@@ -31,4 +31,4 @@ function TransactionResponse.new(self)
     end
 end
 
-return TransactionResponse
+return PurchaseResponse

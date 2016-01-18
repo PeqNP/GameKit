@@ -7,7 +7,7 @@ Log.setLevel(LogLevel.Warning)
 require "bridge.Bridge"
 require "bridge.BridgeResponse"
 require "bridge.modules.iap"
-TransactionRequest = require("iap.request.TransactionRequest")
+PurchaseRequest = require("iap.request.PurchaseRequest")
 
 describe("modules.iap", function()
     local subject
@@ -31,7 +31,7 @@ describe("modules.iap", function()
         local response
 
         before_each(function()
-            request = TransactionRequest("product-id")
+            request = PurchaseRequest("product-id")
         end)
 
         context("when the process succeeds", function()
@@ -69,21 +69,16 @@ describe("modules.iap", function()
     end)
 
     describe("restore", function()
-        local request
         local response
-
-        before_each(function()
-            request = TransactionRequest("product-id")
-        end)
 
         context("when the process succeeds", function()
             before_each(function()
                 stub(bridge, "send", {success=true, id=20})
-                response = subject.restore(request)
+                response = subject.restore()
             end)
 
             it("should have made call to the bridge", function()
-                assert.stub(bridge.send).was.called_with("iap__restore", request)
+                assert.stub(bridge.send).was.called_with("iap__restore")
             end)
 
             it("should have created the correct response", function()
@@ -95,11 +90,11 @@ describe("modules.iap", function()
         context("when the process fails", function()
             before_each(function()
                 stub(bridge, "send", {success=false, error="restore failure"})
-                response = subject.restore(request)
+                response = subject.restore()
             end)
 
             it("should have made call to the bridge", function()
-                assert.stub(bridge.send).was.called_with("iap__restore", request)
+                assert.stub(bridge.send).was.called_with("iap__restore")
             end)
 
             it("should have created the correct response", function()
@@ -109,7 +104,6 @@ describe("modules.iap", function()
             end)
         end)
     end)
-
 end)
 
 describe("IAP Receive", function()
@@ -129,17 +123,17 @@ describe("IAP Receive", function()
         subject.init(bridge)
     end)
 
-    describe("complete a transaction", function()
+    describe("complete a purchase", function()
         local json
 
         before_each(function()
-            json = "{\"id\": 30, \"productid\": \"transaction-1\", \"receipt\": \"012345689\"}"
-            iap__completed(json)
+            json = "{\"id\": 30, \"sku\": \"sku-1\", \"receipt\": \"012345689\"}"
+            iap__purchased(json)
         end)
 
         it("should have sent message to bridge that a transaction was completed", function()
             assert.truthy(response)
-            assert.equal(TransactionCompletedResponse, response.getClass())
+            assert.equal(PurchaseResponse, response.getClass())
         end)
 
         it("should have set the correct values", function()

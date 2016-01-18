@@ -27,8 +27,8 @@ function iap.purchase(request)
     return BridgeResponse(response.success, response.id, response.error), call
 end
 
-function iap.restore(request)
-    local response, call = bridge.sendAsync("iap__restore", request)
+function iap.restore()
+    local response, call = bridge.sendAsync("iap__restore")
     return BridgeResponse(response.success, response.id, response.error), call
 end
 
@@ -39,7 +39,7 @@ end
 
 function iap__purchased(payload)
     local response = json.decode(payload)
-    bridge.receive(TransactionResponse(response.id, response.sku, response.receipt))
+    bridge.receive(PurchaseResponse(response.id, response.sku, response.receipt))
 end
 
 function iap__restored(payload)
