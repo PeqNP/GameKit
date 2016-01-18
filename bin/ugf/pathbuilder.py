@@ -80,7 +80,7 @@ class ProjectPathBuilder (object):
         self.check_platform(platform)
         return self.path("platform/{}/mediation.json".format(platform))
 
-    def luapath(self, platform):
+    def iappath(self, platform):
         self.check_platform(platform)
         return self.path("platform/{}/iap.json".format(platform))
 

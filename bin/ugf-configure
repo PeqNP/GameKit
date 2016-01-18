@@ -175,7 +175,7 @@ local iap = {}
 
 return iap
     """.format(VERSION, datetime.now(), iap.toLua())
-    fh = open(cocos.mediationluapath(platform), "w")
+    fh = open(cocos.iapluapath(platform), "w")
     fh.write(lua)
     fh.close()
 
