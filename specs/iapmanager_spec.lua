@@ -11,6 +11,7 @@ matchers_assert(assert)
 
 local QueryRequest = require("iap.request.QueryRequest")
 local QueryResponse = require("iap.response.QueryResponse")
+local RestorePurchaseResponse = require("iap.response.RestorePurchaseResponse")
 local TransactionResponse = require("iap.response.TransactionResponse")
 local TransactionFailedResponse = require("iap.response.TransactionFailedResponse")
 local PurchaseRequest = require("iap.request.PurchaseRequest")
@@ -138,25 +139,41 @@ describe("iap.Manager", function()
     end)
 
     describe("restore purchases", function()
+        local promise
+        local transactions
+        local _error
+
         before_each(function()
-            response = BridgeCall()
-            stub(bridge, "restore", BridgeResponse(true, 30), response)
-            subject.restorePurchases()
+            call = BridgeCall()
+            stub(bridge, "restore", BridgeResponse(true, 30), call)
+            promise = subject.restorePurchases()
+            promise.done(function(_t)
+                transactions = _t
+            end)
+            promise.fail(function(_e)
+                _error = _e
+            end)
         end)
 
         context("when the response is successful", function()
             before_each(function()
+                call.resolve(RestorePurchaseResponse(30, "sku-1:receipt-1,sku-2:receipt-2"))
             end)
 
             it("should return purchased SKUs", function()
+                assert.equal(2, #transactions)
+                assert.equal("sku-1", transactions[1].getSKU())
+                assert.equal("receipt-1", transactions[1].getReceipt())
             end)
         end)
 
         context("when the response fails", function()
             before_each(function()
+                call.reject(BridgeResponse(false, 30, "An error occurred"))
             end)
 
             it("should return error", function()
+                assert.equal("An error occurred", _error.getMessage())
             end)
         end)
 

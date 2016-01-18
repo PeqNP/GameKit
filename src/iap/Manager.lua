@@ -8,7 +8,7 @@ require "Error"
 local Product = require("iap.Product")
 local Transaction = require("iap.Transaction")
 local QueryRequest = require("iap.request.QueryRequest")
-local QueryRequest = require("iap.request.PurchaseRequest")
+local PurchaseRequest = require("iap.request.PurchaseRequest")
 
 local Manager = Class()
 
@@ -50,6 +50,15 @@ function Manager.new(self)
     end
 
     function self.restorePurchases()
+        local promise = Promise()
+        local response, call = bridge.restore()
+        call.done(function(response)
+            promise.resolve(response.getTransactions())
+        end)
+        call.fail(function(response)
+            promise.reject(Error(0, response.getError()))
+        end)
+        return promise
     end
 
     function self.hasProducts()
