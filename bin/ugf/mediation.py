@@ -27,7 +27,7 @@ def quote(val):
         return "nil"
     return '"' + val + '"'
 
-class Config (object):
+class AdConfig (object):
     def __init__(self, deviceIds, automatic, orientation):
         self.deviceIds = deviceIds
         self.automatic = automatic
@@ -35,6 +35,13 @@ class Config (object):
 
     def toLua(self):
         return "AdConfig({{\"{}\"}}, {}, {})".format("\", \"".join(self.deviceIds), self.automatic and "true" or "false", self.orientation)
+
+class IAPConfig (object):
+    def __init__(self, skus):
+        self.skus = skus
+
+    def toLua(self):
+        return "{{\"{}\"}}".format("\", \"".join(self.skus))
 
 class Network (object):
     def __init__(self, name, appId, signature, ads):
@@ -79,7 +86,16 @@ def load_mediation_config(path):
         for ad in network["ads"]:
             ads.append(Ad(ad["type"], ad["zoneId"], ad.get("location", None)))
         networks.append(Network(network["network"], network.get("appId"), network.get("signature"), ads))
-    return Config(config["config"]["devices"], config["config"]["automatic"], config["config"]["orientation"]), networks
+    return AdConfig(config["config"]["devices"], config["config"]["automatic"], config["config"]["orientation"]), networks
+
+def load_iap_config(path):
+    if not os.path.isfile(path):
+        raise IOError("IAP config file does not exist at path {}".format(path))
+    fh = open(path, "r")
+    json_blob = fh.read()
+    fh.close()
+    skus = json.loads(json_blob)
+    return IAPConfig(skus)
 
 def lua_for_networks(networks):
     code = []

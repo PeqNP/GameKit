@@ -30,6 +30,9 @@ class CocosPathBuilder (object):
     def mediationluapath(self, platform):
         return self.path("src/Mediation-{}.lua".format(platform))
 
+    def iapluapath(self, platform):
+        return self.path("src/IAP-{}.lua".format(platform))
+
     def podfilepath(self):
         return self.iosmacprojpath("Podfile")
 
@@ -68,11 +71,18 @@ class ProjectPathBuilder (object):
 
     def xibpath(self):
         return self.path("platform/ios/src/LaunchScreen.xib")
-    
-    def mediationpath(self, platform):
+
+    def check_platform(self, platform):
         if not platform or len(platform) < 1:
             raise Exception("'platform' must be a string with a length greater than one.")
+    
+    def mediationpath(self, platform):
+        self.check_platform(platform)
         return self.path("platform/{}/mediation.json".format(platform))
+
+    def luapath(self, platform):
+        self.check_platform(platform)
+        return self.path("platform/{}/iap.json".format(platform))
 
 # AdKit project path builder.
 class AdKitPathBuilder (object):
