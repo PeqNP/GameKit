@@ -29,6 +29,10 @@ function RestorePurchaseResponse.new(self)
         transactions = getTransactions(_transactions)
     end
 
+    function self.getId()
+        return id
+    end
+
     function self.getTransactions()
         return transactions
     end

@@ -36,12 +36,12 @@ describe("modules.iap", function()
 
         context("when the process succeeds", function()
             before_each(function()
-                stub(bridge, "send", {success=true, id=20})
+                stub(bridge, "sendAsync", {success=true, id=20})
                 response = subject.purchase(request)
             end)
 
             it("should have made call to the bridge", function()
-                assert.stub(bridge.send).was.called_with("iap__purchase", request)
+                assert.stub(bridge.sendAsync).was.called_with("iap__purchase", request)
             end)
 
             it("should have created the correct response", function()
@@ -52,12 +52,12 @@ describe("modules.iap", function()
 
         context("when the process fails", function()
             before_each(function()
-                stub(bridge, "send", {success=false, error="purchase failure"})
+                stub(bridge, "sendAsync", {success=false, error="purchase failure"})
                 response = subject.purchase(request)
             end)
 
             it("should have made call to the bridge", function()
-                assert.stub(bridge.send).was.called_with("iap__purchase", request)
+                assert.stub(bridge.sendAsync).was.called_with("iap__purchase", request)
             end)
 
             it("should have created the correct response", function()
@@ -73,12 +73,12 @@ describe("modules.iap", function()
 
         context("when the process succeeds", function()
             before_each(function()
-                stub(bridge, "send", {success=true, id=20})
+                stub(bridge, "sendAsync", {success=true, id=20})
                 response = subject.restore()
             end)
 
             it("should have made call to the bridge", function()
-                assert.stub(bridge.send).was.called_with("iap__restore")
+                assert.stub(bridge.sendAsync).was.called_with("iap__restore")
             end)
 
             it("should have created the correct response", function()
@@ -89,12 +89,12 @@ describe("modules.iap", function()
 
         context("when the process fails", function()
             before_each(function()
-                stub(bridge, "send", {success=false, error="restore failure"})
+                stub(bridge, "sendAsync", {success=false, error="restore failure"})
                 response = subject.restore()
             end)
 
             it("should have made call to the bridge", function()
-                assert.stub(bridge.send).was.called_with("iap__restore")
+                assert.stub(bridge.sendAsync).was.called_with("iap__restore")
             end)
 
             it("should have created the correct response", function()
@@ -138,7 +138,7 @@ describe("IAP Receive", function()
 
         it("should have set the correct values", function()
             assert.equal(30, response.getId())
-            assert.equal("transaction-1", response.getProductId())
+            assert.equal("sku-1", response.getSKU())
             assert.equal("012345689", response.getReceipt())
         end)
     end)
@@ -147,19 +147,23 @@ describe("IAP Receive", function()
         local json 
 
         before_each(function()
-            json = "{\"id\": 40, \"productid\": \"transaction-2\", \"receipt\": \"1234567890\"}"
+            json = "{\"id\": 40, \"skus\": \"sku-2:1234567890\"}"
             iap__restored(json)
         end)
 
         it("should have sent message to bridge that a transaction was restored", function()
             assert.truthy(response)
-            assert.equal(TransactionCompletedResponse, response.getClass())
+            assert.equal(RestorePurchaseResponse, response.getClass())
         end)
 
         it("should have set the correct values", function()
+            local transactions = response.getTransactions()
+            assert.equal(1, #transactions)
             assert.equal(40, response.getId())
-            assert.equal("transaction-2", response.getProductId())
-            assert.equal("1234567890", response.getReceipt())
+
+            local transaction = transactions[1]
+            assert.equal("sku-2", transaction.getSKU())
+            assert.equal("1234567890", transaction.getReceipt())
         end)
     end)
 
@@ -173,10 +177,11 @@ describe("IAP Receive", function()
 
         it("should have sent message to bridge that a transaction was restored", function()
             assert.truthy(response)
-            assert.equal(TransactionFailedResponse, response.getClass())
+            assert.equal(BridgeResponse, response.getClass())
         end)
 
         it("should have set the correct values", function()
+            assert.falsy(response.isSuccess())
             assert.equal(50, response.getId())
             assert.equal("an error :(", response.getError())
         end)
