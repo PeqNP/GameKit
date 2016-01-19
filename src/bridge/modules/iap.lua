@@ -34,7 +34,7 @@ end
 
 function iap__queried(payload)
     local response = json.decode(payload)
-    bridge.receive(QueryResponse(response.id, response.skus))
+    bridge.receive(QueryResponse(response.id, response.products))
 end
 
 function iap__purchased(payload)
