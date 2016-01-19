@@ -12,6 +12,10 @@ describe("QueryResponse", function()
             subject = QueryResponse(10, "sku-1:Title:Description:$1.00,sku-2:Title-2:Description-2:$2.00", "sku-3,sku-4")
         end)
 
+        it("should return the correct ID", function()
+            assert.equal(10, subject.getId())
+        end)
+
         it("should parse products correctly", function()
             local products = subject.getProducts()
 

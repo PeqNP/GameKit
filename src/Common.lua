@@ -322,6 +322,10 @@ function cu.getFullFilepath(filename)
     return cc.FileUtils:getInstance():fullPathForFilename(filename)
 end
 
+function cu.addSearchPath(path)
+    cc.FileUtils:getInstance():addSearchPath(path);
+end
+
 -- --------------------
 -- ----- Events -------
 

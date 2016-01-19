@@ -43,6 +43,10 @@ function QueryResponse.new(self)
         invalidSKUs = getInvalidSKUs(_invalidSKUs)
     end
 
+    function self.getId()
+        return id
+    end
+
     function self.getProducts()
         return products
     end
