@@ -318,6 +318,10 @@ function cu.runAction(action)
     cu.RunningScene():runAction(action)
 end
 
+function cu.getFullFilepath(filename)
+    return cc.FileUtils:getInstance():fullPathForFilename(filename)
+end
+
 -- --------------------
 -- ----- Events -------
 
