@@ -36,12 +36,13 @@ class AdConfig (object):
     def toLua(self):
         return "AdConfig({{\"{}\"}}, {}, {})".format("\", \"".join(self.deviceIds), self.automatic and "true" or "false", self.orientation)
 
-class IAPConfig (object):
-    def __init__(self, skus):
-        self.skus = skus
+class IAPTicket (object):
+    def __init__(self, productId, sku):
+        self.productId = productId
+        self.sku = sku
 
     def toLua(self):
-        return "{{\"{}\"}}".format("\", \"".join(self.skus))
+        return "Ticket(\"{}\", \"{}\")".format(self.productId, self.sku)
 
 class Network (object):
     def __init__(self, name, appId, signature, ads):
@@ -94,8 +95,11 @@ def load_iap_config(path):
     fh = open(path, "r")
     json_blob = fh.read()
     fh.close()
-    skus = json.loads(json_blob)
-    return IAPConfig(skus)
+    tickets = []
+    json_tickets = json.loads(json_blob)
+    for ticket in json_tickets:
+        tickets.append(IAPTicket(ticket[0], ticket[1]))
+    return tickets
 
 def lua_for_networks(networks):
     code = []
