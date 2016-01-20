@@ -27,7 +27,7 @@ function IAP.new(self)
             deferred.resolve(store)
             return deferred
         end
-        local promise = manager.query(_tickets)
+        local promise = manager.fetchProducts(_tickets)
         promise.done(function(_store, _invalid)
             store = _store
             deferred.resolve(store)

@@ -29,7 +29,7 @@ describe("IAP", function()
 
         before_each(function()
             server = Promise()
-            stub(manager, "query", server)
+            stub(manager, "fetchProducts", server)
 
             promise = subject.query()
             promise.done(function(_store)
