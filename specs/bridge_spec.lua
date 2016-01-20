@@ -202,6 +202,25 @@ describe("Bridge", function()
         end)
     end)
 
+    context("when sending an async request with no parameters", function()
+        local call
+        local nativeResponse
+        local response
+
+        -- TODO: Test when native response is false and not just true w/ ID.
+        before_each(function()
+            nativeResponse = {success=true}
+
+            stub(adaptor, "send", nativeResponse)
+
+            response, call = subject.sendAsync("test")
+        end)
+
+        it("should send the request to the adaptor", function()
+            assert.stub(adaptor.send).was.called_with("test")
+        end)
+    end)
+
     context("when async requests success is false", function()
         local request
         local call
