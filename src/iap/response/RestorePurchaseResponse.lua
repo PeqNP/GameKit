@@ -2,9 +2,12 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
+require "bridge.BridgeResponseProtocol"
+
 local Transaction = require("iap.Transaction")
 
 local RestorePurchaseResponse = Class()
+RestorePurchaseResponse.implements(BridgeResponseProtocol)
 
 function RestorePurchaseResponse.new(self)
     local id

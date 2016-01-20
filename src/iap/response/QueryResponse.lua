@@ -2,9 +2,12 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
+require "bridge.BridgeResponseProtocol"
+
 local Product = require("iap.Product")
 
 local QueryResponse = Class()
+QueryResponse.implements(BridgeResponseProtocol)
 
 function QueryResponse.new(self)
     local id

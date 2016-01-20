@@ -4,9 +4,14 @@ require "bridge.BridgeResponse"
 local app = {}
 
 local bridge
+local delegate
 
 function app.init(b)
     bridge = b 
+end
+
+function app.setDelegate(d)
+    delegate = d
 end
 
 --
@@ -25,11 +30,15 @@ function app.setupNotification(request)
 end
 
 function app__didBecomeActive()
-    Log.i("Application did become active")
+    if delegate then
+        delegate.appDidBecomeActive()
+    end
 end
 
 function app__willBecomeInactive()
-    Log.i("Application will become inactive")
+    if delegate then
+        delegate.appWillBecomeInactive()
+    end
 end
 
 return app
