@@ -11,10 +11,11 @@ local Ticket = require("iap.Ticket")
 describe("IAP", function()
     local subject
     local manager
+    local tickets
 
     before_each(function()
         manager = Manager()
-        local tickets = {Ticket("id-10", "sku-44"), Ticket("id-104", "sku-1000")}
+        tickets = {Ticket("id-10", "sku-44"), Ticket("id-104", "sku-1000")}
         subject = IAP(manager, tickets)
     end)
 
@@ -38,6 +39,10 @@ describe("IAP", function()
             promise.fail(function(_e)
                 _error = _e
             end)
+        end)
+
+        it("should have made call to manager", function()
+            assert.stub(manager.fetchProducts).was.called_with(tickets)
         end)
 
         context("when the query succeeds", function()
