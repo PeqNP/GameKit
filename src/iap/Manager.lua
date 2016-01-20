@@ -23,7 +23,7 @@ function Manager.new(self)
     local function getSKUs(tickets)
         local skus = {}
         if not tickets then
-            Log.w("Getting SKUs when no tickts given!")
+            Log.w("Manager:getSKUs() - Getting SKUs when no tickets given!")
             return skus
         end
         for _, ticket in ipairs(tickets) do
