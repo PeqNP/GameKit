@@ -22,6 +22,10 @@ function Manager.new(self)
 
     local function getSKUs(tickets)
         local skus = {}
+        if not tickets then
+            Log.w("Getting SKUs when no tickts given!")
+            return skus
+        end
         for _, ticket in ipairs(tickets) do
             table.insert(skus, ticket.getSKU())
         end
