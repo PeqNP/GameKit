@@ -26,6 +26,7 @@ function AdManager.new(self)
     local requests = {}
     local private = {}
     local networks = {}
+    local enabled = true
     --local cachedNextAd
 
     function self.init(_adaptor, _adFactory)
@@ -40,6 +41,9 @@ function AdManager.new(self)
     -- Prevents the delay from being called more than once.
     local delayInProgress = false
     function private.delayRebuildRequests()
+        if not enabled then
+            return
+        end
         if delayInProgress then
             return
         end
@@ -54,6 +58,9 @@ function AdManager.new(self)
     end
 
     function private.rebuildRequests()
+        if not enabled then
+            return
+        end
         delayInProgress = false
 
         local ads = {}
@@ -80,6 +87,9 @@ function AdManager.new(self)
     end
 
     function private.cacheAd(ad)
+        if not enabled then
+            Log.w("Ads have been disabled. Will not cache network (%s) type (%s)", ad.getAdNetwork(), ad.getAdType())
+        end
         if ad.getAdType() == AdType.Banner then
             return
         end
@@ -306,6 +316,21 @@ function AdManager.new(self)
         local response = adaptor.hideBannerAd()
         _error = response.getError()
         return response.isSuccess()
+    end
+
+    function self.disableAds()
+        enabled = false
+        self.hideBannerAd()
+        -- @todo Destory cache for all ads, requests, etc.
+        --[[
+        for _, ad in ipairs(ads) do
+            bridge.destroy(ad)
+        end
+        --]]
+    end
+
+    function self.isEnabled()
+        return enabled
     end
 
     function self.getError()
