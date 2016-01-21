@@ -27,6 +27,17 @@ def quote(val):
         return "nil"
     return '"' + val + '"'
 
+class AdServerConfig (object):
+    def __init__(self, host, port, path):
+        self.host = host
+        self.port = port
+        self.path = path
+
+    def toLua(self):
+        if self.host:
+            return "AdServerConfig(\"{}\", {}, \"{}\")".format(self.host, self.port, self.path)
+        return "nil"
+
 class AdConfig (object):
     def __init__(self, deviceIds, automatic, orientation):
         self.deviceIds = deviceIds
@@ -87,7 +98,10 @@ def load_mediation_config(path):
         for ad in network["ads"]:
             ads.append(Ad(ad["type"], ad["zoneId"], ad.get("location", None)))
         networks.append(Network(network["network"], network.get("appId"), network.get("signature"), ads))
-    return AdConfig(config["config"]["devices"], config["config"]["automatic"], config["config"]["orientation"]), networks
+    server = config.get("server", None)
+    if server:
+        server = AdServerConfig(server["host"], server["port"], server["path"])
+    return AdConfig(config["config"]["devices"], config["config"]["automatic"], config["config"]["orientation"]), networks, server
 
 def load_iap_config(path):
     if not os.path.isfile(path):

@@ -31,19 +31,20 @@ function AdServerManager.new(self)
         return adManager
     end
 
-    local function getDefaultAdManager()
+    local function handleDefaultAdManager(promise)
         if not defaultAdConfig then
-            return nil
+            promise.reject(Error(500, "Failed to load server config. There is also no default configuration."))
+            return
         end
         local adFactory = MediationAdFactory(defaultAdConfig.getAds())
-        return getAdManager(adFactory)
+        promise.resolve(getAdManager(adFactory))
     end
 
     -- @return Promise<AdManager>, fn cancel
     function self.fetchConfig()
         if not service then
             local promise = Promise()
-            promise.resolve(getDefaultAdManager())
+            handleDefaultAdManager(promise)
             return promise
         end
         if deferred then
@@ -54,7 +55,7 @@ function AdServerManager.new(self)
         promise.done(function(success, config)
             if not success then
                 Log.e("AdServerManager:fetchConfig() - Failed to retrieve MediationAdConfig(s) from server. Returning default.")
-                deferred.resolve(getDefaultAdManager())
+                handleDefaultAdManager(deferred)
                 deferred = nil
                 return
             end
@@ -70,11 +71,11 @@ function AdServerManager.new(self)
                     deferred.resolve(getAdManager(factory))
                 else
                     Log.e("Mediation config has error (%s)", factory.getLastError().getMessage())
-                    deferred.resolve(getDefaultAdManager())
+                    handleDefaultAdManager(deferred)
                 end
             else
                 Log.w("AdServerManager:fetchConfig() - Server has no configs!")
-                deferred.resolve(getDefaultAdManager())
+                handleDefaultAdManager(deferred)
             end
             deferred = nil
         end)

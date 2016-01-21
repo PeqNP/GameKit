@@ -1,10 +1,9 @@
---[[ Provides the Ad network; which provides a client interface to download Ads
-    and vend them when necessary.
-
- @since 2015.05.27
- @copyright Upstart Illustration LLC
-
---]]
+--
+-- Provides the Ad network; which provides a client interface to download
+-- a JSON format of MediationAdConfig[].
+--
+-- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
+--
 
 require "Promise"
 
