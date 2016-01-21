@@ -105,7 +105,7 @@ function Bridge.new(self)
         end
         requests[id] = nil
         numRequests = numRequests - 1
-        if response.isSuccess() then
+        if not response.isSuccess or response.isSuccess() then
             request.resolve(response)
         else
             request.reject(response)
