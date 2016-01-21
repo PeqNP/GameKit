@@ -159,18 +159,53 @@ describe("Bridge", function()
         context("when the async request is received", function()
             local t_response
             local p_response
+            local e_response
 
             before_each(function()
                 p_response = false
                 call.done(function(r)
                     p_response = r
                 end)
+                call.fail(function(e)
+                    e_response = e
+                end)
+                t_response = BridgeResponse(true, 54)
+                subject.receive(t_response)
+            end)
+
+            it("should have resolved request w/ response", function()
+                assert.falsy(e_response)
+                assert.truthy(p_response)
+                assert.equals(t_response, p_response)
+            end)
+
+            it("should no longer be tracking any requests", function()
+                local requests = subject.getRequests()
+                assert.equal(0, #requests)
+            end)
+        end)
+
+        context("when the async request succeeds", function()
+            local t_response
+            local p_response
+            local e_response
+
+            before_each(function()
+                p_response = false
+                call.done(function(r)
+                    p_response = r
+                end)
+                call.fail(function(e)
+                    e_response = e
+                end)
                 t_response = BridgeResponse(false, 54)
                 subject.receive(t_response)
             end)
 
-            it("should have returned the response in the form of an object from native layer", function()
-                assert.equals(t_response, p_response)
+            it("should have rejected the request w/ the response", function()
+                assert.falsy(p_response)
+                assert.truthy(e_response)
+                assert.equals(t_response, e_response)
             end)
 
             it("should no longer be tracking any requests", function()

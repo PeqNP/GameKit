@@ -2,9 +2,12 @@ require "specs.busted"
 require "specs.Cocos2d-x"
 require "lang.Signal"
 
+require "Logger"
 require "Common"
 require "bridge.BridgeCall"
 require "bridge.BridgeResponse"
+
+Log.setLevel(LogLevel.Error)
 
 local match = require("specs.matchers")
 matchers_assert(assert)
@@ -134,3 +137,5 @@ describe("iap.Manager", function()
     end)
 end)
 
+describe("iap.Manager - callbacks", function()
+end)
