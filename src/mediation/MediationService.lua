@@ -6,11 +6,9 @@
 
 --]]
 
-require "json"
 require "Promise"
 
 require "mediation.MediationConfig"
-require "mediation.MediationAdConfig"
 
 MediationService = Class()
 
@@ -37,15 +35,7 @@ function MediationService.new(self)
             if request.status < 200 or request.status > 299 then
                 promise.resolve(false, nil)
             else
-                local dict = json.decode(request.response)
-                local ads = {}
-                for _, c in ipairs(dict["ads"]) do
-                    -- @fixme Should call MediationAdConfig.fromDictionary() class method from within MediationConfig.fromDictionary
-                    local config = MediationAdConfig.fromDictionary(c)
-                    table.insert(ads, config)
-                end
-                -- @fixme Should call MediationConfig.fromDictionary() class method
-                local config = MediationConfig(dict["version"], ads)
+                local config = MediationConfig.fromJson(request.response)
                 promise.resolve(true, config)
             end
         end
