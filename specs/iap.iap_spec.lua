@@ -2,7 +2,10 @@ require "specs.busted"
 require "specs.Cocos2d-x"
 require "lang.Signal"
 
+require "Logger"
 require "Promise"
+
+Log.setLevel(LogLevel.Warning)
 
 local IAP = require("iap.IAP")
 local Manager = require("iap.Manager")

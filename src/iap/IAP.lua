@@ -2,6 +2,7 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
+require "Logger"
 require "Promise"
 
 local IAP = Class()
@@ -24,6 +25,7 @@ function IAP.new(self)
 
     function self.query()
         if qDeferred then
+            Log.i("IAP:query() - piggy backing on previous request")
             return qDeferred
         end
         qDeferred = Promise()
