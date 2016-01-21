@@ -8,7 +8,7 @@ ErrorCode = enum(1
 Error = Class()
 
 function Error.tostring(err)
-    return string.format("Code (%d) Message (%s) Params (%s)", err.code, err.message, unpack(err.params))
+    return string.format("Code (%d) Message (%s)", err.getCode(), err.getMessage())
 end
 
 Error.mt = {}
