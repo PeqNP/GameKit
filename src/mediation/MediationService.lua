@@ -25,8 +25,15 @@ function MediationService.new(self)
       @return Promise
     --]]
     function self.downloadConfig()
+        local fullpath
+        if self.port then
+            fullpath = string.format("%s:%s%s", self.host, self.port, self.path)
+        else
+            fullpath = self.host .. self.path
+        end
+        Log.i("MediationService:downloadConfig() - Downloading mediation from (%s)", fullpath)
+
         errors = {}
-        local fullpath = self.host .. self.path
         local promise = Promise()
         local request = cc.XMLHttpRequest:new()
         local function callback__complete()

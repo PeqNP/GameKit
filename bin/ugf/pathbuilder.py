@@ -31,7 +31,7 @@ class CocosPathBuilder (object):
         return self.path("src/Mediation-{}.lua".format(platform))
 
     def mediationconfigpath(self, platform):
-        return self.path("src/mediation-{}.config.json".format(platform))
+        return self.path("res/mediation-{}.config.json".format(platform))
 
     def iapluapath(self, platform):
         return self.path("src/IAP-{}.lua".format(platform))
