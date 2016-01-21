@@ -11,6 +11,7 @@ function IAP.new(self)
     local tickets
     local store
     local transactions
+    local qDeferred
 
     function self.init(_manager, _tickets)
         manager = _manager
@@ -22,20 +23,25 @@ function IAP.new(self)
     end
 
     function self.query()
-        local deferred = Promise()
+        if qDeferred then
+            return qDeferred
+        end
+        qDeferred = Promise()
         if store then
-            deferred.resolve(store)
-            return deferred
+            qDeferred.resolve(store)
+            return qDeferred
         end
         local promise = manager.fetchProducts(tickets)
         promise.done(function(_store, _invalid)
             store = _store
-            deferred.resolve(store)
+            qDeferred.resolve(store)
+            qDeferred = nil
         end)
         promise.fail(function(_error)
-            deferred.reject(_error)
+            qDeferred.reject(_error)
+            qDeferred = nil
         end)
-        return deferred
+        return qDeferred
     end
 
     function self.restorePurchases()

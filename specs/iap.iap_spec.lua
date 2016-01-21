@@ -77,6 +77,75 @@ describe("IAP", function()
             end)
         end)
 
+        context("when another query is made when one is still in progress", function()
+            local secondPromise
+            local secondStore
+            local secondError
+
+            before_each(function()
+                secondPromise = subject.query()
+                secondPromise.done(function(_store)
+                    secondStore = _store
+                end)
+                secondPromise.fail(function(_error)
+                    secondError = _error
+                end)
+            end)
+
+            it("should have returned the same promise", function()
+                assert.truthy(secondPromise)
+                assert.equal(promise, secondPromise)
+            end)
+
+            context("when the promise succeeds", function()
+                local response
+
+                before_each(function()
+                    response = {}
+                    server.resolve(response)
+                end)
+
+                it("should have returned the store queried from the manager", function()
+                    assert.truthy(store)
+                    assert.truthy(secondStore)
+                    assert.equal(response, store)
+                    assert.equal(response, secondStore)
+                end)
+            end)
+
+            context("when the promise fails", function()
+                local response
+
+                before_each(function()
+                    response = {}
+                    server.reject(response)
+                end)
+
+                it("should have returned the store queried from the manager", function()
+                    assert.truthy(_error)
+                    assert.truthy(secondError)
+                    assert.equal(response, _error)
+                    assert.equal(response, secondError)
+                end)
+
+                context("when the previous request finishes", function()
+                    local server2
+                    local thirdResponse
+
+                    before_each(function()
+                        server2 = Promise()
+                        stub(manager, "fetchProducts", server2)
+                        thirdResponse = subject.query()
+                    end)
+
+                    it("should return a new response", function()
+                        assert.truthy(thirdResponse)
+                        assert.are_not_equal(response, thirdResponse)
+                    end)
+                end)
+            end)
+        end)
+
         context("when the query fails", function()
             local response
 
