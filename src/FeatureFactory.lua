@@ -23,7 +23,7 @@ function FeatureFactory.new(self)
         return bridge
     end
 
-    local function getAppManager()
+    function self.getAppManager()
         local appModule = require("bridge.modules.app")
         appModule.init(getBridge())
 
@@ -31,7 +31,7 @@ function FeatureFactory.new(self)
         return AppManager(appModule)
     end
 
-    local function getIAP(tickets)
+    function self.getIAP(tickets)
         local iapModule = require("bridge.modules.iap")
         iapModule.init(getBridge())
 
@@ -42,7 +42,7 @@ function FeatureFactory.new(self)
         return IAP(iapManager, tickets)
     end
 
-    local function getAdManager(adConfig, networks, adServer)
+    function self.getAdManager(adConfig, networks, adServer)
         local adModule = require("bridge.modules.ad")
         adModule.init(getBridge())
 
@@ -56,7 +56,7 @@ function FeatureFactory.new(self)
         return AdServerManager(adModule, adConfig, networks, service)
     end
 
-    local function getSocialManager()
+    function self.getSocialManager()
         local SocialManager = require("social.Manager")
         return SocialManager(getBridge())
     end
