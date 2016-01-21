@@ -194,6 +194,13 @@ def load_iap(platform, source):
         print(exc)
         return None
 
+#
+# Copy mediation.config.json to Cocos2d-x res/ directory.
+#
+# @note This won't work as we can't load resources from code. It's staying here until
+# I can figure out how to turn the default configuration into a Lua file; which seems
+# to be way more work than what is necessary.
+#
 def copy_mediation_config(platform, source, cocos):
     source = source.mediationconfigpath(platform)
     if os.path.exists(source):
@@ -277,7 +284,7 @@ if __name__ == "__main__":
         if "lua" in options:
             create_lua_mediation("ios", mediation, networks, server, cocos)
             create_lua_iap("ios", iap, cocos)
-            copy_mediation_config("ios", source, cocos)
+            #copy_mediation_config("ios", source, cocos)
         if "adkit" in options:
             copy_adkit_sources(networks, cocos, adkit)
             configure_supported_networks_header(networks, cocos)

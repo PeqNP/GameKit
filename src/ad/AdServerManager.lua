@@ -2,6 +2,8 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
+require "Error"
+
 local AdServerManager = Class()
 
 function AdServerManager.new(self)
@@ -15,36 +17,30 @@ function AdServerManager.new(self)
     -- @param bridge.modules.ad
     -- @param MediationAdFactory
     -- @param MediationService
-    function self.init(_bridge, _adConfig, _networks, _defaultAdConfig, _service)
+    function self.init(_bridge, _adConfig, _networks, _service)
         bridge = _bridge
         adConfig = _adConfig
         networks = _networks
-        defaultAdConfig = _defaultAdConfig
         service = _service
     end
 
+    function self.getBridge()
+        return bridge
+    end
+
     local function getAdManager(adFactory)
-        Log.d("Registering %d networks with the Ad Manager", #networks)
+        Log.d("Registering %d MediationAdConfig(s) with an AdManager", #networks)
         local adManager = AdManager(bridge, adFactory)
         adManager.configure(adConfig)
         adManager.registerNetworks(networks)
         return adManager
     end
 
-    local function handleDefaultAdManager(promise)
-        if not defaultAdConfig then
-            promise.reject(Error(500, "Failed to load server config. There is also no default configuration."))
-            return
-        end
-        local adFactory = MediationAdFactory(defaultAdConfig.getAds())
-        promise.resolve(getAdManager(adFactory))
-    end
-
     -- @return Promise<AdManager>, fn cancel
     function self.fetchConfig()
         if not service then
             local promise = Promise()
-            handleDefaultAdManager(promise)
+            promise.reject(Error(500, "MediationService was not been provided."))
             return promise
         end
         if deferred then
@@ -54,8 +50,7 @@ function AdServerManager.new(self)
         local promise = service.downloadConfig()
         promise.done(function(success, config)
             if not success then
-                Log.e("AdServerManager:fetchConfig() - Failed to retrieve MediationAdConfig(s) from server. Returning default.")
-                handleDefaultAdManager(deferred)
+                deferred.reject(Error(501, "Failed to retrieve MediationAdConfig(s) from server."))
                 deferred = nil
                 return
             end
@@ -70,12 +65,10 @@ function AdServerManager.new(self)
                 if not factory.getLastError() then
                     deferred.resolve(getAdManager(factory))
                 else
-                    Log.e("Mediation config has error (%s)", factory.getLastError().getMessage())
-                    handleDefaultAdManager(deferred)
+                    deferred.reject(Error(502, factory.getLastError()))
                 end
             else
-                Log.w("AdServerManager:fetchConfig() - Server has no configs!")
-                handleDefaultAdManager(deferred)
+                deferred.reject(Error(503, "Server has no configs."))
             end
             deferred = nil
         end)
