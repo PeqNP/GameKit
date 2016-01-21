@@ -4,7 +4,7 @@ require "specs.Cocos2d-x"
 require "json"
 require "Logger"
 
-Log.setLevel(LogLevel.Info)
+Log.setLevel(LogLevel.Error)
 
 require "mediation.MediationService"
 require "mediation.MediationAdConfig"
@@ -70,7 +70,7 @@ describe("MediationService", function()
         end)
 
         it("should have made request for json manifest", function()
-            assert.stub(request.open).was.called_with(request, "GET", "http://www.example.com/ad/com.example.game/mediation.json", true)
+            assert.stub(request.open).was.called_with(request, "GET", "http://www.example.com:80/ad/com.example.game/mediation.json", true)
         end)
 
         it("should have sent ad request", function()

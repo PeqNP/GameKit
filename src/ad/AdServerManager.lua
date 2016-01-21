@@ -24,11 +24,7 @@ function AdServerManager.new(self)
         service = _service
     end
 
-    function self.getBridge()
-        return bridge
-    end
-
-    local function getAdManager(adFactory)
+    function self.getAdManager(adFactory)
         Log.d("Registering %d MediationAdConfig(s) with an AdManager", #networks)
         local adManager = AdManager(bridge, adFactory)
         adManager.configure(adConfig)
