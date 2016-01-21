@@ -194,6 +194,11 @@ def load_iap(platform, source):
         print(exc)
         return None
 
+def copy_mediation_config(platform, source, cocos):
+    source = source.mediationconfigpath(platform)
+    if os.path.exists(source):
+        shutil.copyfile(source, cocos.mediationconfigpath(platform))
+
 # Select and make 'project' the active project.
 def configure_ios_targets(project, source, cocos, stage):
 
@@ -272,6 +277,7 @@ if __name__ == "__main__":
         if "lua" in options:
             create_lua_mediation("ios", mediation, networks, server, cocos)
             create_lua_iap("ios", iap, cocos)
+            copy_mediation_config("ios", source, cocos)
         if "adkit" in options:
             copy_adkit_sources(networks, cocos, adkit)
             configure_supported_networks_header(networks, cocos)

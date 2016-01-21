@@ -30,6 +30,9 @@ class CocosPathBuilder (object):
     def mediationluapath(self, platform):
         return self.path("src/Mediation-{}.lua".format(platform))
 
+    def mediationconfigpath(self, platform):
+        return self.path("src/mediation-{}.config.json".format(platform))
+
     def iapluapath(self, platform):
         return self.path("src/IAP-{}.lua".format(platform))
 
@@ -83,6 +86,10 @@ class ProjectPathBuilder (object):
     def iappath(self, platform):
         self.check_platform(platform)
         return self.path("platform/{}/iap.json".format(platform))
+
+    def mediationconfigpath(self, platform):
+        self.check_platform(platform)
+        return self.path("platform/{}/mediation.config.json".format(platform))
 
 # AdKit project path builder.
 class AdKitPathBuilder (object):
