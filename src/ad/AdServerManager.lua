@@ -59,7 +59,7 @@ function AdServerManager.new(self)
 
                 local factory = MediationAdFactory(configs)
                 if not factory.getLastError() then
-                    deferred.resolve(getAdManager(factory))
+                    deferred.resolve(self.getAdManager(factory))
                 else
                     deferred.reject(Error(502, factory.getLastError()))
                 end
