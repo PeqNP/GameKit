@@ -14,6 +14,10 @@ function AppManager.new(self)
         bridge = _bridge
     end
 
+    function self.setDelegate(delegate)
+        bridge.setDelegate(delegate)
+    end
+
     function self.getNotifications()
         local response = bridge.getNotifications()
         if response.isSuccess() then
