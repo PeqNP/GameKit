@@ -31,6 +31,13 @@ describe("AppManager", function()
         subject = AppManager(bridge)
     end)
 
+    it("should set the delegate", function()
+        local delegate = {}
+        stub(bridge, "setDelegate")
+        subject.setDelegate(delegate)
+        assert.stub(bridge.setDelegate).was.called_with(delegate)
+    end)
+
     describe("getting number of notifications", function()
         local response
 
