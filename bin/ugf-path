@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 #
-# Provides process to initially configure and install 3rd party dependencies
-# for UGF.
+# Provides path configuration for local and remote resources.
 #
 # @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 #
 
+import os
+from datetime import datetime
 from ugf.config import configpath, checkconfig, Config
 
-VERSION = "ugf-configure v1.0.0"
+VERSION = "ugf-path v1.0.0"
 
 def main():
     pass
@@ -23,6 +24,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
+    print
 
     valid_operations = ["all"] + operations
     for option in args.operations:
@@ -30,7 +32,7 @@ if __name__ == "__main__":
             print("Invalid configure option '{}'. Valid operations are: {}".format(option, ", ".join(valid_operations)))
             sys.exit(1)
 
-    options = "all" in args.operations and operations or args.operations
+    options = "all" in args.operations and ["configure"] or args.operations
 
     # print current configuration
     # configure
@@ -40,11 +42,24 @@ if __name__ == "__main__":
     checkconfig(config)
 
     if "print" in options:
-        print("Local: {}".format(config.basepath))
-        print("Remote: {}".format(config.remote))
+        if config.hasConfig():
+            print("Current configuration")
+            print("Local: {}".format(config.basepath))
+            print("Remote: {}".format(config.remote))
+            print
+        else:
+            print("Incomplete configuration! Please run ugf-path configure to configure paths.")
     
     if "configure" in options:
-        config.basepath = raw_input("Path to base UGF path: ")
-        config.remote = raw_input("URL remote for UGF Git repository: ")
-        config.save()
+        while True:
+            print("Where do you want the UGF dependencies to be stored locally?")
+            config.basepath = raw_input("Local path: ")
+            if os.path.exists(config.basepath):
+                break
+            else:
+                print("The path {} does not exist!".format(config.basepath))
+                print
+        print("Which Git repository should dependencies be downloaded from?")
+        config.remote = raw_input("Remote URL to Git repository: ")
+        config.save(configpath())
         print("Saved config to: {}".format(configpath()))

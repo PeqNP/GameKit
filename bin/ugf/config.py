@@ -37,13 +37,16 @@ class Config (object):
     def configFromJson(json):
         project = "project" in json and json["project"] or None
         apptype = "apptype" in json and json["apptype"] or None
-        return Config(json["basepath"], json["remote"], project, apptype)
+        return Config(json.get("basepath", None), json.get("remote", None), project, apptype)
 
     def __init__(self, basepath, remote, project, apptype):
         self.basepath = basepath
         self.remote = remote
         self.project = project
         self.apptype = apptype
+
+    def hasConfig(self):
+        return self.basepath and self.remote
 
     def save(self, path):
         json_blob = json.dumps(self.__dict__)
