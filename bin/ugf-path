@@ -39,7 +39,6 @@ if __name__ == "__main__":
     # download - must be configured first
     # install - must be downloaded first
     config = Config.load(configpath())
-    checkconfig(config)
 
     if "print" in options:
         if config.hasConfig():

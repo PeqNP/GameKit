@@ -11,10 +11,13 @@ from ugf import gethomedir
 def configpath():
     return os.path.join(gethomedir(), ".ugf")
 
+def print_configure():
+    print("Please configure the UGF utility by running the ugf-path CLI tool")
+    sys.exit(1)
+
 def checkconfig(config):
-    if not config.basepath:
-        print("The basepath must be configured using the ugf-config CLI tool")
-        sys.exit(1)
+    if not config.hasConfig():
+        print_configure()
     if not config.project:
         print("A project must be selected first using the ugf-select CLI tool")
         sys.exit(1)
@@ -22,6 +25,8 @@ def checkconfig(config):
 class Config (object):
     @staticmethod
     def load(path, project=None, apptype=None):
+        if not os.path.exists(path):
+            print_configure()
         fh = open(path, "r")
         json_blob = fh.read()
         fh.close()
