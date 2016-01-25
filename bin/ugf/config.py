@@ -37,10 +37,11 @@ class Config (object):
     def configFromJson(json):
         project = "project" in json and json["project"] or None
         apptype = "apptype" in json and json["apptype"] or None
-        return Config(json["basepath"], project, apptype)
+        return Config(json["basepath"], json["remote"], project, apptype)
 
-    def __init__(self, basepath, project, apptype):
+    def __init__(self, basepath, remote, project, apptype):
         self.basepath = basepath
+        self.remote = remote
         self.project = project
         self.apptype = apptype
 
