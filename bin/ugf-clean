@@ -10,8 +10,8 @@ from subprocess import call
 import os
 
 from ugf import gethomedir
-from ugf.config import Config
-from ugf.pathbuilder import CocosPathBuilder
+from ugf.config import configpath, checkconfig, Config, ProjectConfig
+from ugf.pathbuilder import CocosPathBuilder, ProjectPathBuilder
 
 def main(cocos):
     os.chdir(cocos.basepath())
@@ -25,9 +25,20 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Upstart Game Framework - Clean a Cocos2d-x project")
-    parser.add_argument('version', help="The version of cocos to clean. Version must be in the format of #.#.# (e.g. 1.0.4)")
+    parser.add_argument('--version', help="The version of cocos to clean. Version must be in the format of #.#.# (e.g. 1.0.4)")
     args = parser.parse_args()
 
-    config = Config.load(os.path.join(gethomedir(), ".ugf"))
-    cocos = CocosPathBuilder(config, args.version)
+    config = Config.load(configpath())
+    version = None
+    if args.version:
+        version = args.version
+        print("Cleaning Cocos2d-x version ({})".format(args.version))
+    else:
+        checkconfig(config)
+        source = ProjectPathBuilder(config)
+        project = ProjectConfig.load(source.configpath())
+        version = project.cocos
+        print("Cleaning project ({}) Cocos2d-x version ({})".format(project.name, project.cocos))
+
+    cocos = CocosPathBuilder(config, version)
     main(cocos)
