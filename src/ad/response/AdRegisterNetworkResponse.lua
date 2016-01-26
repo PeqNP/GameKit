@@ -4,7 +4,7 @@
 
 require "bridge.BridgeResponse"
 
-AdRegisterNetworkResponse = Class(BridgeResponse)
+local AdRegisterNetworkResponse = Class(BridgeResponse)
 
 function AdRegisterNetworkResponse.new(self, init)
     local adIds
@@ -30,3 +30,5 @@ function AdRegisterNetworkResponse.new(self, init)
         return adIds
     end
 end
+
+return AdRegisterNetworkResponse

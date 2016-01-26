@@ -2,7 +2,7 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-AdCacheResponse = Class(BridgeResponse)
+local AdCacheResponse = Class(BridgeResponse)
 
 function AdCacheResponse.new(self, init)
     local reward
@@ -16,3 +16,5 @@ function AdCacheResponse.new(self, init)
         return reward
     end
 end
+
+return AdCacheResponse

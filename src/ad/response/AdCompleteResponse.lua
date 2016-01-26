@@ -4,7 +4,7 @@
 
 require "bridge.BridgeResponseProtocol"
 
-AdCompleteResponse = Class(BridgeResponse)
+local AdCompleteResponse = Class(BridgeResponse)
 
 function AdCompleteResponse.new(self, init)
     local reward
@@ -24,3 +24,5 @@ function AdCompleteResponse.new(self, init)
         return clicked
     end
 end
+
+return AdCompleteResponse
