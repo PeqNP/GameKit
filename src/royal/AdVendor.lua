@@ -7,7 +7,7 @@
 -- @copyright Upstart Illustration LLC. All rights reserved.
 --
 
-AdVendor = Class()
+local AdVendor = Class()
 
 -- 
 --  @param AdManifest
@@ -88,3 +88,5 @@ function AdVendor.new(self)
         return buttons
     end
 end
+
+return AdVendor

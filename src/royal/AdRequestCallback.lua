@@ -4,7 +4,7 @@
 
 --]]
 
-AdRequestCallback = Class()
+local AdRequestCallback = Class()
 
 function AdRequestCallback.new(self)
     local callback
@@ -21,3 +21,5 @@ function AdRequestCallback.new(self)
         callback(file, request)
     end
 end
+
+return AdRequestCallback

@@ -4,7 +4,7 @@
 
 --]]
 
-AdConfig = Class()
+local AdConfig = Class()
 
 function AdConfig.new(self)
     local path
@@ -33,4 +33,4 @@ function AdConfig.new(self)
     end
 end
 
-Singleton(AdConfig)
+return AdConfig

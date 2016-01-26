@@ -5,9 +5,9 @@
 
 --]]
 
-require "royal.AdManifest"
+local AdManifest = require("royal.AdManifest")
 
-AdManifestV1 = Class(AdManifest)
+local AdManifestV1 = Class(AdManifest)
 
 --[[ Create a new AdManifest.
 
@@ -21,3 +21,5 @@ function AdManifestV1.new(self)
         -- @todo
     end
 end
+
+return AdManifestV1

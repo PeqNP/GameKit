@@ -8,9 +8,9 @@
 
 require "json"
 
-require "royal.AdConfig"
+local AdConfig = require("royal.AdConfig")
 
-AdTier = Class()
+local AdTier = Class()
 
 function AdTier.new(self)
     -- Clicks this ad has received.
@@ -95,3 +95,5 @@ function AdTier.new(self)
         return #clicks < self.maxclicks
     end
 end
+
+return AdTier

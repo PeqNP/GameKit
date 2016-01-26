@@ -8,12 +8,12 @@
 require "json"
 require "Promise"
 
-require "royal.AdManifestParser"
-require "royal.AdRequestCallback"
+local AdManifestParser = require("royal.AdManifestParser")
+local AdRequestCallback = require("royal.AdRequestCallback")
 
-AdClient = Class()
+local Client = Class()
 
-function AdClient.new(self)
+function Client.new(self)
     self.delegate = false -- Assign if you wish to get callbacks in regards to progress, etc.
 
     local manifest
@@ -200,3 +200,5 @@ function AdClient.new(self)
         return promise
     end
 end
+
+return Client

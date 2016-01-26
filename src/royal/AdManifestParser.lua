@@ -8,9 +8,10 @@
 --]]
 
 require "Logger"
-require "royal.AdManifest"
 
-AdManifestParser = Class()
+local AdManifest = require("royal.AdManifest")
+
+local AdManifestParser = Class()
 
 function AdManifestParser.new(self)
     local classes
@@ -42,4 +43,4 @@ function AdManifestParser.new(self)
     end
 end
 
-Singleton(AdManifestParser)
+return AdManifestParser

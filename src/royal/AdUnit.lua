@@ -6,9 +6,9 @@
 
 --]]
 
-require "royal.AdTier"
+local AdTier = require("royal.AdTier")
 
-AdUnit = Class()
+local AdUnit = Class()
 
 --[[ Create a new AdUnit.
 
@@ -71,3 +71,5 @@ function AdUnit.new(self)
         return active ~= #tiers
     end
 end
+
+return AdUnit

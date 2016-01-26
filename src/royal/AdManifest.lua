@@ -7,9 +7,9 @@
 
 require "Logger"
 
-require "royal.AdUnit"
+local AdUnit = require("royal.AdUnit")
 
-AdManifest = Class()
+local AdManifest = Class()
 
 function AdManifest.new(self)
     local version
@@ -65,3 +65,5 @@ function AdManifest.new(self)
         return created >= epoch
     end
 end
+
+return AdManifest
