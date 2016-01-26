@@ -4,7 +4,7 @@
 
 require "Promise"
 
-BridgeCall = Class(Promise)
+local BridgeCall = Class(Promise)
 
 function BridgeCall.new(self)
     local request
@@ -18,3 +18,4 @@ function BridgeCall.new(self)
     end
 end
 
+return BridgeCall

@@ -4,7 +4,7 @@
 
 require "Logger"
 
-BridgeAdaptor = Class()
+local BridgeAdaptor = Class()
 
 function BridgeAdaptor.new(self)
     local platform
@@ -69,3 +69,5 @@ function BridgeAdaptor.getAdaptor(platform)
 
     return BridgeAdaptor(adaptor, controller, paramFn)
 end
+
+return BridgeAdaptor

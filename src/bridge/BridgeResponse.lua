@@ -2,10 +2,8 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeResponseProtocol"
-
-BridgeResponse = Class()
-BridgeResponse.implements(BridgeResponseProtocol)
+local BridgeResponse = Class()
+BridgeResponse.implements("bridge.BridgeResponseProtocol")
 
 function BridgeResponse.new(self)
     local success
@@ -34,3 +32,5 @@ function BridgeResponse.new(self)
         return _error
     end
 end
+
+return BridgeResponse

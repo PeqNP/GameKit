@@ -7,7 +7,7 @@
 require "Promise"
 require "bridge.BridgeCall"
 
-Bridge = Class()
+local Bridge = Class()
 
 function Bridge.new(self)
     local adaptor -- BridgeAdaptor
@@ -112,3 +112,5 @@ function Bridge.new(self)
         end
     end
 end
+
+return Bridge
