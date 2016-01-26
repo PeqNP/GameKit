@@ -2,7 +2,7 @@ require "lang.Signal"
 require "specs.Cocos2d-x"
 require "Logger"
 
-require "royal.AdConfig"
+local AdConfig = require("royal.AdConfig")
 
 describe("singleton", function()
     it("should have created a singleton", function()

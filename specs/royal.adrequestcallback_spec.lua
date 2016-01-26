@@ -2,7 +2,7 @@ require "lang.Signal"
 require "specs.Cocos2d-x"
 require "Logger"
 
-require "royal.AdRequestCallback"
+local AdRequestCallback = require("royal.AdRequestCallback")
 
 describe("AdRequestCallback", function()
     local subject

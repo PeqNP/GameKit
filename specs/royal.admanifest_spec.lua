@@ -1,7 +1,7 @@
 require "lang.Signal"
 
-require "royal.AdManifest"
-require "royal.AdUnit"
+local AdManifest = require("royal.AdManifest")
+local AdUnit = require("royal.AdUnit")
 
 describe("AdManifest", function()
     local subject
