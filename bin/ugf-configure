@@ -18,7 +18,7 @@ from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuild
 from ugf.interpolator import Interpolator
 from ugf.mediation import load_mediation_config, load_iap_config, pods_for_networks, lua_for_networks
 
-VERSION = "ugf-dependency v1.0.0"
+VERSION = "ugf-configure v1.0.0"
 
 def interpolate_iospbxproj(project, blob):
     # Global

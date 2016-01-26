@@ -53,7 +53,7 @@ if __name__ == "__main__":
     # are updated, etc. they are reflected back into the project's directory.
     print("To avoid Xcode crashing make sure to close the GameTools project before running!")
     call(["ugf-clean", "--version", project.cocos])
-    call(["ugf-dependency"])
+    call(["ugf-configure"])
     call(["ugf-copy"])
     run_post_select(config, source, cocos)
     install_pods(cocos)
