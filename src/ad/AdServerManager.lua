@@ -4,9 +4,9 @@
 
 require "Error"
 
-local AdServerManager = Class()
+local ServerManager = Class()
 
-function AdServerManager.new(self)
+function ServerManager.new(self)
     local bridge
     local adConfig
     local networks
@@ -51,10 +51,10 @@ function AdServerManager.new(self)
                 return
             end
             local configs = config.getAds()
-            Log.i("AdServerManager:fetchConfig() - Downloaded mediation network config w/ success (%s) # configs (%d)", success, #configs)
+            Log.i("ServerManager:fetchConfig() - Downloaded mediation network config w/ success (%s) # configs (%d)", success, #configs)
             if #configs > 0 then
                 for _, c in ipairs(configs) do
-                    Log.i("AdServerManager:fetchConfig() - Network (%d) impression reward (%s) click reward (%s)", c.getAdNetwork(), c.getRewardForImpression() or "", c.getRewardForClick() or "")
+                    Log.i("ServerManager:fetchConfig() - Network (%d) impression reward (%s) click reward (%s)", c.getAdNetwork(), c.getRewardForImpression() or "", c.getRewardForClick() or "")
                 end
 
                 local factory = MediationAdFactory(configs)
@@ -72,4 +72,4 @@ function AdServerManager.new(self)
     end
 end
 
-return AdServerManager
+return ServerManager

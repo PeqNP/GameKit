@@ -2,8 +2,8 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights resevered.
 --
 
-AdNetworkModule = Class()
-AdNetworkModule.abstract(Protocol(
+local NetworkModule = Class()
+NetworkModule.abstract(Protocol(
     -- Return the ID of the network.
     Method("getAdNetwork")
     -- Returns dictionary containing configuration.
@@ -12,7 +12,7 @@ AdNetworkModule.abstract(Protocol(
   , Method("getName")
 ))
 
-function AdNetworkModule.new(self)
+function NetworkModule.new(self)
     local ads
 
     local function configureAds()
@@ -34,3 +34,5 @@ function AdNetworkModule.new(self)
         return ads
     end
 end
+
+return NetworkModule

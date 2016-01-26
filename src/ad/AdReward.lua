@@ -2,9 +2,9 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-AdReward = Class()
+local Reward = Class()
 
-function AdReward.new(self, presented, clicked)
+function Reward.new(self, presented, clicked)
     function self.getPresentedAmount()
         return presented
     end
@@ -13,3 +13,5 @@ function AdReward.new(self, presented, clicked)
         return clicked
     end
 end
+
+return Reward

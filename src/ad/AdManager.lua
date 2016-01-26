@@ -7,18 +7,19 @@
 require("Logger")
 require("Promise")
 require("Common")
-require("ad.Constants")
-require("ad.request.AdRequest")
-require("ad.request.AdConfigureRequest")
-require("ad.request.AdRegisterNetworkRequest")
-require("ad.AdError")
 
-AdManager = Class()
+require("ad.Constants")
+local AdRequest = require("ad.request.AdRequest")
+local AdConfigRequest = require("ad.request.AdConfigureRequest")
+local AdRegisterNetworkRequest = require("ad.request.AdRegisterNetworkRequest")
+local AdError = require("ad.AdError")
+
+local Manager = Class()
 
 -- Graduated timeout intervals.
 local TIMEOUT = {15, 30, 60, 120, 240, 600}
 
-function AdManager.new(self)
+function Manager.new(self)
     local adaptor
     local adFactory
     local ads = {}
@@ -199,7 +200,7 @@ function AdManager.new(self)
     function self.registerNetworks(networks)
         for _, network in ipairs(networks) do
             local success, err = self.registerNetwork(network)
-            Log.d("AdManager.registerNetworks: Network (%s) success (%s) err (%s)", network.getName(), success and "true" or "false", err and err.getMessage() or "None")
+            Log.d("Manager.registerNetworks: Network (%s) success (%s) err (%s)", network.getName(), success and "true" or "false", err and err.getMessage() or "None")
         end
     end
 
@@ -209,7 +210,7 @@ function AdManager.new(self)
             return false, AdError(100, string.format("Failed to register network (%s)", network.getName()), response.getError())
         end
         -- Map ad ID to respective ad.
-        Log.d("AdManager.registerNetwork: IDs: %s", table.concat(response.getAdIds(), ","))
+        Log.d("Manager.registerNetwork: IDs: %s", table.concat(response.getAdIds(), ","))
         local ads = network.getAds()
         for i, adId in ipairs(response.getAdIds()) do
             local ad = ads[i]
@@ -337,3 +338,5 @@ function AdManager.new(self)
         return _error
     end
 end
+
+return Manager

@@ -4,7 +4,9 @@
 
 require("Error")
 
-AdError = Class(Error)
+local AdError = Class(Error)
 
 function AdError.new(self)
 end
+
+return AdError

@@ -2,9 +2,9 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-local AdConfig = Class()
+local Config = Class()
 
-function AdConfig.new(self)
+function Config.new(self)
     local testDevices
     local automatic
     local orientation
@@ -28,4 +28,4 @@ function AdConfig.new(self)
     end
 end
 
-return AdConfig
+return Config

@@ -2,7 +2,7 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-Ad = Class()
+local Ad = Class()
 
 function Ad.new(self)
     local adNetwork
@@ -45,3 +45,5 @@ function Ad.new(self)
         return adId
     end
 end
+
+return Ad
