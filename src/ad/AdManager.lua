@@ -7,12 +7,12 @@
 require("Logger")
 require("Promise")
 require("Common")
+require("Error")
 
 require("ad.Constants")
 local AdRequest = require("ad.request.AdRequest")
 local AdConfigRequest = require("ad.request.AdConfigureRequest")
 local AdRegisterNetworkRequest = require("ad.request.AdRegisterNetworkRequest")
-local AdError = require("ad.AdError")
 
 local Manager = Class()
 
@@ -207,7 +207,7 @@ function Manager.new(self)
     function self.registerNetwork(network)
         local response = adaptor.register(AdRegisterNetworkRequest(network))
         if not response.isSuccess() then
-            return false, AdError(100, string.format("Failed to register network (%s)", network.getName()), response.getError())
+            return false, Error(100, string.format("Failed to register network (%s)", network.getName()), response.getError())
         end
         -- Map ad ID to respective ad.
         Log.d("Manager.registerNetwork: IDs: %s", table.concat(response.getAdIds(), ","))
