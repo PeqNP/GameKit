@@ -31,7 +31,7 @@ function Service.new(self)
         else
             fullpath = self.host .. self.path
         end
-        Log.i("MediationService:downloadConfig() - Downloading mediation from (%s)", fullpath)
+        Log.i("mediation.Service:downloadConfig() - Downloading mediation from (%s)", fullpath)
 
         errors = {}
         local promise = Promise()

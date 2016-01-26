@@ -10,8 +10,8 @@ require "Common"
 require "ad.Constants"
 require "bridge.BridgeCall"
 require "bridge.BridgeResponse"
-require "mediation.MediationAdFactory"
-require "mediation.MediationAdConfig"
+local MediationAdFactory = require("mediation.AdFactory")
+local MediationAdConfig = require("mediation.AdConfig")
 local Ad = require("ad.Ad")
 local AdManager = require("ad.Manager")
 local AdRegisterNetworkResponse = require("ad.response.AdRegisterNetworkResponse")

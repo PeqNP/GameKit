@@ -38,4 +38,4 @@ function Config.fromJson(jsonBlob)
     return Config(dict["version"], ads)
 end
 
-local Config
+return Config

@@ -48,8 +48,8 @@ function AdConfig.new(self)
     end
 end
 
-function MediationAdConfig.fromDictionary(dict)
-    return MediationAdConfig(
+function AdConfig.fromDictionary(dict)
+    return AdConfig(
         dict["adnetwork"]
       , dict["adtype"]
       , dict["adimpressiontype"]
