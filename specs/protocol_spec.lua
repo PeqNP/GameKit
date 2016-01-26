@@ -1,5 +1,7 @@
 require "lang.Signal"
 
+local SpecProtocol = require("specs.SpecProtocol")
+
 describe("Method", function()
     local subject
 
@@ -60,6 +62,7 @@ describe("Protocol", function()
 
     describe("implementing the TestProtocol", function()
         local instance
+        local MyClass
 
         before_each(function()
             MyClass = Class()
@@ -95,4 +98,45 @@ describe("Protocol", function()
             assert.falsy(instance.conformsTo({}))
         end)
     end)
+
+    describe("implementing the SpecProtocol using path", function()
+        local instance
+        local MyClass
+
+        before_each(function()
+            MyClass = Class()
+            MyClass.implements("specs.SpecProtocol")
+
+            function MyClass.new(self)
+                function self.getSpec()
+                    return "Implemented protocol using path"
+                end
+            end
+
+            instance = MyClass()
+        end)
+
+        it("should conform to the SpecProtocol", function()
+            assert.truthy(instance.conformsTo(SpecProtocol))
+        end)
+
+        it("should not conform to a protocol it does not implement", function()
+            assert.falsy(instance.conformsTo({}))
+        end)
+    end)
+
+    --[[
+    describe("test failed protocol", function()
+        local MyClass
+
+        before_each(function()
+            MyClass = Class()
+            MyClass.implements("specs.NotAClass")
+        end)
+
+        it("should NOT have a value", function()
+            assert.falsy(MyClass)
+        end)
+    end)
+    --]]
 end)

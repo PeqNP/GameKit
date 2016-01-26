@@ -221,6 +221,16 @@ describe("Subclassing with a path to dependency", function()
     end)
 end)
 
-SubclassWithString2 = Class("specs.NotAClass") 
-function SubclassWithString2.new(self)
-end
+--[[
+describe("Subclassing a module that does not exist", function()
+    local MyClass
+
+    before_each(function()
+        MyClass = Class("specs.NotAClass") 
+    end)
+
+    it("should NOT have created a class", function()
+        assert.falsy(MyClass)
+    end)
+end)
+--]]

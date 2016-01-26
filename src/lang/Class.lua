@@ -69,7 +69,19 @@ function Class(extends)
 
     function class.implements(...)
         local args = {...}
-        table.extend(protocols, args)
+        local new_protocols = {}
+        for _, protocol in ipairs(args) do
+            if type(protocol) == "string" then
+                local module_path = protocol
+                protocol = require(module_path)
+                if type(protocol) ~= "table" then
+                    print(string.format("Failed to load protocol module (%s). Does the protocol return the instance to the Protocol definition?", module_path))
+                    os.exit(1)
+                end
+            end
+            table.insert(new_protocols, protocol)
+        end
+        table.extend(protocols, new_protocols)
     end
 
     function class.conformsTo(protocol)
