@@ -4,7 +4,7 @@
 
 require "bridge.BridgeRequestProtocol"
 
-AdRegisterNetworkRequest = Class()
+local AdRegisterNetworkRequest = Class()
 AdRegisterNetworkRequest.implements(BridgeRequestProtocol)
 
 function AdRegisterNetworkRequest.new(self)
@@ -37,3 +37,5 @@ function AdRegisterNetworkRequest.new(self)
         return config
     end
 end
+
+return AdRegisterNetworkRequest

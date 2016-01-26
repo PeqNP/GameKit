@@ -4,7 +4,7 @@
 
 require "bridge.BridgeRequestProtocol"
 
-AdConfigureRequest = Class()
+local AdConfigureRequest = Class()
 AdConfigureRequest.implements(BridgeRequestProtocol)
 
 function AdConfigureRequest.new(self)
@@ -18,3 +18,5 @@ function AdConfigureRequest.new(self)
         return {testDevices=table.concat(config.getTestDevices(), ","), automatic=config.isAutomatic(), orientation=config.getOrientation()}
     end
 end
+
+return AdConfigureRequest

@@ -5,7 +5,7 @@
 require "bridge.BridgeRequestProtocol"
 require "ad.Constants"
 
-AdRequest = Class()
+local AdRequest = Class()
 AdRequest.implements(BridgeRequestProtocol)
 
 function AdRequest.new(self)
@@ -64,3 +64,5 @@ function AdRequest.new(self)
         return {adid=ad.getAdId()}
     end
 end
+
+return AdRequest
