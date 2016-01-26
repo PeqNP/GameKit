@@ -4,8 +4,9 @@ require "Logger"
 
 Log.setLevel(LogLevel.Error)
 
-require "specs.AdManifestTest"
-require "royal.AdManifestParser"
+local AdManifestTest = require("specs.AdManifestTest")
+local AdManifestParser = require("royal.AdManifestParser")
+local AdManifest = require("royal.AdManifest")
 
 describe("AdManifestParser", function()
     local subject

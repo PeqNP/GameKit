@@ -8,6 +8,7 @@
 require "json"
 require "Promise"
 
+local AdConfig = require("royal.AdConfig")
 local AdManifestParser = require("royal.AdManifestParser")
 local AdRequestCallback = require("royal.AdRequestCallback")
 

@@ -43,4 +43,6 @@ function AdManifestParser.new(self)
     end
 end
 
+Singleton(AdManifestParser)
+
 return AdManifestParser

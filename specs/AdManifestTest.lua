@@ -1,8 +1,9 @@
 
-require "royal.AdManifest"
+local AdManifest = require("royal.AdManifest")
 
-AdManifestTest = Class(AdManifest)
+local AdManifestTest = Class(AdManifest)
 
 function AdManifestTest.new(self)
 end
 
+return AdManifestTest
