@@ -4,9 +4,9 @@
 
 require "app.request.AppSetupNotificationRequest"
 
-local AppManager = Class()
+local Manager = Class()
 
-function AppManager.new(self)
+function Manager.new(self)
     local bridge
     local _error
 
@@ -41,4 +41,4 @@ function AppManager.new(self)
     end
 end
 
-return AppManager
+return Manager
