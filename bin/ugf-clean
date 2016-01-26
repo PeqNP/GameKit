@@ -32,13 +32,12 @@ if __name__ == "__main__":
     version = None
     if args.version:
         version = args.version
-        print("Cleaning Cocos2d-x version ({})".format(args.version))
     else:
         checkconfig(config)
         source = ProjectPathBuilder(config)
         project = ProjectConfig.load(source.configpath())
         version = project.cocos
-        print("Cleaning project ({}) Cocos2d-x version ({})".format(project.name, project.cocos))
 
     cocos = CocosPathBuilder(config, version)
+    print("Cleaning Cocos2d-x version ({}) at ({})".format(version, cocos.basepath()))
     main(cocos)
