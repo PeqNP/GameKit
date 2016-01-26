@@ -1,12 +1,12 @@
---[[ Provides configuration an individiual mediation network.
+--
+-- Provides configuration an individiual mediation network.
+--
+-- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
+--
 
-  @copyright 2015 Upstart Illustration LLC. All rights reserved.
+local AdConfig = Class()
 
---]]
-
-MediationAdConfig = Class()
-
-function MediationAdConfig.new(self)
+function AdConfig.new(self)
     local adNetwork
     local adType
     local adImpressionType
@@ -58,3 +58,5 @@ function MediationAdConfig.fromDictionary(dict)
       , dict["click"]
     )
 end
+
+return AdConfig

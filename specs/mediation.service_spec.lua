@@ -6,8 +6,8 @@ require "Logger"
 
 Log.setLevel(LogLevel.Error)
 
-require "mediation.MediationService"
-require "mediation.MediationAdConfig"
+local MediationService = require("mediation.Service")
+local MediationAdConfig = require("mediation.AdConfig")
 
 describe("MediationService", function()
     local subject

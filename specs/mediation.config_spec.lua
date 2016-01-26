@@ -1,7 +1,6 @@
-
 require "lang.Signal"
 
-require "mediation.MediationConfig"
+local MediationConfig = require("mediation.Config")
 
 describe("MediationConfig", function()
     local subject

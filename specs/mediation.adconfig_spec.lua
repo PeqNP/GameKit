@@ -1,4 +1,3 @@
-
 require "lang.Signal"
 require "specs.Cocos2d-x"
 require "json"
@@ -6,7 +5,7 @@ require "Logger"
 
 Log.setLevel(LogLevel.Info)
 
-require "mediation.MediationAdConfig"
+local MediationAdConfig = require("mediation.AdConfig")
 
 describe("MediationAdConfig", function()
     local subject

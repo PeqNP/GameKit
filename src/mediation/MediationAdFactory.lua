@@ -1,12 +1,15 @@
+--
+-- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
+--
 
 require "Logger"
 require "Error"
 require "ad.Constants"
 
-MediationAdFactory = Class()
+local AdFactory = Class()
 
 -- @param MediationAdConfigs[] configs
-function MediationAdFactory.new(self)
+function AdFactory.new(self)
     local configs
     local queues = {}
     local lastError = false
@@ -166,3 +169,5 @@ function MediationAdFactory.new(self)
         return queue[interval]
     end
 end
+
+return AdFactory

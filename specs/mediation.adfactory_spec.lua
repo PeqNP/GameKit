@@ -15,8 +15,8 @@ require "Logger"
 Log.setLevel(LogLevel.Info)
 
 require "ad.Constants"
-require "mediation.MediationAdConfig"
-require "mediation.MediationAdFactory"
+local MediationAdConfig = require("mediation.AdConfig")
+local MediationAdFactory = require("mediation.AdFactory")
 
 describe("MediationAdFactory", function()
     local subject

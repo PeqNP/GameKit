@@ -7,11 +7,11 @@
 
 require "Promise"
 
-require "mediation.MediationConfig"
+local Config = require("mediation.Config")
 
-MediationService = Class()
+local Service = Class()
 
-function MediationService.new(self)
+function Service.new(self)
     self.delegate = false -- Assign if you wish to get callbacks in regards to progress, etc.
 
     function self.init(host, port, path)
@@ -41,7 +41,7 @@ function MediationService.new(self)
             if request.status < 200 or request.status > 299 then
                 promise.resolve(false, nil)
             else
-                local config = MediationConfig.fromJson(request.response)
+                local config = Config.fromJson(request.response)
                 promise.resolve(true, config)
             end
         end
@@ -52,3 +52,5 @@ function MediationService.new(self)
         return promise
     end
 end
+
+return Service

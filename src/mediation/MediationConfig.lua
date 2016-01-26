@@ -1,15 +1,15 @@
---[[ Provides configuration for mediation.
-
-  @copyright 2015 Upstart Illustration LLC. All rights reserved.
-
---]]
+--
+-- Provides configuration for mediation.
+--
+-- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
+--
 
 require "json"
-require "mediation.MediationAdConfig"
+local AdConfig = require("mediation.AdConfig")
 
-MediationConfig = Class()
+local Config = Class()
 
-function MediationConfig.new(self)
+function Config.new(self)
     local version
     local ads
 
@@ -27,13 +27,15 @@ function MediationConfig.new(self)
     end
 end
 
-function MediationConfig.fromJson(jsonBlob)
+function Config.fromJson(jsonBlob)
     local dict = json.decode(jsonBlob)
     local ads = {}
     for _, c in ipairs(dict["ads"]) do
         -- @fixme Should call MediationAdConfig.fromDictionary() class method from within MediationConfig.fromDictionary
-        local config = MediationAdConfig.fromDictionary(c)
+        local config = AdConfig.fromDictionary(c)
         table.insert(ads, config)
     end
-    return MediationConfig(dict["version"], ads)
+    return Config(dict["version"], ads)
 end
+
+local Config
