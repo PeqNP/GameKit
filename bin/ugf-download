@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+#
+# Provides ability to download all UGF dependencies including projects, cocos2d-x versions, etc.
+# @note Currently only Cocos2d-x is supported.
+#
+# @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
+#
+
+import os
+import sys
+from datetime import datetime
+from subprocess import call
+
+from ugf import gethomedir
+from ugf.config import configpath, checkconfig, Config, ProjectConfig
+from ugf.pathbuilder import CocosPathBuilder, ProjectPathBuilder
+
+VERSION = "ugf-download v1.0.0"
+
+def main(config, cocos):
+    # @todo Determine if repository already exists. Prevent it from being downloaded if
+    # it aleady is.
+    cocospath = cocos.basepath()
+    if os.path.exists(cocospath):
+        print("STOP: Cocos2d-x v({}) already exists at ({})".format(cocos.version, cocospath))
+        print("If you want a clean version of this repository, run ugf-clean")
+        print
+        sys.exit(0)
+    remote = config.remote[-1] == "/" and config.remote or config.remote + "/"
+    remotepath = remote+cocos.foldername()
+    print("Cloning ({}) to ({})".format(remotepath, cocospath))
+    os.chdir(cocos.basepath())
+    call(["git", "clone", repository])
+
+if __name__ == "__main__":
+    import argparse
+
+    operations = ["configure", "print"]
+
+    parser = argparse.ArgumentParser(description="Upstart Game Framework - Download Cocos2d-x from Git configured repository")
+    parser.add_argument('--version', help="The version of Cocos2d-x to download from remote Git repository")
+    args = parser.parse_args()
+
+    print("{}, Time: {}".format(VERSION, str(datetime.now())))
+    print
+
+    config = Config.load(configpath())
+    version = None
+    if args.version:
+        version = args.version
+        print("Downloading Cocos2d-x version ({}) from remote ({})".format(args.version, config.remote))
+    else:
+        checkconfig(config)
+        source = ProjectPathBuilder(config)
+        project = ProjectConfig.load(source.configpath())
+        version = project.cocos
+        print("Downloading project ({}) Cocos2d-x version ({}) from remote ({})".format(project.name, project.cocos, config.remote))
+
+    cocos = CocosPathBuilder(config, version)
+    main(config, cocos)

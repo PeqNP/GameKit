@@ -12,8 +12,11 @@ class CocosPathBuilder (object):
         self.config = config
         self.version = version
 
+    def foldername(self):
+        return "Cocos2d-x_v{}".format(self.version)
+
     def basepath(self):
-        return os.path.join(self.config.basepath, "Cocos2d-x_v{}".format(self.version))
+        return os.path.join(self.config.basepath, self.foldername())
 
     def path(self, path):
         return os.path.join(self.basepath(), path)
