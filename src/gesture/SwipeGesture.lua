@@ -1,4 +1,8 @@
-SwipeGesture = Class()
+--
+-- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
+--
+
+local SwipeGesture = Class()
 
 function SwipeGesture.new(self)
     function self.init(start, stop, direction)
@@ -14,3 +18,5 @@ function SwipeGesture.new(self)
         -- local slideFactor = 0.1 * slideMultiplier
     end
 end
+
+return SwipeGesture

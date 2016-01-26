@@ -1,4 +1,8 @@
-LongPressGesture = Class()
+--
+-- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
+--
+
+local LongPressGesture = Class()
 
 function LongPressGesture.new(self)
     function self.init(point, prevPoint, touch)
@@ -30,3 +34,5 @@ function LongPressGesture.new(self)
         return LongPressGesture(node:convertToWorldSpace(self.point), node:convertToWorldSpace(self.prevPoint), self.direction)
     end
 end
+
+return LongPressGesture

@@ -1,4 +1,8 @@
-TapGesture = Class()
+--
+-- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
+--
+
+local TapGesture = Class()
 
 function TapGesture.new(self)
     function self.init(point)
@@ -13,3 +17,5 @@ function TapGesture.new(self)
         return TapGesture(node:convertToNodeSpace(self.point))
     end
 end
+
+return TapGesture

@@ -12,9 +12,9 @@ require "Logger"
 
 require "Constants"
 
-require "gesture.LongPressGesture"
-require "gesture.TapGesture"
-require "gesture.SwipeGesture"
+local LongPressGesture = require("gesture.LongPressGesture")
+local TapGesture = require("gesture.TapGesture")
+local SwipeGesture = require("gesture.SwipeGesture")
 
 local V = {}
 
