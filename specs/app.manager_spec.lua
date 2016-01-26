@@ -2,7 +2,7 @@ require "specs.busted"
 require "specs.Cocos2d-x"
 require "lang.Signal"
 
-AppManager = require("app.AppManager")
+AppManager = require("app.Manager")
 require "app.response.AppNotificationResponse"
 require "app.request.AppSetupNotificationRequest"
 require "bridge.BridgeResponse"
