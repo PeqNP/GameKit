@@ -1,6 +1,6 @@
 require "lang.Signal"
 
-require "bridge.BridgeResponse"
+local BridgeResponse = require("bridge.BridgeResponse")
 
 describe("AdRespose", function()
     local subject

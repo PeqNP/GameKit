@@ -3,7 +3,7 @@ require "Logger"
 
 Log.setLevel(LogLevel.Warning)
 
-require "bridge.BridgeAdaptor"
+local BridgeAdaptor = require("bridge.BridgeAdaptor")
 
 adaptor = {}
 adaptor.callStaticMethod = function()

@@ -5,7 +5,8 @@
 --
 
 require "Promise"
-require "bridge.BridgeCall"
+
+local BridgeCall = require("bridge.BridgeCall")
 
 local Bridge = Class()
 

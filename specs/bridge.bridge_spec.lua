@@ -6,10 +6,11 @@ Log.setLevel(LogLevel.Severe)
 
 require "ad.Constants"
 
-require "bridge.Bridge"
-require "bridge.BridgeCall"
-require "bridge.BridgeAdaptor"
-require "bridge.BridgeRequestProtocol"
+local Bridge = require("bridge.Bridge")
+local BridgeCall = require("bridge.BridgeCall")
+local BridgeResponse = require("bridge.BridgeResponse")
+local BridgeAdaptor = require("bridge.BridgeAdaptor")
+local BridgeRequestProtocol = require("bridge.BridgeRequestProtocol")
 
 describe("Bridge", function()
     local subject
