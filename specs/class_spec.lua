@@ -203,3 +203,24 @@ describe("Subclassing w/o init", function()
         assert.equals("Blarg", subject.getName())
     end)
 end)
+
+local Subclass = require("specs.Subclass")
+SubclassWithString = Class("specs.Subclass") 
+function SubclassWithString.new(self)
+end
+
+describe("Subclassing with a path to dependency", function()
+    local subject
+
+    before_each(function()
+        subject = SubclassWithString()
+    end)
+
+    it("should be a type of Subclass", function()
+        assert.truthy(subject.kindOf(Subclass))
+    end)
+end)
+
+SubclassWithString2 = Class("specs.NotAClass") 
+function SubclassWithString2.new(self)
+end

@@ -11,6 +11,16 @@ function Class(extends)
     local class = {}
     class.__index = class
 
+    -- Attempt to load the subclass's module.
+    if type(extends) == "string" then
+        local module_path = extends
+        extends = require(module_path)
+        if type(extends) ~= "table" then
+            print(string.format("Failed to load class module (%s). Does the module return the instance to the class definition?", module_path))
+            os.exit(1)
+        end
+    end
+
     -- Class information --
     local info = debug.getinfo(2, "Sl")
     local className = string.split(info.source, "/") -- remove everything before path
