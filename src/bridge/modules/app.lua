@@ -1,5 +1,6 @@
-require "app.response.AppNotificationResponse"
 require "bridge.BridgeResponse"
+
+local AppNotificationResponse = require("app.response.AppNotificationResponse")
 
 local app = {}
 

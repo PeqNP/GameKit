@@ -2,10 +2,11 @@ require "specs.busted"
 require "specs.Cocos2d-x"
 require "lang.Signal"
 
-AppManager = require("app.Manager")
-require "app.response.AppNotificationResponse"
-require "app.request.AppSetupNotificationRequest"
 require "bridge.BridgeResponse"
+
+local AppManager = require("app.Manager")
+local AppNotificationResponse = require("app.response.AppNotificationResponse")
+local AppSetupNotificationRequest = require("app.request.AppSetupNotificationRequest")
 
 local match = require("luassert.match")
 

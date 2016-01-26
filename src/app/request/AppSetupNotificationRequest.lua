@@ -4,7 +4,7 @@
 
 require "bridge.BridgeRequestProtocol"
 
-AppSetupNotificationRequest = Class()
+local AppSetupNotificationRequest = Class()
 AppSetupNotificationRequest.implements(BridgeRequestProtocol)
 
 function AppSetupNotificationRequest.new(self)
@@ -20,3 +20,5 @@ function AppSetupNotificationRequest.new(self)
         return {message=message, interval=interval}
     end
 end
+
+return AppSetupNotificationRequest

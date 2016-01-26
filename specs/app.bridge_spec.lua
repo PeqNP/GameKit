@@ -3,6 +3,7 @@ require "specs.busted"
 require "Logger"
 
 require "bridge.Bridge"
+local AppNotificationResponse = require("app.response.AppNotificationResponse")
 
 local match = require("specs.matchers")
 

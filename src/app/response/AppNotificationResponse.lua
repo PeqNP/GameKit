@@ -4,7 +4,7 @@
 
 require "bridge.BridgeResponse"
 
-AppNotificationResponse = Class(BridgeResponse)
+local AppNotificationResponse = Class(BridgeResponse)
 
 function AppNotificationResponse.new(self, init)
     local notifications
@@ -19,3 +19,4 @@ function AppNotificationResponse.new(self, init)
     end
 end
 
+return AppNotificationResponse
