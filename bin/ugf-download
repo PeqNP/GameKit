@@ -29,8 +29,8 @@ def main(config, cocos):
     remote = config.remote[-1] == "/" and config.remote or config.remote + "/"
     remotepath = remote+cocos.foldername()
     print("Cloning ({}) to ({})".format(remotepath, cocospath))
-    os.chdir(cocos.basepath())
-    call(["git", "clone", repository])
+    os.chdir(config.basepath)
+    call(["git", "clone", remotepath])
 
 if __name__ == "__main__":
     import argparse
