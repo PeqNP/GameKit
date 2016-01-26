@@ -2,22 +2,26 @@ require "specs.busted"
 require "specs.Cocos2d-x"
 require "lang.Signal"
 require "Logger"
+require "Error"
 
 Log.setLevel(LogLevel.Warning)
 
 require "Common"
 require "ad.Constants"
-require "ad.Ad"
-require "ad.AdManager"
-require "ad.AdError"
-require "ad.response.AdRegisterNetworkResponse"
-require "ad.response.AdCacheResponse"
-require "ad.networks.AdMobNetwork"
-require "ad.networks.AdColonyNetwork"
 require "bridge.BridgeCall"
 require "bridge.BridgeResponse"
 require "mediation.MediationAdFactory"
 require "mediation.MediationAdConfig"
+local Ad = require("ad.Ad")
+local AdManager = require("ad.Manager")
+local AdRegisterNetworkResponse = require("ad.response.AdRegisterNetworkResponse")
+local AdRequest = require("ad.request.AdRequest")
+local AdConfigureRequest = require("ad.request.AdConfigureRequest")
+local AdRegisterNetworkRequest = require("ad.request.AdRegisterNetworkRequest")
+local AdCompleteResponse = require("ad.response.AdCompleteResponse")
+local AdCacheResponse = require("ad.response.AdCacheResponse")
+local AdMobNetwork = require("ad.network.AdMobNetwork")
+local AdColonyNetwork = require("ad.network.AdColonyNetwork")
 
 local match = require("specs.matchers")
 matchers_assert(assert)
@@ -190,7 +194,7 @@ describe("AdManager", function()
 
             it("should return correct response", function()
                 assert.falsy(success)
-                assert.equals(AdError, _error.getClass())
+                assert.equals(Error, _error.getClass())
                 assert.equals(100, _error.getCode())
                 assert.equals("Failed to register network (AdMob)", _error.getMessage())
                 assert.equals("Info", _error.getInfo())
@@ -239,7 +243,7 @@ describe("AdManager", function()
             adColony = networks[1]
             adMob = networks[2]
 
-            stub(subject, "registerNetwork", false, AdError(100, "admanager_spec failure"))
+            stub(subject, "registerNetwork", false, Error(100, "admanager_spec failure"))
 
             subject.registerNetworks(networks)
         end)

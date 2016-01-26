@@ -1,6 +1,6 @@
 require "lang.Signal"
 
-require "ad.response.AdRegisterNetworkResponse"
+local AdRegisterNetworkResponse = require("ad.response.AdRegisterNetworkResponse")
 
 describe("AdRegisterNetworkResponse", function()
     local subject

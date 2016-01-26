@@ -6,8 +6,10 @@ Log.setLevel(LogLevel.Warning)
 
 require "bridge.Bridge"
 require "bridge.modules.ad"
-require "ad.response.AdCompleteResponse"
-require "ad.networks.AdColonyNetwork"
+local AdRegisterNetworkResponse = require("ad.response.AdRegisterNetworkResponse")
+local AdCacheResponse = require("ad.response.AdCacheResponse")
+local AdCompleteResponse = require("ad.response.AdCompleteResponse")
+local AdColonyNetwork = require("ad.network.AdColonyNetwork")
 
 local match = require("specs.matchers")
 

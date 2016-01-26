@@ -4,9 +4,9 @@
 --
 
 require "ad.Constants"
-require "ad.Ad"
-require "ad.networks.AdColonyNetwork"
-require "ad.networks.AdMobNetwork"
+local Ad = require("ad.Ad")
+local AdColonyNetwork = require("ad.network.AdColonyNetwork")
+local AdMobNetwork = require("ad.network.AdMobNetwork")
 
 local networks = {
     AdColonyNetwork("appd2f131e997a94cbbb5", {Ad(AdType.Video, "video-zone", 0)}),

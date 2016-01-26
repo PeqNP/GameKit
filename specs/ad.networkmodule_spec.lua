@@ -1,8 +1,8 @@
 require "lang.Signal"
 
-require "ad.Ad"
-require "ad.AdNetworkModule"
 require "ad.Constants"
+local Ad = require("ad.Ad")
+local AdNetworkModule = require("ad.NetworkModule")
 
 TestNetwork = Class(AdNetworkModule)
 function TestNetwork.new(self)

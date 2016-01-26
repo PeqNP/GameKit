@@ -6,9 +6,9 @@ require "json"
 
 require "bridge.BridgeResponse"
 
-require "ad.response.AdCacheResponse"
-require "ad.response.AdCompleteResponse"
-require "ad.response.AdRegisterNetworkResponse"
+local AdCacheResponse = require("ad.response.AdCacheResponse")
+local AdCompleteResponse = require("ad.response.AdCompleteResponse")
+local AdRegisterNetworkResponse = require("ad.response.AdRegisterNetworkResponse")
 
 local ad = {}
 

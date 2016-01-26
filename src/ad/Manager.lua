@@ -11,7 +11,7 @@ require("Error")
 
 require("ad.Constants")
 local AdRequest = require("ad.request.AdRequest")
-local AdConfigRequest = require("ad.request.AdConfigureRequest")
+local AdConfigureRequest = require("ad.request.AdConfigureRequest")
 local AdRegisterNetworkRequest = require("ad.request.AdRegisterNetworkRequest")
 
 local Manager = Class()

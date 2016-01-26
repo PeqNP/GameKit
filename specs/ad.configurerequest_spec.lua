@@ -1,9 +1,8 @@
 require "lang.Signal"
 
 require "ad.Constants"
-require("ad.request.AdConfigureRequest")
-
-AdConfig = require("ad.AdConfig")
+local AdConfig = require("ad.Config")
+local AdConfigureRequest = require("ad.request.AdConfigureRequest")
 
 describe("AdConfigureRequest", function()
     local subject

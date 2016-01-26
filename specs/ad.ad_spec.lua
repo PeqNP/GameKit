@@ -1,7 +1,7 @@
 require "lang.Signal"
 
-require "ad.Ad"
 require "ad.Constants"
+local Ad = require("ad.Ad")
 
 describe("Ad", function()
     local subject

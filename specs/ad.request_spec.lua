@@ -1,9 +1,9 @@
 require "lang.Signal"
 
 require "ad.Constants"
-require "ad.Ad"
-require "ad.request.AdRequest"
-require "ad.networks.AdMobNetwork"
+local Ad = require("ad.Ad")
+local AdRequest = require("ad.request.AdRequest")
+local AdMobNetwork = require("ad.network.AdMobNetwork")
 
 describe("AdRequest", function()
     local subject
