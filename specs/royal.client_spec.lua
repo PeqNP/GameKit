@@ -12,11 +12,11 @@ require "Logger"
 
 Log.setLevel(LogLevel.Warning)
 
-require "royal.AdConfig"
-require "royal.AdManifestParser"
-require "royal.AdManifest"
-require "royal.AdClient"
-require "royal.AdUnit"
+local AdConfig = require("royal.AdConfig")
+local AdManifestParser = require("royal.AdManifestParser")
+local AdManifest = require("royal.AdManifest")
+local AdClient = require("royal.Client")
+local AdUnit = require("royal.AdUnit")
 
 AdConfig.singleton.setBasePath("/path/")
 

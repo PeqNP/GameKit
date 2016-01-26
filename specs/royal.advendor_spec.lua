@@ -5,11 +5,11 @@ require "Common"
 
 Log.setLevel(LogLevel.Info)
 
-require "royal.AdConfig"
-require "royal.AdVendor"
-require "royal.AdTier"
-require "royal.AdUnit"
-require "royal.AdManifest"
+local AdConfig = require("royal.AdConfig")
+local AdVendor = require("royal.AdVendor")
+local AdTier = require("royal.AdTier")
+local AdUnit = require("royal.AdUnit")
+local AdManifest = require("royal.AdManifest")
 
 AdConfig.singleton.setBasePath("/path/")
 
