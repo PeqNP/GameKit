@@ -2,10 +2,10 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "ad.Constants"
-require "ad.AdNetworkModule"
+require("ad.Constants")
+local NetworkModule = require("ad.NetworkModule")
 
-LeadboltNetwork = Class(AdNetworkModule)
+local LeadboltNetwork = Class(NetworkModule)
 
 function LeadboltNetwork.new(self, init)
     local appid
@@ -29,3 +29,5 @@ function LeadboltNetwork.new(self, init)
         return {appid = appid}
     end
 end
+
+return LeadboltNetwork

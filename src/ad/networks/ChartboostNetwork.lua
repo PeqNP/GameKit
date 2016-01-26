@@ -2,10 +2,10 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "ad.Constants"
-require "ad.AdNetworkModule"
+require("ad.Constants")
+local NetworkModule = require("ad.NetworkModule")
 
-ChartboostNetwork = Class(AdNetworkModule)
+local ChartboostNetwork = Class(NetworkModule)
 
 function ChartboostNetwork.new(self, init)
     local appid
@@ -31,3 +31,5 @@ function ChartboostNetwork.new(self, init)
         return {appid = appid, signature = signature}
     end
 end
+
+return ChartboostNetwork

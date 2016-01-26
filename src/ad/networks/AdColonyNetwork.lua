@@ -2,10 +2,10 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "ad.Constants"
-require "ad.AdNetworkModule"
+require("ad.Constants")
+local NetworkModule = require("ad.NetworkModule")
 
-AdColonyNetwork = Class(AdNetworkModule)
+local AdColonyNetwork = Class(NetworkModule)
 
 function AdColonyNetwork.new(self, init)
     local appid
@@ -29,3 +29,5 @@ function AdColonyNetwork.new(self, init)
         return {appid = appid}
     end
 end
+
+return AdColonyNetwork

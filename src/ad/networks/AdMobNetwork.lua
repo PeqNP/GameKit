@@ -2,10 +2,10 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "ad.Constants"
-require "ad.AdNetworkModule"
+require("ad.Constants")
+local NetworkModule = require("ad.NetworkModule")
 
-AdMobNetwork = Class(AdNetworkModule)
+local AdMobNetwork = Class(NetworkModule)
 
 function AdMobNetwork.new(self, init)
     function self.getAdNetwork()
@@ -20,3 +20,5 @@ function AdMobNetwork.new(self, init)
         return {}
     end
 end
+
+return AdMobNetwork
