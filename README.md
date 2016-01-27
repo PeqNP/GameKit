@@ -26,9 +26,9 @@ GameKit heavily relies on two projects, GameKit-iOS and GameKit-Android (Android
 - GameKit is fully tested. This makes GameKit a _much_ more stable and changeable platform.
 - A _consistent_ API for every module. Write integration code only once. In addition to this, many of the APIs provide the option to configure which services should be used at run-time. The ad API, for instance, even allows you to download this configuration from a remote host. This provides you with the ability to change how ads are served. More importantly _which_ mediation services to use at any given time.
 
-Except for analytics, GameKit is already feature parity with SDK Box on the iOS platform. As soon as Android is complete it will be feature parity for both platforms.
+Except for analytics, GameKit is already feature parity with SDKBOX on the iOS platform. As soon as Android is complete it will be feature parity for both platforms.
 
-Note: GameKit already supports more than twice the number of mediation networks as SDK Box on iOS as of this writing. It is incredibly easy to support new mediation servies. It takes only 30 minutes to 1 hour to support a new mediation network.
+Note: GameKit already supports more than twice the number of mediation networks as SDKBOX on iOS as of this writing. It is incredibly easy to support new mediation servies. It takes only 30 minutes to 1 hour to support a new mediation network.
 
 ## FAQ
 
