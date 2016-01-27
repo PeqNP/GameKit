@@ -18,7 +18,7 @@ GameKit provides a set of middleware tools to make games faster.
 
 This diagram provides an overview of the design of GameKit.
 
-![GameKit Design] (https://www.dropbox.com/s/3cwkm0h2npd5lh7/Design.png?dl=0)
+![GameKit Design] (https://dl.dropboxusercontent.com/u/55773661/GameKit/Design.png)
 
 ## Dependencies
 
