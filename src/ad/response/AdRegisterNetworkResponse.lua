@@ -2,9 +2,7 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeResponse"
-
-local AdRegisterNetworkResponse = Class(BridgeResponse)
+local AdRegisterNetworkResponse = Class("bridge.BridgeResponse")
 
 function AdRegisterNetworkResponse.new(self, init)
     local adIds

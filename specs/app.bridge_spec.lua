@@ -2,7 +2,7 @@ require "lang.Signal"
 require "specs.busted"
 require "Logger"
 
-require "bridge.Bridge"
+local Bridge = require("bridge.Bridge")
 local AppNotificationResponse = require("app.response.AppNotificationResponse")
 
 local match = require("specs.matchers")

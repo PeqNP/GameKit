@@ -2,10 +2,8 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeResponseProtocol"
-
 local PurchaseResponse = Class()
-PurchaseResponse.implements(BridgeResponseProtocol)
+PurchaseResponse.implements("bridge.BridgeResponseProtocol")
 
 function PurchaseResponse.new(self)
     local id

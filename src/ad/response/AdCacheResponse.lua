@@ -2,7 +2,7 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-local AdCacheResponse = Class(BridgeResponse)
+local AdCacheResponse = Class("bridge.BridgeResponse")
 
 function AdCacheResponse.new(self, init)
     local reward

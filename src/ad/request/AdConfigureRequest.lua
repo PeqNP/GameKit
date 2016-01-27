@@ -2,10 +2,8 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeRequestProtocol"
-
 local AdConfigureRequest = Class()
-AdConfigureRequest.implements(BridgeRequestProtocol)
+AdConfigureRequest.implements("bridge.BridgeRequestProtocol")
 
 function AdConfigureRequest.new(self)
     local config

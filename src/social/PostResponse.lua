@@ -2,10 +2,8 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeResponseProtocol"
-
 local PostResponse = Class()
-PostResponse.implements(BridgeResponseProtocol)
+PostResponse.implements("bridge.BridgeResponseProtocol")
 
 function PostResponse.new(self)
     local id

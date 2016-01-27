@@ -4,10 +4,13 @@ require "Logger"
 
 Log.setLevel(LogLevel.Warning)
 
-require "bridge.Bridge"
-require "bridge.BridgeResponse"
 require "bridge.modules.iap"
-PurchaseRequest = require("iap.request.PurchaseRequest")
+local Bridge = require("bridge.Bridge")
+local BridgeCall = require("bridge.BridgeCall")
+local BridgeResponse = require("bridge.BridgeResponse")
+local PurchaseRequest = require("iap.request.PurchaseRequest")
+local PurchaseResponse = require("iap.response.PurchaseResponse")
+local RestorePurchaseResponse = require("iap.response.RestorePurchaseResponse")
 
 describe("modules.iap", function()
     local subject

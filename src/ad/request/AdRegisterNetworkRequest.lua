@@ -2,10 +2,8 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeRequestProtocol"
-
 local AdRegisterNetworkRequest = Class()
-AdRegisterNetworkRequest.implements(BridgeRequestProtocol)
+AdRegisterNetworkRequest.implements("bridge.BridgeRequestProtocol")
 
 function AdRegisterNetworkRequest.new(self)
     local network

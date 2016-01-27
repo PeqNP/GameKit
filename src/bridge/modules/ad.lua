@@ -4,8 +4,7 @@
 
 require "json"
 
-require "bridge.BridgeResponse"
-
+local BridgeResponse = require("bridge.BridgeResponse")
 local AdCacheResponse = require("ad.response.AdCacheResponse")
 local AdCompleteResponse = require("ad.response.AdCompleteResponse")
 local AdRegisterNetworkResponse = require("ad.response.AdRegisterNetworkResponse")

@@ -3,9 +3,9 @@ require "specs.Cocos2d-x"
 require "lang.Signal"
 
 require "Common"
-require "bridge.BridgeCall"
-require "bridge.BridgeResponse"
 
+local BridgeCall = require("bridge.BridgeCall")
+local BridgeResponse = require("bridge.BridgeResponse")
 local Manager = require("social.Manager")
 local PostRequest = require("social.PostRequest")
 local PostResponse = require("social.PostResponse")

@@ -2,9 +2,7 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeResponse"
-
-local AppNotificationResponse = Class(BridgeResponse)
+local AppNotificationResponse = Class("bridge.BridgeResponse")
 
 function AppNotificationResponse.new(self, init)
     local notifications

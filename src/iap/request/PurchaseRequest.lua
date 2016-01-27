@@ -2,10 +2,8 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeRequestProtocol"
-
 local PurchaseRequest = Class()
-PurchaseRequest.implements(BridgeRequestProtocol)
+PurchaseRequest.implements("bridge.BridgeRequestProtocol")
 
 function PurchaseRequest.new(self)
     local sku

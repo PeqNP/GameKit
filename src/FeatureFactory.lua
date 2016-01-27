@@ -16,8 +16,8 @@ function FeatureFactory.new(self)
         if bridge then
             return bridge
         end
-        require "bridge.Bridge"
-        require "bridge.BridgeAdaptor"
+        local Bridge = require("bridge.Bridge")
+        local BridgeAdaptor = require("bridge.BridgeAdaptor")
         platform = BridgeAdaptor.getAdaptor(device.platform)
         bridge = Bridge(platform)
         return bridge

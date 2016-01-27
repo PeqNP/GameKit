@@ -2,10 +2,8 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeRequestProtocol"
-
 local PostRequest = Class()
-PostRequest.implements(BridgeRequestProtocol)
+PostRequest.implements("bridge.BridgeRequestProtocol")
 
 function PostRequest.new(self)
     local service

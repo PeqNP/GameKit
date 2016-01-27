@@ -3,6 +3,7 @@
 --
 
 local Transaction = require("iap.Transaction")
+local PurchaseRequest = require("iap.request.PurchaseRequest")
 
 local Store = Class()
 

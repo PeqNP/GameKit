@@ -2,10 +2,8 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeRequestProtocol"
-
 local QueryRequest = Class()
-QueryRequest.implements(BridgeRequestProtocol)
+QueryRequest.implements("bridge.BridgeRequestProtocol")
 
 function QueryRequest.new(self)
     local skus

@@ -2,9 +2,7 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeResponseProtocol"
-
-local AdCompleteResponse = Class(BridgeResponse)
+local AdCompleteResponse = Class("bridge.BridgeResponse")
 
 function AdCompleteResponse.new(self, init)
     local reward

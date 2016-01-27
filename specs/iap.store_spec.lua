@@ -4,9 +4,9 @@ require "lang.Signal"
 
 require "Common"
 require "Promise"
-require "bridge.BridgeCall"
-require "bridge.BridgeResponse"
 
+local BridgeCall = require("bridge.BridgeCall")
+local BridgeResponse = require("bridge.BridgeResponse")
 local PurchaseResponse = require("iap.response.PurchaseResponse")
 local PurchaseRequest = require("iap.request.PurchaseRequest")
 local Store = require("iap.Store")

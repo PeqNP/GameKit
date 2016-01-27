@@ -2,11 +2,10 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeRequestProtocol"
 require "ad.Constants"
 
 local AdRequest = Class()
-AdRequest.implements(BridgeRequestProtocol)
+AdRequest.implements("bridge.BridgeRequestProtocol")
 
 function AdRequest.new(self)
     local ad

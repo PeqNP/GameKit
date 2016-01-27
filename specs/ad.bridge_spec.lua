@@ -4,8 +4,10 @@ require "Logger"
 
 Log.setLevel(LogLevel.Warning)
 
-require "bridge.Bridge"
 require "bridge.modules.ad"
+local Bridge = require("bridge.Bridge")
+local BridgeCall = require("bridge.BridgeCall")
+local BridgeResponse = require("bridge.BridgeResponse")
 local AdRegisterNetworkResponse = require("ad.response.AdRegisterNetworkResponse")
 local AdCacheResponse = require("ad.response.AdCacheResponse")
 local AdCompleteResponse = require("ad.response.AdCompleteResponse")

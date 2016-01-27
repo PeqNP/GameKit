@@ -3,12 +3,12 @@
 --
 
 require "json"
-require "bridge.BridgeResponse"
 
-PurchaseRequest = require("iap.request.PurchaseRequest")
-QueryResponse = require("iap.response.QueryResponse")
-PurchaseResponse = require("iap.response.PurchaseResponse")
-RestorePurchaseResponse = require("iap.response.RestorePurchaseResponse")
+local BridgeResponse = require("bridge.BridgeResponse")
+local PurchaseRequest = require("iap.request.PurchaseRequest")
+local QueryResponse = require("iap.response.QueryResponse")
+local PurchaseResponse = require("iap.response.PurchaseResponse")
+local RestorePurchaseResponse = require("iap.response.RestorePurchaseResponse")
 
 local iap = {}
 

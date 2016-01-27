@@ -8,8 +8,8 @@ Log.setLevel(LogLevel.Warning)
 
 require "Common"
 require "ad.Constants"
-require "bridge.BridgeCall"
-require "bridge.BridgeResponse"
+local BridgeCall = require("bridge.BridgeCall")
+local BridgeResponse = require("bridge.BridgeResponse")
 local MediationAdFactory = require("mediation.AdFactory")
 local MediationAdConfig = require("mediation.AdConfig")
 local Ad = require("ad.Ad")

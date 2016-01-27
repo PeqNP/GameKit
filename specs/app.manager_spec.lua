@@ -2,8 +2,7 @@ require "specs.busted"
 require "specs.Cocos2d-x"
 require "lang.Signal"
 
-require "bridge.BridgeResponse"
-
+local BridgeResponse = require("bridge.BridgeResponse")
 local AppManager = require("app.Manager")
 local AppNotificationResponse = require("app.response.AppNotificationResponse")
 local AppSetupNotificationRequest = require("app.request.AppSetupNotificationRequest")

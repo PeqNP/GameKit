@@ -3,9 +3,9 @@
 --
 
 require "json"
-require "bridge.BridgeResponse"
 
-PostResponse = require("social.PostResponse")
+local BridgeResponse = require("bridge.BridgeResponse")
+local PostResponse = require("social.PostResponse")
 
 local social = {}
 

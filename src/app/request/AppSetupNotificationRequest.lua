@@ -2,10 +2,8 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "bridge.BridgeRequestProtocol"
-
 local AppSetupNotificationRequest = Class()
-AppSetupNotificationRequest.implements(BridgeRequestProtocol)
+AppSetupNotificationRequest.implements("bridge.BridgeRequestProtocol")
 
 function AppSetupNotificationRequest.new(self)
     local message
