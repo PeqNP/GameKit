@@ -1,10 +1,8 @@
---[[
+--
+-- @copyright (c) 2014 Upstart Illustration LLC. All rights reserved.
+--
 
-  @copyright 2014 Upstart Illustration LLC. All rights reserved.
-
---]]
-
-TouchableSprite = Class()
+local TouchableSprite = Class()
 
 function TouchableSprite.new(self)
     local imgName
@@ -46,3 +44,5 @@ function TouchableSprite.new(self)
         self.sprite = nil
     end
 end
+
+return TouchableSprite

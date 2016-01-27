@@ -1,13 +1,12 @@
---[[
-  Provides SpriteSheet data structure loading routines.
+--
+-- Provides SpriteSheet data structure loading routines.
+--
+-- @copyright 2014 Upstart Illustration LLC. All rights reserved.
+--
 
-  @copyright 2014 Upstart Illustration LLC. All rights reserved.
+local Frame = require("sprite.Frame")
 
---]]
-
-require "sprite.Frame"
-
-SpriteSheet = Class()
+local SpriteSheet = Class()
 
 local sheets = {}
 
@@ -124,3 +123,5 @@ function SpriteSheet.new(self)
         --cc.Director:getInstance():getTextureCache():dumpCachedTextureInfo()
     end
 end
+
+return SpriteSheet

@@ -1,12 +1,11 @@
---[[
-  Provides data structure that contains a frame and its respective
-  bbox offset.
+--
+-- Provides data structure that contains a frame and its respective
+-- bbox offset.
+--
+-- @copyright 2014 Upstart Illustration LLC. All rights reserved.
+--
 
-  @author Eric Chamberlain
-  @copyright 2014 Upstart Illustration LLC. All rights reserved.
---]]
-
-Frame = Class()
+local Frame = Class()
 
 function Frame.new(self)
     self.sprite = false
@@ -20,3 +19,5 @@ function Frame.new(self)
         end
     end
 end
+
+return Frame

@@ -1,15 +1,14 @@
---[[
-  Provides SpritePlist data structure loading routines. This loads
-  Sprite sheets from a plist.
+--
+-- Provides SpritePlist data structure loading routines. This loads
+-- Sprite sheets from a plist.
+--
+-- @copyright 2014 Upstart Illustration LLC. All rights reserved.
+--
 
-  @copyright 2014 Upstart Illustration LLC. All rights reserved.
+local Promise = require("Promise")
+local Frame = require("sprite.Frame")
 
---]]
-
-require "Promise"
-require "sprite.Frame"
-
-SpritePlist = Class()
+local SpritePlist = Class()
 
 local plists = {}
 
@@ -129,3 +128,5 @@ function SpritePlist.new(self)
         --cc.Director:getInstance():getTextureCache():dumpCachedTextureInfo()
     end
 end
+
+return SpritePlist
