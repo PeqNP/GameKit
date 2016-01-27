@@ -1,3 +1,8 @@
+--
+-- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
+-- @attribution Inspired by https://github.com/friesencr/lua_promise
+-- @license <http://unlicense.org/>
+--
 
 Promise = Class()
 
