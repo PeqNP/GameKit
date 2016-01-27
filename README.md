@@ -4,21 +4,61 @@ GameKit provides a set of middleware tools to make games faster.
 
 ## Features
 
-- Decouples Cocos2d-x APIs, with a thin wrapper, from your game logic. This provides the possibility to port your game, if written entirely in Lua, to another game engine where Cocos2d-x is not supported.
+- Decouples your game logic from the Cocos2d-x library. The benefits of this are:
+  - Maintain only **one** version of any given version of Cocos2d-x for _every_ game you make. If there is a bug found in your version of Cocos2d-x, patch it in one repository, and then recompile all your games against that version of Cocos2d-x.
+  - Much smaller repository sizes for your games. Status quo is to save all of your game's code, assets, etc. in the same repository that contains the Cocos2d-x libs. This is completely unnecessary and quickly becomes unmanageable when you are maintaining any given version of Cocos2d-x.
+  - Upgrade to a new version of Cocos2d-x in less than 5 minutes. Download the new version of Cocos2d-x, configure your game to use the latest version, and then run ugf-select. Your game is then ready to start taking advantage of all the latest features and bug fixes.
+  - If your game is written entirely in Lua, it will be much easier to port your game to a platform that Cocos2d-x does not support.
 - A set of modules to perform common operations such as:
   - Ad Manager: Display ads from a large list of supported mediation networks (AdMob, AdColony, Chartboost, iAd, Leadbolt, Vungle, etc.)
   - The Royal Ad Network: An in-house mediation platform which provides a flexible, robust, ad serving platform.
-  - IAP Manager: In app purchasing
-  - Social Manager: Social network integration with Facebook, Twitter and Weibo
+  - IAP Manager: A flexible API to query and purchase products.
+  - Social Manager: Easily integrate with Facebook, Twitter and Weibo
   - App Manager: Manage application related messages including foreground/background messages and notifications
-- A messaging platform to send message to/from client (Lua) and server (native code using the respective Obj-C and Android bridge)
-- The Signal Programming Language extension. It is an aspect oriented programming language which provides mechanisms to 'tap' into other messages before they are received by the receiver or 'chain' to a receiver, and consume the return value after the message is processed by the receiver. More information will be provided once the API is complete. Games are ideally suited for this type of messaging system.
+- A model for messaging between client (Lua) and server (native code using the respective Obj-C and Android bridge) layers.
+- The Signal Programming Language extension. Signal is an aspect oriented programming language which provides mechanisms to 'tap' into other messages before they are received by the receiver or 'chain' to a receiver, and consume the return value after the message is processed by the receiver. More information will be provided once the API is complete.
 
 ## Design
 
 This diagram provides an overview of the design of GameKit.
 
 ![GameKit Design] (https://dl.dropboxusercontent.com/u/55773661/GameKit/Design.png)
+
+## Installation
+
+Create a directory on your machine where all GameKit supported Git repositories will be saved. This _includes_ any project that uses GameKit.
+```
+$ cd ~
+$ mkdir git
+```
+
+Clone this repository.
+```
+$ git clone https://github.com/PeqNP/GameKit.git
+```
+
+Create a game. This command will create a new game called 'MyGame' with the directory structure that GameKit requires.
+```
+$ ugf-create MyGame
+```
+
+At this point you can configure your game's config file. Make sure you to use the supported version of Cocos2d-x that your game will support. GameKit will automatically select the _latest_ supported version for you by default!
+```
+$ vim MyGame/config.json
+```
+
+Select your game to be the currently selected project that UGF will use with the Cocos2d-x template project.
+```
+$ ugf-select MyGame
+```
+
+This operation will:
+- Download the version of Cocos2d-x your game requires, if it does not already exist
+- Cleans the Cocos2d-x project, if necessary
+- Download and configure all dependencies. This includes mediation services, analytics libraries, etc.
+- Copies GameKit and your project's source code into the Cocos2d-x project
+
+At this point you should be able to open the Cocos2d-x_v#.#.#/frameworks/runtime-src/proj.ios_mac/GameKit-Template.xcworkspace (not the .xccodeproj!) and run your app. (Please note that the '#' must be replaced with the version of Cocos2d-x your project supports; i.e. Cocos2d-x_v3.8.1)
 
 ## Dependencies
 
