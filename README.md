@@ -28,11 +28,11 @@ This diagram provides an overview of the design of GameKit.
 
 Create a directory on your machine where all GameKit supported Git repositories will be saved. This _includes_ any project that uses GameKit.
 ```
-$ cd ~
-$ mkdir git
+$ mkdir ~/git
+$ cd ~/git
 ```
 
-Clone this repository.
+Clone the GameKit repository.
 ```
 $ git clone https://github.com/PeqNP/GameKit.git
 ```
@@ -42,15 +42,16 @@ Create a game. This command will create a new game called 'MyGame' with the dire
 $ ugf-create MyGame
 ```
 
-At this point you can configure your game's config file. Make sure you to use the supported version of Cocos2d-x that your game will support. GameKit will automatically select the _latest_ supported version for you by default!
+At this point you can configure your game's config file. Here you can change which version of Cocos2d-x your game should use, the name, bundle identifier, etc.
 ```
 $ vim MyGame/config.json
 ```
 
-Select your game to be the currently selected project that UGF will use with the Cocos2d-x template project.
+Select your game to be the currently selected project that GameKit will use.
 ```
 $ ugf-select MyGame
 ```
+Note: This operation is similar to checking out a branch in git. Only one game can be selected at a time. That being said, it takes less than 5 seconds to checkout most games (this could longer depending on the number of dependencies your game has to download).
 
 This operation will:
 - Download the version of Cocos2d-x your game requires, if it does not already exist
@@ -63,7 +64,8 @@ At this point you should be able to open the Cocos2d-x_v#.#.#/frameworks/runtime
 ## Dependencies
 
 GameKit heavily relies on two projects, GameKit-iOS and GameKit-Android (Android is not yet complete). The features that the native GameKit libraries provide is equivalent to Cocos's SDKBOX. The primary differences between the two projects are:
-- GameKit is fully tested. This makes GameKit a _much_ more stable and changeable platform.
+- GameKit is fully tested. This makes GameKit a _much_ more stable and changeable platform. Most new 3rd party services, such as Chartboost, etc. take less than 30 minutes to support.
+- More native land related features including application related features such as (notifications, foreground/background messages, etc.)
 - A _consistent_ API for every module. Write integration code only once. In addition to this, many of the APIs provide the option to configure which services should be used at run-time. The ad API, for instance, even allows you to download this configuration from a remote host. This provides you with the ability to change how ads are served. More importantly _which_ mediation services to use at any given time.
 
 Except for analytics, GameKit is already feature parity with SDKBOX on the iOS platform. As soon as Android is complete it will be feature parity for both platforms.
