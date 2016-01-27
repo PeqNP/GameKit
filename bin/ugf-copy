@@ -13,12 +13,12 @@ from subprocess  import call
 
 from ugf import gethomedir, emptydir, rmdir
 from ugf.config import configpath, checkconfig, Config, ProjectConfig
-from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder
+from ugf.pathbuilder import CocosPathBuilder, GameKitPathBuilder, StagePathBuilder, ProjectPathBuilder
 
-def copy_gametools(source, cocos):
+def copy_gamekit(gamekit, source, cocos):
     rmdir(cocos.path("src/ugf"))
     # @todo fix this path
-    call(["cp", "-r", "/Users/eric/git/GameTools/src", cocos.path("src/ugf")])
+    call(["cp", "-r", gamekit.path("src"), cocos.path("src/ugf")])
 
 def copy_ios_assets(source, cocos):
     emptydir(cocos.path("frameworks/runtime-src/proj.ios_mac/GameTools-mobile"))
@@ -44,6 +44,7 @@ if __name__ == "__main__":
     checkconfig(config)
 
     source = ProjectPathBuilder(config)
+    gamekit = GameKitPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
 
@@ -61,7 +62,7 @@ if __name__ == "__main__":
     if "all" in args.files:
         print "Copying all files."
         copy_ios_assets(source, cocos)
-        copy_gametools(source, cocos)
+        copy_gamekit(gamekit, source, cocos)
         copy_source(source, cocos)
         copy_resources(source, cocos)
         sys.exit(0)
@@ -71,7 +72,7 @@ if __name__ == "__main__":
         copy_ios_assets(source, cocos)
     if "gametools" in args.files:
         print "Copying GameTools files."
-        copy_gametools(source, cocos)
+        copy_gamekit(gamekit, stagesource, cocos)
     if "project" in args.files:
         print "Copying project source files."
         copy_source(source, cocos)

@@ -51,7 +51,7 @@ if __name__ == "__main__":
     # @todo Possibly create a script that copies any _modified_ files, in the currently configured
     # Cocos2d-x repository, back into the current project's file structure. This way, if app icons
     # are updated, etc. they are reflected back into the project's directory.
-    print("To avoid Xcode crashing make sure to close the GameTools project before running!")
+    print("To avoid Xcode crashing make sure to close the GameKit project before running!")
     call(["ugf-clean", "--version", project.cocos])
     call(["ugf-configure"])
     call(["ugf-copy"])

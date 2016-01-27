@@ -52,6 +52,16 @@ class StagePathBuilder (object):
     def path(self, path):
         return os.path.join(self.basepath(), path)
 
+class GameKitPathBuilder (object):
+    def __init__(self, config):
+        self.config = config
+
+    def basepath(self):
+        return os.path.join(self.config.basepath, "GameKit")
+
+    def path(self, path):
+        return os.path.join(self.basepath(), path)
+
 # Builds project related paths.
 class ProjectPathBuilder (object):
     # @param Config

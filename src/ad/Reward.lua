@@ -4,7 +4,15 @@
 
 local Reward = Class()
 
-function Reward.new(self, presented, clicked)
+function Reward.new(self)
+    local presented
+    local clicked
+
+    function self.init(_presented, _clicked)
+        presented = _presented
+        clicked = _clicked
+    end
+
     function self.getPresentedAmount()
         return presented
     end
