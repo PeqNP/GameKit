@@ -1,16 +1,15 @@
---[[
-  Provides a simple type setter.
+--
+-- Provides a simple type setter.
+--
+-- This class provides an easy way to associate characters to a glyph sprite
+-- sheet. It also provides routines to turn glyphs into a single sprite.
+--
+--  @copyright 2014 Upstart Illustration LLC. All rights reserved.
+--
 
-  This class provides an easy way to associate characters to a glyph sprite
-  sheet. It also provides routines to turn glyphs into a single sprite.
+local Glyph = require("text.Glyph")
 
-  @copyright 2014 Upstart Illustration LLC. All rights reserved.
-
---]]
-
-require "text.Glyph"
-
-TypeSetter = Class()
+local TypeSetter = Class()
 
 function TypeSetter.new(self)
     local sheet
@@ -64,3 +63,5 @@ function TypeSetter.new(self)
         return layout
     end
 end
+
+return TypeSetter

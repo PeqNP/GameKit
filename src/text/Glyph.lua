@@ -1,11 +1,10 @@
---[[
-  Provides data structure for a letter glyph; which is used by the TypeSetter.
+--
+-- Provides data structure for a letter glyph; which is used by the TypeSetter.
+--
+-- @copyright (c) 2014 Upstart Illustration LLC. All rights reserved.
+--
 
-  @copyright 2014 Upstart Illustration LLC. All rights reserved.
-
---]]
-
-Glyph = Class()
+local Glyph = Class()
 
 function Glyph.new(self)
     function self.init(char, width, frame)
@@ -14,3 +13,5 @@ function Glyph.new(self)
         self.frame = frame
     end
 end
+
+return Glyph
