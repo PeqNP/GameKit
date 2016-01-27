@@ -1,10 +1,10 @@
 # GameTools
 
 The GameTools project is many things:
-- It decouples Cocos2d-x's APIs to provide an easy transition to port your game, written in Lua, to another game engine where Cocos2d-x is not supported.
+- Decouples Cocos2d-x APIs, with a thin wrapper, from your game logic. This provides the possibility to port your game, if written entirely in Lua, to another game engine where Cocos2d-x is not supported.
 - Helper classes to perform common operations:
   - Display ads from a large list of supported mediation networks (AdMob, AdColony, Chartboost, iAd, Leadbolt, Vungle, etc.)
-  - The Royal Ad Network; an in-house mediation platform which provides a flexible, robust ad serving platform.
+  - The Royal Ad Network; an in-house mediation platform which provides a flexible, robust, ad serving platform.
   - IAP
   - Social integration with Facebook, Twitter and Weibo
   - Application notifications
@@ -30,4 +30,8 @@ A trade-off was made to favor speed over memory usage; which is arguably negligi
 
 ## TODO
 
-- Make all classes modules. All of the newer classes can be included by using local ClassName = require("ClassName"). This follows the latest conventions used by Lua.
+Make all classes modules. Most classes can be included by doing the following:
+```
+local ClassName = require("ClassName")
+```
+The remainder of classes in src/ will eventually be changed.
