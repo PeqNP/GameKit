@@ -9,7 +9,6 @@ require "Logger"
 
 local Error = require("Error")
 local Promise = require("Promise")
-local Music = require("Music")
 
 local shim = {}
 

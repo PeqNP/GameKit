@@ -8,6 +8,7 @@ Log.setLevel(LogLevel.Warning)
 require "ad.Constants"
 
 local shim = require("shim.Main")
+local GameShim = require("shim.Game")
 local Error = require("Error")
 local BridgeCall = require("bridge.BridgeCall")
 local BridgeResponse = require("bridge.BridgeResponse")
@@ -47,6 +48,7 @@ describe("AdManager", function()
     local adFactory
 
     before_each(function()
+        mock(GameShim, true)
         bridge = require("bridge.modules.ad")
         adFactory = mock(MediationAdFactory({}), true)
 
