@@ -13,7 +13,7 @@ local Music = require("Music")
 
 cu = {}
 
-function cu.generateShader(shader, vertex, frag)
+function cu.GenerateShader(shader, vertex, frag)
     Log.i("Loading shader (%s)", shader)
     local prg = cc.GLProgram:createWithFilenames(
         cu.fullPathForFilename(string.format("%s.vsh", vertex))
@@ -29,7 +29,7 @@ end
 
 --[[ Returns random point, within visible area, where a sprite can be
      placed. ]]--
-function cu.getRandomPoint(sprite)
+function cu.GetRandomPoint(sprite)
     -- @fixme Ensure that the sprite is always in view. This code does not
     -- do that.
     local size = cu.GetVisibleSize()
@@ -48,7 +48,7 @@ end
   This is generally used for rolling credits at the ending of a game.
 
 --]]
-function cu.getPointForLocation(location, sprite, padding)
+function cu.GetPointForLocation(location, sprite, padding)
     local size = cu.GetVisibleSize()
     local x, y
     if location == Location.Random then
@@ -97,7 +97,7 @@ end
 -- Returns respective position for a given heading. A heading
 -- is a Location sans Center.
 --
-function cu.getPointForHeading(heading)
+function cu.GetPointForHeading(heading)
     local size = cu.GetVisibleSize()
     local x, y
     if heading == Location.Random then
@@ -137,7 +137,7 @@ end
 
 --[[ Return the next position and angle given the target and current position
      of an actor. ]]--
-function cu.getNextPosition(pos, target, distance)
+function cu.GetNextPosition(pos, target, distance)
     local angle = math.atan2(target.y - pos.y, target.x - pos.x)
     local pos = cc.p(pos.x + (distance * math.cos(angle)), pos.y + (distance * math.sin(angle)))
     return pos
@@ -150,7 +150,7 @@ end
   @param cc.p locb destination point
 
 --]]
-function cu.getDistance(loca, locb)
+function cu.GetDistance(loca, locb)
     -- current position is considered point A. dest, point B
     local aDist = loca.x - locb.x
     local bDist = loca.y - locb.y
@@ -158,7 +158,7 @@ function cu.getDistance(loca, locb)
     return cDist
 end
 
-function cu.getRenderedTexture(child)
+function cu.GetRenderedTexture(child)
     local bbox = child:getBoundingBox()
     child:setPosition(bbox.width/2, bbox.height/2)
     local size = child:getContentSize()
@@ -172,9 +172,9 @@ function cu.getRenderedTexture(child)
     return sprite
 end
 
-function cu.fitImageInCenter(img)
+function cu.FitImageInCenter(img)
     local size = cu.GetVisibleSize()
-    local origin = cu.getMidPoint()
+    local origin = cu.GetMidPoint()
 
     local contentSize = img:getContentSize()
     local x, y = size.width / contentSize.width, size.height / contentSize.height
@@ -183,7 +183,7 @@ function cu.fitImageInCenter(img)
     img:setPosition(origin.x, origin.y)
 end
 
-function cu.takeScreenShot()
+function cu.TakeScreenShot()
     local promise = Promise()
     local path = cc.FileUtils:getInstance():getWritablePath() .. "screen.png"
     cc.utils:captureScreen(function(succeed, outputFile)
@@ -197,10 +197,12 @@ function cu.takeScreenShot()
     return promise
 end
 
+--
 -- Seed random number generator and pop a few random numbers to ensure that the
 -- numbers are random.
 -- Reference: http://lua-users.org/wiki/MathLibraryTutorial
-function cu.randomizeSeed()
+--
+function cu.RandomizeSeed()
     math.randomseed(os.time())
     math.random(); math.random(); math.random();
 end
@@ -298,7 +300,7 @@ function cu.UnscheduleFunc(scheduleId)
     director:getScheduler():unscheduleScriptEntry(scheduleId)
 end
 
-function cu.getMidPoint()
+function cu.GetMidPoint()
     local size = cu.GetVisibleSize()
     local origin = cu.GetOrigin()
     return cc.p(origin.x + (size.width / 2), origin.y + (size.height / 2))
@@ -307,7 +309,7 @@ end
 --
 -- Delay N seconds before executing call.
 --
-function cu.delayCall(fn, delay)
+function cu.DelayCall(fn, delay)
     local sequence = cu.Sequence(cu.Delay(delay), cu.Call(fn))
     cu.runAction(sequence)
 end
@@ -322,11 +324,6 @@ function cu.Scene()
     return cc.Scene:create()
 end
 
--- @tood Rename to AudioEngine... Actually, why is this even here?
-function SimpleAudioEngine()
-    return cc.SimpleAudioEngine:getInstance()
-end
-
 function cu.Sprite(...)
     return cc.Sprite:create(...)
 end
@@ -339,12 +336,6 @@ end
 
 -- Returns table{.x, .y} given (x, y)
 cu.p = cc.p
-
---[[ This belongs on the Node class.
-function cu.p(node)
-    return cc.p(node:getPosition())
-end
- Convert Cocos2d-x getPosition to Point. ]]--
 
 function cu.p3(x, y, z)
     return {x=x, y=y, z=z}
@@ -454,11 +445,11 @@ end
 
 --[[ Conversions. ]]--
 
-function cu.degToRad(radians)
+function cu.DegToRad(radians)
     return radians * 0.01745329252 -- PI / 180
 end
 
-function cu.radToDeg(degrees)
+function cu.RadToDeg(degrees)
     return degrees * 57.29577951 -- PI * 180
 end
 
@@ -480,5 +471,18 @@ cu.addSearchPath = cu.AddSearchPath
 cu.getVisibleSize = cu.GetVisibleSize
 cu.getOrigin = cu.GetOrigin
 cu.getWinSizeInPixels = cu.GetWinSizeInPixels
+cu.generateShader = cu.GenerateShader
+cu.getRandomPoint = cu.GetRandomPoint
+cu.getPointForLocation = cu.GetPointForLocation
+cu.getPointForHeading = cu.GetPointForHeading
+cu.getNextPosition = cu.GetNextPosition
+cu.getDistance = cu.GetDistance
+cu.getRenderedTexture = cu.GetRenderedTexture
+cu.fitImageInCenter = cu.FitImageInCenter
+cu.takeScreenShot = cu.TakeScreenShot
+cu.getMidPoint = cu.GetMidPoint
+cu.delayCall = cu.DelayCall
+cu.degToRad = cu.DegToRad
+cu.radToDeg = cu.RadToDeg
 
 return cu

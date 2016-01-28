@@ -189,7 +189,7 @@ function Game.new(self)
     function self.start()
         if scheduleId then
             Log.d("Unscheduling main tick w/ ID (%s)", scheduleId)
-            cu.unscheduleFunc(scheduleId)
+            cu.UnscheduleFunc(scheduleId)
             scheduleId = false
         end
 
@@ -207,7 +207,7 @@ function Game.new(self)
         local function tick()
             -- @note Execute any method that must be done every tick.
         end
-        scheduleId = cu.scheduleFunc(tick, 0, false)
+        scheduleId = cu.ScheduleFunc(tick, 0, false)
 
         -- Run some initialization routines to prevent race-conditions (like app
         -- notifications, etc.) by running them one second after the game has
@@ -235,7 +235,7 @@ function Game.new(self)
 
         -- local saveFile = writablePath .. "game.save"
 
-        cu.randomizeSeed()
+        cu.RandomizeSeed()
     end
 end
 
