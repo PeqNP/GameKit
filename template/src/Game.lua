@@ -1,9 +1,7 @@
 require "socket.core"
 
-local Music = require("Music")
-local music = Music()
-local Sound = require("Sound")
-local sound = Sound()
+local music = require("Music")()
+local sound = require("Sound")()
 
 local shim = require("shim.Main")
 local GameShim = require("shim.Game")

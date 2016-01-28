@@ -1,0 +1,26 @@
+{
+    "server": {
+        "host": "http://127.0.0.1",
+        "port": 80,
+        "path": "/ad/ios/mediation.json"
+    },
+    "config": {
+        "devices": ["test-device-id-1"],
+        "automatic": false,
+        "orientation": "AdOrientation.AutoDetect"
+    },
+    "networks": [
+        {"network": "AdColony",
+           "appId": "appd#####",
+             "ads": [
+                {"type": "Video", "zoneId": "vz#####"}
+             ]
+        },
+        {"network": "AdMob",
+             "ads": [
+                {"type": "Banner", "zoneId": "ca-app-pub-#####/######", "location": "AdLocation.Bottom"},
+                {"type": "Interstitial", "zoneId": "ca-app-pub-#####/#####"}
+             ]
+        },
+    ]
+}
