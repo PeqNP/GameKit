@@ -1,4 +1,5 @@
 require "lang.Signal"
+require "specs.Cocos2d-x"
 
 -- @tood All of the signal_spec class tests should be in this test.
 
@@ -218,6 +219,20 @@ describe("Subclassing with a path to dependency", function()
 
     it("should be a type of Subclass", function()
         assert.truthy(subject.kindOf(Subclass))
+    end)
+end)
+
+-- This tests is for my own curiosity.
+describe("instantiating a class directly after require", function()
+    local instance
+
+    before_each(function()
+        instance = require("Music")()
+    end)
+
+    it("should be an instance of Music", function()
+        assert.truthy(instance)
+        assert.truthy(instance.stop)
     end)
 end)
 
