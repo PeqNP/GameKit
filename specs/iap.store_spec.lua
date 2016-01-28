@@ -3,8 +3,8 @@ require "specs.Cocos2d-x"
 require "lang.Signal"
 
 require "Common"
-require "Promise"
 
+local Promise = require("Promise")
 local BridgeCall = require("bridge.BridgeCall")
 local BridgeResponse = require("bridge.BridgeResponse")
 local PurchaseResponse = require("iap.response.PurchaseResponse")

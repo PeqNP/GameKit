@@ -3,7 +3,7 @@
 --
 
 require "Logger"
-require "Promise"
+local Promise = require("Promise")
 
 local IAP = Class()
 

@@ -12,6 +12,7 @@ require "Logger"
 
 Log.setLevel(LogLevel.Warning)
 
+local Promise = require("Promise")
 local AdConfig = require("royal.AdConfig")
 local AdManifestParser = require("royal.AdManifestParser")
 local AdManifest = require("royal.AdManifest")

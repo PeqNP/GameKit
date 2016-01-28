@@ -5,8 +5,7 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "Promise"
-
+local Promise = require("Promise")
 local Config = require("mediation.Config")
 
 local Service = Class()

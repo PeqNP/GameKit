@@ -6,6 +6,7 @@ require "Logger"
 
 Log.setLevel(LogLevel.Error)
 
+local Promise = require("Promise")
 local MediationConfig = require("mediation.Config")
 local MediationService = require("mediation.Service")
 local MediationAdConfig = require("mediation.AdConfig")

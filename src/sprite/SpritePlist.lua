@@ -5,8 +5,7 @@
 -- @copyright 2014 Upstart Illustration LLC. All rights reserved.
 --
 
-require "Promise"
-
+local Promise = require("Promise")
 local Frame = require("sprite.Frame")
 
 local SpritePlist = Class()

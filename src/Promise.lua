@@ -4,7 +4,7 @@
 -- @license <http://unlicense.org/>
 --
 
-Promise = Class()
+local Promise = Class()
 
 local function null_or_unpack(val)
     if val then
@@ -145,3 +145,5 @@ function Promise.when(...)
     end
     return deferred
 end
+
+return Promise

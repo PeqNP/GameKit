@@ -5,7 +5,7 @@
 --
 
 require("Logger")
-require("Promise")
+local Promise = require("Promise")
 require("Common")
 require("Error")
 

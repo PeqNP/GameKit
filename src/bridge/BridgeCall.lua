@@ -2,9 +2,7 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "Promise"
-
-local BridgeCall = Class(Promise)
+local BridgeCall = Class("Promise")
 
 function BridgeCall.new(self)
     local request

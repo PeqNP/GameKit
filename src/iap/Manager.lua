@@ -2,9 +2,9 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
-require "Promise"
 require "Error"
 
+local Promise = require("Promise")
 local Store = require("iap.Store")
 local Product = require("iap.Product")
 local Transaction = require("iap.Transaction")

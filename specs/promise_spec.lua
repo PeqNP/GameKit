@@ -1,5 +1,6 @@
 require "lang.Signal"
-require "Promise" 
+
+local Promise = require("Promise" )
 
 describe("new", function()
 

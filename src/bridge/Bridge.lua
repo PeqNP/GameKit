@@ -4,8 +4,6 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "Promise"
-
 local BridgeCall = require("bridge.BridgeCall")
 
 local Bridge = Class()

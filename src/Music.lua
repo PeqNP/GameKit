@@ -5,6 +5,7 @@
 --
 
 require("Logger")
+local Promise = require("Promise")
 
 Music = Class()
 
