@@ -11,14 +11,6 @@ local NotificationObserver = require("NotificationObserver")
 
 local NotificationCenter = Class()
 
-local shared = nil
-function NotificationCenter.getInstance()
-    if not shared then
-        shared = NotificationCenter()
-    end
-    return shared
-end
-
 function NotificationCenter.new(self)
     local observers = {}
 

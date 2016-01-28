@@ -13,10 +13,6 @@ local Music = require("Music")
 
 cu = {}
 
-function cu.fullPathForFilename(path)
-    return cc.FileUtils:getInstance():fullPathForFilename(path)
-end
-
 function cu.generateShader(shader, vertex, frag)
     Log.i("Loading shader (%s)", shader)
     local prg = cc.GLProgram:createWithFilenames(
@@ -36,77 +32,12 @@ end
 function cu.getRandomPoint(sprite)
     -- @fixme Ensure that the sprite is always in view. This code does not
     -- do that.
-    local size = cu.getVisibleSize()
+    local size = cu.GetVisibleSize()
     local xMin, xMax = 50, size.width - 50
     local yMin, yMax = BOTTOM_AD_HEIGHT + 50, size.height - 50
     local x = math.random(xMin, xMax)
     local y = math.random(yMin, yMax)
     return cc.p(x, y)
-end
-
-function cu.isPaused()
-    return cc.Director:getInstance():isPaused()
-end
-
-function cu.pause()
-    if not cu.isPaused() then
-        cc.Director:getInstance():pause()
-        cc.Director:getInstance():stopAnimation()
-        Music.singleton.pause()
-    end
-end
-
-function cu.resume()
-    if cu.isPaused() then
-        cc.Director:getInstance():startAnimation()
-        Music.singleton.resume()
-        cc.Director:getInstance():resume()
-    end
-end
-
-function cu.getVisibleSize()
-    return cc.Director:getInstance():getVisibleSize()
-end
-
-function cu.getOrigin()
-    return cc.Director:getInstance():getVisibleOrigin()
-end
-
-function cu.getWinSizeInPixels()
-    return cc.Director:getInstance():getWinSizeInPixels()
-end
-
---[[ Schedules a function callback to be called every tick.
-
-  @param fn - function to call
-  @param number priority - interal to call method in seconds. If 0, will be called every frame.
-  @param boolean paused - If yes, will not run until it is resumed.
-
-  @return number - ID of script registration
-
---]]
-function cu.scheduleFunc(fn, priority, paused)
-    return cc.Director:getInstance():getScheduler():scheduleScriptFunc(fn, priority, paused)
-end
-
--- @todo Find pauseScheduleFunc
-
-function cu.unscheduleFunc(scheduleId)
-    cc.Director:getInstance():getScheduler():unscheduleScriptEntry(scheduleId)
-end
-
-function cu.getMidPoint()
-    local size = cu.getVisibleSize()
-    local origin = cu.getOrigin()
-    return cc.p(origin.x + (size.width / 2), origin.y + (size.height / 2))
-end
-
---
--- Delay N seconds before executing call.
---
-function cu.delayCall(fn, delay)
-    local sequence = cu.Sequence(cu.Delay(delay), cu.Call(fn))
-    cu.runAction(sequence)
 end
 
 --[[ Returns a point which represents the position of a location.
@@ -118,7 +49,7 @@ end
 
 --]]
 function cu.getPointForLocation(location, sprite, padding)
-    local size = cu.getVisibleSize()
+    local size = cu.GetVisibleSize()
     local x, y
     if location == Location.Random then
         location = math.random(Location.MIN, Location.MAX-1) -- -1 to remove 'Random'
@@ -167,7 +98,7 @@ end
 -- is a Location sans Center.
 --
 function cu.getPointForHeading(heading)
-    local size = cu.getVisibleSize()
+    local size = cu.GetVisibleSize()
     local x, y
     if heading == Location.Random then
         -- Do not factor in Center or Random locations as they are
@@ -242,7 +173,7 @@ function cu.getRenderedTexture(child)
 end
 
 function cu.fitImageInCenter(img)
-    local size = cu.getVisibleSize()
+    local size = cu.GetVisibleSize()
     local origin = cu.getMidPoint()
 
     local contentSize = img:getContentSize()
@@ -266,18 +197,121 @@ function cu.takeScreenShot()
     return promise
 end
 
--- --------------------
+-- Seed random number generator and pop a few random numbers to ensure that the
+-- numbers are random.
+-- Reference: http://lua-users.org/wiki/MathLibraryTutorial
+function cu.randomizeSeed()
+    math.randomseed(os.time())
+    math.random(); math.random(); math.random();
+end
+
 -- ----- Director -----
 
 function cu.Director()
     return cc.Director:getInstance()
 end
 
-function cu.RunningScene()
-    return cc.Director:getInstance():getRunningScene()
+local director = cu.Director()
+
+function cu.GetRunningScene()
+    return director:getRunningScene()
 end
 
--- --------------------
+function cu.IsPaused()
+    return director:isPaused()
+end
+
+function cu.Pause()
+    if not cu.isPaused() then
+        director:pause()
+        director:stopAnimation()
+        Music.singleton.pause()
+    end
+end
+
+function cu.Resume()
+    if cu.isPaused() then
+        director:startAnimation()
+        Music.singleton.resume()
+        director:resume()
+    end
+end
+
+function cu.GetVisibleSize()
+    return director:getVisibleSize()
+end
+
+function cu.GetOrigin()
+    return director:getVisibleOrigin()
+end
+
+function cu.GetWinSizeInPixels()
+    return director:getWinSizeInPixels()
+end
+
+-- ----- Actions ------
+
+function cu.RunAction(action)
+    return cu.RunningScene():runAction(action)
+end
+
+function cu.FadeTransition(node, delay)
+    return cc.TransitionFade:create(delay, node)
+end
+
+function cu.TransitionScene(transition)
+    return director:replaceScene(transition)
+end
+
+function cu.RunScene(scene)
+    return director:runWithScene(scene)
+end
+
+-- ----- File Utilities -----
+
+function cu.GetFullFilepath(path)
+    return cc.FileUtils:getInstance():fullPathForFilename(path)
+end
+
+function cu.AddSearchPath(path)
+    cc.FileUtils:getInstance():addSearchPath(path);
+end
+
+-- ----- Scheduler -----
+
+--[[ Schedules a function callback to be called every tick.
+
+  @param fn - function to call
+  @param number priority - interal to call method in seconds. If 0, will be called every frame.
+  @param boolean paused - If yes, will not run until it is resumed.
+
+  @return number - ID of script registration
+
+--]]
+function cu.ScheduleFunc(fn, priority, paused)
+    return director:getScheduler():scheduleScriptFunc(fn, priority, paused)
+end
+
+-- @todo Find pauseScheduleFunc
+
+function cu.UnscheduleFunc(scheduleId)
+    director:getScheduler():unscheduleScriptEntry(scheduleId)
+end
+
+function cu.getMidPoint()
+    local size = cu.GetVisibleSize()
+    local origin = cu.GetOrigin()
+    return cc.p(origin.x + (size.width / 2), origin.y + (size.height / 2))
+end
+
+--
+-- Delay N seconds before executing call.
+--
+function cu.delayCall(fn, delay)
+    local sequence = cu.Sequence(cu.Delay(delay), cu.Call(fn))
+    cu.runAction(sequence)
+end
+
 -- ----- Objects ------
 
 function cu.Layer()
@@ -288,6 +322,7 @@ function cu.Scene()
     return cc.Scene:create()
 end
 
+-- @tood Rename to AudioEngine... Actually, why is this even here?
 function SimpleAudioEngine()
     return cc.SimpleAudioEngine:getInstance()
 end
@@ -300,7 +335,6 @@ function cu.SpriteButton(...)
     return cc.MenuItemSprite:create(...)
 end
 
--- --------------------
 -- ----- Utility ------
 
 -- Returns table{.x, .y} given (x, y)
@@ -314,18 +348,6 @@ end
 
 function cu.p3(x, y, z)
     return {x=x, y=y, z=z}
-end
-
-function cu.runAction(action)
-    cu.RunningScene():runAction(action)
-end
-
-function cu.getFullFilepath(filename)
-    return cc.FileUtils:getInstance():fullPathForFilename(filename)
-end
-
-function cu.addSearchPath(path)
-    cc.FileUtils:getInstance():addSearchPath(path);
 end
 
 -- --------------------
@@ -444,5 +466,19 @@ end
 cu.Z_BUTTON = 42
 -- Z-index for faded black background
 cu.Z_SCENE_BG = 50
+
+-- @deprecated
+cu.runAction = cu.RunAction
+cu.scheduleFunc = cu.ScheduleFunc
+cu.unscheduleFunc = cu.UnscheduleFunc
+cu.isPaused = cu.IsPaused
+cu.pause = cu.Pause
+cu.resume = cu.Resume
+cu.fullPathForFilename = cu.GetFullFilepath
+cu.getFullFilepath = cu.GetFullFilepath
+cu.addSearchPath = cu.AddSearchPath
+cu.getVisibleSize = cu.GetVisibleSize
+cu.getOrigin = cu.GetOrigin
+cu.getWinSizeInPixels = cu.GetWinSizeInPixels
 
 return cu
