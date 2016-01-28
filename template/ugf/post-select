@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+# This script is ran after the ugf-select command has completed all operations.
+#
+
+# Path to base path of the selected Cocos2d-x repository.
+COCOS=$1
+# The application type, if necessary.
+APPTYPE=$2
+# The current directory (source) where the script is being ran.
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+echo "Source: $DIR"
+echo "Cocos: $COCOS"

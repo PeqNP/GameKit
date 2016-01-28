@@ -37,6 +37,17 @@ Clone the GameKit repository.
 $ git clone https://github.com/PeqNP/GameKit.git
 ```
 
+Expose the GameKit script files by appending the GameKit/bin path to the system's PATH at the end of you .bashrc (Linux) or .bash_profile (Mac) file.
+```
+$ vim ~/.bash_profile
+export PATH=/Users/eric/git/GameKit/bin:$PATH
+```
+
+Source the bashrc file to ensure that PATH is updated.
+```
+$ source ~/.bash_profile
+```
+
 Create a game. This command will create a new game called 'MyGame' with the directory structure that GameKit requires.
 ```
 $ ugf-create MyGame
@@ -63,7 +74,12 @@ At this point you should be able to open the Cocos2d-x_v#.#.#/frameworks/runtime
 
 ## Dependencies
 
-GameKit heavily relies on two projects, GameKit-iOS and GameKit-Android (Android is not yet complete). The features that the native GameKit libraries provide is equivalent to Cocos's SDKBOX. The primary differences between the two projects are:
+GameKit requires the following projects:
+- Slightly modified version of Cocos2d-x which integrates GameKit APIs.
+- GameKit-iOS
+- GameKit-Android (this is not yet complete)
+
+The features that the native GameKit libraries provide is equivalent to Cocos's SDKBOX. The primary differences between the two projects are:
 - GameKit is fully tested. This makes GameKit a _much_ more stable and changeable platform. Most new 3rd party services, such as Chartboost, etc. take less than 30 minutes to support.
 - More native land related features including application related features such as (notifications, foreground/background messages, etc.)
 - A _consistent_ API for every module. Write integration code only once. In addition to this, many of the APIs provide the option to configure which services should be used at run-time. The ad API, for instance, even allows you to download this configuration from a remote host. This provides you with the ability to change how ads are served. More importantly _which_ mediation services to use at any given time.
