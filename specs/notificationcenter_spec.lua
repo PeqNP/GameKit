@@ -1,7 +1,7 @@
 require "lang.Signal"
 require "busted"
 
-require "NotificationCenter"
+local NotificationCenter = require("NotificationCenter")
 
 describe("NotificationCenter", function()
     local subject

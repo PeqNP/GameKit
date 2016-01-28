@@ -1,6 +1,6 @@
-
 require "lang.Signal"
-require "Logger"
+
+local Logger = require("Logger")
 
 describe("Logger", function()
     local subject

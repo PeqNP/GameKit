@@ -2,7 +2,7 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-NotificationObserver = Class()
+local NotificationObserver = Class()
 
 function NotificationObserver.new(self)
     function self.init(observer, callback)
@@ -10,3 +10,5 @@ function NotificationObserver.new(self)
         self.callback = callback
     end
 end
+
+return NotificationObserver

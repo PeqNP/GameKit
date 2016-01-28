@@ -5,10 +5,11 @@
 -- @copyright 2014 Upstart Illustration LLC. All rights reserved.
 --
 
-require "NotificationObserver"
 require "Logger"
 
-NotificationCenter = Class()
+local NotificationObserver = require("NotificationObserver")
+
+local NotificationCenter = Class()
 
 local shared = nil
 function NotificationCenter.getInstance()
@@ -82,3 +83,5 @@ function NotificationCenter.new(self)
         end
     end
 end
+
+return NotificationCenter

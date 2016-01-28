@@ -7,7 +7,7 @@
 require("Logger")
 local Promise = require("Promise")
 
-Music = Class()
+local Music = Class()
 
 local engine = cc.SimpleAudioEngine:getInstance()
 
@@ -114,3 +114,5 @@ function Music.new(self)
         return p
     end
 end
+
+return Music

@@ -1,11 +1,10 @@
---[[
-  Provides ability to play and stop a given sound effect.
+--
+-- Provides ability to play and stop a given sound effect.
+--
+-- @copyright 2015 Upstart Illustration LLC. All rights reserved.
+--
 
-  @copyright 2015 Upstart Illustration LLC. All rights reserved.
-
---]]
-
-Sound = Class()
+local Sound = Class()
 
 local engine = cc.SimpleAudioEngine:getInstance()
 
@@ -74,3 +73,5 @@ end
 function Sound.setEngine(e)
     engine = e
 end
+
+return Sound

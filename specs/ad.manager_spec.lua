@@ -27,8 +27,7 @@ local AdColonyNetwork = require("ad.network.AdColonyNetwork")
 local match = require("specs.matchers")
 matchers_assert(assert)
 
-require "Music"
-Singleton(Music)
+Singleton("Music")
 
 function reload(pckg)
     package.loaded[pckg] = nil

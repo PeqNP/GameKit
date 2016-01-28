@@ -1,12 +1,11 @@
 require "specs.Cocos2d-x"
 require "lang.Signal"
-
 require "Common"
-
 require "Logger"
+
 Log.setLevel(LogLevel.Warning)
 
-require "Music"
+local Music = require("Music")
 
 describe("Music", function()
     local subject = false

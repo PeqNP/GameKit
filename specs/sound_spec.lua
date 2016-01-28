@@ -1,10 +1,8 @@
-
 require "lang.Signal"
-
 require "specs.Cocos2d-x"
-
 require "Logger"
-require "Sound"
+
+local Sound = require("Sound")
 
 Log.setLevel(LogLevel.Warning)
 

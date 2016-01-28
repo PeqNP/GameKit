@@ -4,7 +4,7 @@
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-Logger = Class()
+local Logger = Class()
 
 LogLevel = enum(0
   , 'Debug'
@@ -87,3 +87,5 @@ function Logger.new(self)
 end
 
 Log = Logger()
+
+return Logger

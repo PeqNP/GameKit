@@ -4,6 +4,18 @@
 
 require "lang.Protocol"
 
+local function get_definition(definition, _type)
+    if type(definition) == "string" then
+        local module_path = definition
+        definition = require(module_path)
+        if type(definition) ~= "table" then
+            print(string.format("Failed to load (%s) module (%s). Does the module return the (%s) definition?", _type, module_path, _type))
+            os.exit(1)
+        end
+    end
+    return definition
+end
+
 --
 -- Factory method for creating new classes.
 --
@@ -12,14 +24,7 @@ function Class(extends)
     class.__index = class
 
     -- Attempt to load the subclass's module.
-    if type(extends) == "string" then
-        local module_path = extends
-        extends = require(module_path)
-        if type(extends) ~= "table" then
-            print(string.format("Failed to load class module (%s). Does the module return the instance to the class definition?", module_path))
-            os.exit(1)
-        end
-    end
+    extends = get_definition(extends, "class")
 
     -- Class information --
     local info = debug.getinfo(2, "Sl")
@@ -71,14 +76,7 @@ function Class(extends)
         local args = {...}
         local new_protocols = {}
         for _, protocol in ipairs(args) do
-            if type(protocol) == "string" then
-                local module_path = protocol
-                protocol = require(module_path)
-                if type(protocol) ~= "table" then
-                    print(string.format("Failed to load protocol module (%s). Does the protocol return the instance to the Protocol definition?", module_path))
-                    os.exit(1)
-                end
-            end
+            protocol = get_definition(protocol, "protocol")
             table.insert(new_protocols, protocol)
         end
         table.extend(protocols, new_protocols)
@@ -179,6 +177,7 @@ end
 -- Creates a singleton instance of class.
 --
 function Singleton(class, ...)
+    class = get_definition(class, "class")
     if class.singleton then
         assert(false, string.format("Can not redefine the singleton instance of class (%s)", class.__tostring()))
     end
