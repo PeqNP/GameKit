@@ -4,6 +4,7 @@ require "lang.Signal"
 
 require "Common"
 
+local Error = require("Error")
 local Promise = require("Promise")
 local BridgeCall = require("bridge.BridgeCall")
 local BridgeResponse = require("bridge.BridgeResponse")

@@ -5,8 +5,9 @@
 
 --]]
 
-require "Error"
 require "Logger"
+
+local Error = require("Error")
 local Promise = require("Promise")
 
 cu = {}

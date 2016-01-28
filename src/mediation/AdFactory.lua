@@ -3,8 +3,9 @@
 --
 
 require "Logger"
-require "Error"
 require "ad.Constants"
+
+local Error = require("Error")
 
 local AdFactory = Class()
 

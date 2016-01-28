@@ -2,8 +2,7 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
-require "Error"
-
+local Error = require("Error")
 local Promise = require("Promise")
 local PostRequest = require("social.PostRequest")
 local PostResponse = require("social.PostResponse")

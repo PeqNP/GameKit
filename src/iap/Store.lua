@@ -2,6 +2,7 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
+local Error = require("Error")
 local Promise = require("Promise")
 local Transaction = require("iap.Transaction")
 local PurchaseRequest = require("iap.request.PurchaseRequest")

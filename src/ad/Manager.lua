@@ -7,7 +7,7 @@
 require("Logger")
 local Promise = require("Promise")
 require("Common")
-require("Error")
+local Error = require("Error")
 
 require("ad.Constants")
 local AdRequest = require("ad.request.AdRequest")

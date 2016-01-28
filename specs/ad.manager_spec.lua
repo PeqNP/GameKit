@@ -2,12 +2,13 @@ require "specs.busted"
 require "specs.Cocos2d-x"
 require "lang.Signal"
 require "Logger"
-require "Error"
 
 Log.setLevel(LogLevel.Warning)
 
 require "Common"
 require "ad.Constants"
+
+local Error = require("Error")
 local BridgeCall = require("bridge.BridgeCall")
 local BridgeResponse = require("bridge.BridgeResponse")
 local MediationAdFactory = require("mediation.AdFactory")

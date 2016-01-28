@@ -1,7 +1,6 @@
 
 require "lang.Signal"
-require "Error"
-
+local Error = require("Error")
 
 describe("Error", function()
     local subject

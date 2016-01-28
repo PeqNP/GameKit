@@ -5,7 +5,7 @@ ErrorCode = enum(1
   , 'ValueError'
 )
 
-Error = Class()
+local Error = Class()
 
 function Error.tostring(err)
     return string.format("Code (%d) Message (%s)", err.getCode(), err.getMessage())
@@ -39,3 +39,5 @@ function Error.new(self)
 
     setmetatable(self, Error.mt)
 end
+
+return Error
