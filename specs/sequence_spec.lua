@@ -2,7 +2,7 @@
 require "lang.Signal"
 require "specs.Cocos2d-x"
 
-require "Common"
+local shim = require("shim.Main")
 
 describe("Sequence", function()
     local scene1
@@ -15,10 +15,10 @@ describe("Sequence", function()
     before_each(function()
         wasCalled1 = false
         wasCalled2 = false
-        call1 = cu.Call(function() wasCalled1 = true end)
-        call2 = cu.Call(function() wasCalled2 = true end)
-        scene1 = cc.Sequence("here", "there")
-        scene2 = cc.Sequence(call1, "you", call2)
+        call1 = shim.Call(function() wasCalled1 = true end)
+        call2 = shim.Call(function() wasCalled2 = true end)
+        scene1 = shim.Sequence("here", "there")
+        scene2 = shim.Sequence(call1, "you", call2)
     end)
 
     it("should have set actions to scene1", function()

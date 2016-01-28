@@ -1,10 +1,19 @@
 require "socket.core"
 
+local Music = require("Music")
+local music = Music()
+local Sound = require("Sound")
+local sound = Sound()
+
+local shim = require("shim.Main")
+local GameShim = require("shim.Game")
+GameShim.init(shim, music)
+
 local Game = Class()
 Game.implements("GameProtocol")
 
 -- Add any search paths your game may need access to
--- cu.addSearchPath("res/subdirectory")
+-- shim.addSearchPath("res/subdirectory")
 
 function Game.new(self)
     local writablePath
@@ -61,7 +70,7 @@ function Game.new(self)
                 -- before the next retry.
                 -- @fixme It's just too risky to include this in.
                 --Log.i("Failed to download ads... restarting in 120.0s")
-                --level.layer:runAction(cu.Sequence(cu.Delay(120.0), cu.Call(initRoyalAdNetwork)))
+                --level.layer:runAction(shim.Sequence(shim.Delay(120.0), shim.Call(initRoyalAdNetwork)))
                 return
             end
 
@@ -189,25 +198,25 @@ function Game.new(self)
     function self.start()
         if scheduleId then
             Log.d("Unscheduling main tick w/ ID (%s)", scheduleId)
-            cu.UnscheduleFunc(scheduleId)
+            shim.UnscheduleFunc(scheduleId)
             scheduleId = false
         end
 
         -- Main scene creation. Add a layer to this scene.
-        local scene = cu.Scene()
+        local scene = shim.Scene()
 
         -- Fade into the next scene.
-        if cu.GetRunningScene() then
-            cu.TransitionScene(cu.FadeTransition(scene, 4.0))
+        if shim.GetRunningScene() then
+            shim.TransitionScene(shim.FadeTransition(scene, 4.0))
         else
-            cu.RunScene(scene)
+            shim.RunScene(scene)
         end
 
         -- Main game run loop
         local function tick()
             -- @note Execute any method that must be done every tick.
         end
-        scheduleId = cu.ScheduleFunc(tick, 0, false)
+        scheduleId = shim.ScheduleFunc(tick, 0, false)
 
         -- Run some initialization routines to prevent race-conditions (like app
         -- notifications, etc.) by running them one second after the game has
@@ -216,7 +225,7 @@ function Game.new(self)
             Log.i("Booting game...")
             -- configureApp()
         end
-        cu.RunAction(cu.Sequence(cu.Delay(1.0), cu.Call(boot)))
+        shim.RunAction(shim.Sequence(shim.Delay(1.0), shim.Call(boot)))
     end
 
     function self.stop()
@@ -235,7 +244,7 @@ function Game.new(self)
 
         -- local saveFile = writablePath .. "game.save"
 
-        cu.RandomizeSeed()
+        shim.RandomizeSeed()
     end
 end
 

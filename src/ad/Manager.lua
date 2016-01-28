@@ -4,9 +4,12 @@
 --  @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require("Logger")
+require "Logger"
+
+local shim = require("shim.Main")
+local Game = require("shim.Game")
+
 local Promise = require("Promise")
-require("Common")
 local Error = require("Error")
 
 require("ad.Constants")
@@ -49,7 +52,7 @@ function Manager.new(self)
             return
         end
         delayInProgress = true
-        cu.delayCall(private.rebuildRequests, getNextDelay())
+        shim.DelayCall(private.rebuildRequests, getNextDelay())
     end
 
     function private.cacheAds(ads)
@@ -141,7 +144,7 @@ function Manager.new(self)
         end
 
         if request.getAdType() ~= AdType.Banner then
-            cu.pause()
+            Game.Pause()
         end
 
         request.setState(AdState.Presenting)
@@ -162,7 +165,7 @@ function Manager.new(self)
             deferred.reject(_error)
         end)
         promise.always(function(response)
-            cu.resume()
+            Game.Resume()
         end)
         return deferred
     end

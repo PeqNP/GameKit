@@ -1,10 +1,10 @@
 require "specs.Cocos2d-x"
 require "lang.Signal"
-require "Common"
 require "Logger"
 
 Log.setLevel(LogLevel.Warning)
 
+local shim = require("shim.Main")
 local Music = require("Music")
 
 describe("Music", function()
@@ -25,8 +25,8 @@ describe("Music", function()
 
         before_each(function()
             scriptId = 1
-            stub(cu, "unscheduleScriptEntry")
-            cu.scheduleFunc = scheduleScriptEntry
+            stub(shim, "UnscheduleScriptEntry")
+            shim.ScheduleFunc = scheduleScriptEntry
         end)
 
         describe("fadeTo", function()

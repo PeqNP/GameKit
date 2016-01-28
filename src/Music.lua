@@ -4,7 +4,9 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require("Logger")
+require "Logger"
+
+local shim = require("shim.Main")
 local Promise = require("Promise")
 
 local Music = Class()
@@ -70,7 +72,7 @@ function Music.new(self)
         Log.d("Starting music...")
         if tweenId then
             Log.w("Attempting to fade music in before the previous transition is over!")
-            cu.unscheduleFunc(tweenId)
+            shim.UnscheduleFunc(tweenId)
             tweenId = nil
         end
         local from
@@ -94,7 +96,7 @@ function Music.new(self)
             if diff <= 0.0 then
                 Log.d("Music finished")
                 self.setVolume(to)
-                cu.unscheduleFunc(tweenId)
+                shim.UnscheduleFunc(tweenId)
                 tweenId = nil
                 p.resolve()
                 return
@@ -110,7 +112,7 @@ function Music.new(self)
             end
             self.setVolume(volume)
         end
-        tweenId = cu.scheduleFunc(tweenTick, 0, false)
+        tweenId = shim.ScheduleFunc(tweenTick, 0, false)
         return p
     end
 end

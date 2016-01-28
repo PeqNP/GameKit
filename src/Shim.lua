@@ -11,13 +11,13 @@ local Error = require("Error")
 local Promise = require("Promise")
 local Music = require("Music")
 
-cu = {}
+local shim = {}
 
-function cu.GenerateShader(shader, vertex, frag)
+function shim.GenerateShader(shader, vertex, frag)
     Log.i("Loading shader (%s)", shader)
     local prg = cc.GLProgram:createWithFilenames(
-        cu.fullPathForFilename(string.format("%s.vsh", vertex))
-      , cu.fullPathForFilename(string.format("%s.fsh", frag))
+        shim.fullPathForFilename(string.format("%s.vsh", vertex))
+      , shim.fullPathForFilename(string.format("%s.fsh", frag))
     )
     prg:bindAttribLocation(cc.ATTRIBUTE_NAME_POSITION, cc.VERTEX_ATTRIB_POSITION)
     prg:bindAttribLocation(cc.ATTRIBUTE_NAME_COLOR, cc.VERTEX_ATTRIB_COLOR)
@@ -29,10 +29,10 @@ end
 
 --[[ Returns random point, within visible area, where a sprite can be
      placed. ]]--
-function cu.GetRandomPoint(sprite)
+function shim.GetRandomPoint(sprite)
     -- @fixme Ensure that the sprite is always in view. This code does not
     -- do that.
-    local size = cu.GetVisibleSize()
+    local size = shim.GetVisibleSize()
     local xMin, xMax = 50, size.width - 50
     local yMin, yMax = BOTTOM_AD_HEIGHT + 50, size.height - 50
     local x = math.random(xMin, xMax)
@@ -48,8 +48,8 @@ end
   This is generally used for rolling credits at the ending of a game.
 
 --]]
-function cu.GetPointForLocation(location, sprite, padding)
-    local size = cu.GetVisibleSize()
+function shim.GetPointForLocation(location, sprite, padding)
+    local size = shim.GetVisibleSize()
     local x, y
     if location == Location.Random then
         location = math.random(Location.MIN, Location.MAX-1) -- -1 to remove 'Random'
@@ -97,8 +97,8 @@ end
 -- Returns respective position for a given heading. A heading
 -- is a Location sans Center.
 --
-function cu.GetPointForHeading(heading)
-    local size = cu.GetVisibleSize()
+function shim.GetPointForHeading(heading)
+    local size = shim.GetVisibleSize()
     local x, y
     if heading == Location.Random then
         -- Do not factor in Center or Random locations as they are
@@ -137,7 +137,7 @@ end
 
 --[[ Return the next position and angle given the target and current position
      of an actor. ]]--
-function cu.GetNextPosition(pos, target, distance)
+function shim.GetNextPosition(pos, target, distance)
     local angle = math.atan2(target.y - pos.y, target.x - pos.x)
     local pos = cc.p(pos.x + (distance * math.cos(angle)), pos.y + (distance * math.sin(angle)))
     return pos
@@ -150,7 +150,7 @@ end
   @param cc.p locb destination point
 
 --]]
-function cu.GetDistance(loca, locb)
+function shim.GetDistance(loca, locb)
     -- current position is considered point A. dest, point B
     local aDist = loca.x - locb.x
     local bDist = loca.y - locb.y
@@ -158,7 +158,7 @@ function cu.GetDistance(loca, locb)
     return cDist
 end
 
-function cu.GetRenderedTexture(child)
+function shim.GetRenderedTexture(child)
     local bbox = child:getBoundingBox()
     child:setPosition(bbox.width/2, bbox.height/2)
     local size = child:getContentSize()
@@ -172,9 +172,9 @@ function cu.GetRenderedTexture(child)
     return sprite
 end
 
-function cu.FitImageInCenter(img)
-    local size = cu.GetVisibleSize()
-    local origin = cu.GetMidPoint()
+function shim.FitImageInCenter(img)
+    local size = shim.GetVisibleSize()
+    local origin = shim.GetMidPoint()
 
     local contentSize = img:getContentSize()
     local x, y = size.width / contentSize.width, size.height / contentSize.height
@@ -183,7 +183,7 @@ function cu.FitImageInCenter(img)
     img:setPosition(origin.x, origin.y)
 end
 
-function cu.TakeScreenShot()
+function shim.TakeScreenShot()
     local promise = Promise()
     local path = cc.FileUtils:getInstance():getWritablePath() .. "screen.png"
     cc.utils:captureScreen(function(succeed, outputFile)
@@ -202,80 +202,60 @@ end
 -- numbers are random.
 -- Reference: http://lua-users.org/wiki/MathLibraryTutorial
 --
-function cu.RandomizeSeed()
+function shim.RandomizeSeed()
     math.randomseed(os.time())
     math.random(); math.random(); math.random();
 end
 
 -- ----- Director -----
 
-function cu.Director()
+function shim.Director()
     return cc.Director:getInstance()
 end
 
-local director = cu.Director()
+local director = shim.Director()
 
-function cu.GetRunningScene()
+function shim.GetRunningScene()
     return director:getRunningScene()
 end
 
-function cu.IsPaused()
-    return director:isPaused()
-end
-
-function cu.Pause()
-    if not cu.isPaused() then
-        director:pause()
-        director:stopAnimation()
-        Music.singleton.pause()
-    end
-end
-
-function cu.Resume()
-    if cu.isPaused() then
-        director:startAnimation()
-        Music.singleton.resume()
-        director:resume()
-    end
-end
-
-function cu.GetVisibleSize()
+function shim.GetVisibleSize()
     return director:getVisibleSize()
 end
 
-function cu.GetOrigin()
+function shim.GetOrigin()
     return director:getVisibleOrigin()
 end
 
-function cu.GetWinSizeInPixels()
+function shim.GetWinSizeInPixels()
     return director:getWinSizeInPixels()
 end
 
 -- ----- Actions ------
 
-function cu.RunAction(action)
-    return cu.RunningScene():runAction(action)
+function shim.RunAction(action)
+    return shim.GetRunningScene():runAction(action)
 end
 
-function cu.FadeTransition(node, delay)
+function shim.FadeTransition(node, delay)
     return cc.TransitionFade:create(delay, node)
 end
 
-function cu.TransitionScene(transition)
+function shim.TransitionScene(transition)
     return director:replaceScene(transition)
 end
 
-function cu.RunScene(scene)
+function shim.RunScene(scene)
     return director:runWithScene(scene)
 end
 
 -- ----- File Utilities -----
 
-function cu.GetFullFilepath(path)
+function shim.GetFullFilepath(path)
     return cc.FileUtils:getInstance():fullPathForFilename(path)
 end
 
-function cu.AddSearchPath(path)
+function shim.AddSearchPath(path)
     cc.FileUtils:getInstance():addSearchPath(path);
 end
 
@@ -290,54 +270,54 @@ end
   @return number - ID of script registration
 
 --]]
-function cu.ScheduleFunc(fn, priority, paused)
+function shim.ScheduleFunc(fn, priority, paused)
     return director:getScheduler():scheduleScriptFunc(fn, priority, paused)
 end
 
 -- @todo Find pauseScheduleFunc
 
-function cu.UnscheduleFunc(scheduleId)
+function shim.UnscheduleFunc(scheduleId)
     director:getScheduler():unscheduleScriptEntry(scheduleId)
 end
 
-function cu.GetMidPoint()
-    local size = cu.GetVisibleSize()
-    local origin = cu.GetOrigin()
+function shim.GetMidPoint()
+    local size = shim.GetVisibleSize()
+    local origin = shim.GetOrigin()
     return cc.p(origin.x + (size.width / 2), origin.y + (size.height / 2))
 end
 
 --
 -- Delay N seconds before executing call.
 --
-function cu.DelayCall(fn, delay)
-    local sequence = cu.Sequence(cu.Delay(delay), cu.Call(fn))
-    cu.runAction(sequence)
+function shim.DelayCall(fn, delay)
+    local sequence = shim.Sequence(shim.Delay(delay), shim.Call(fn))
+    shim.runAction(sequence)
 end
 
 -- ----- Objects ------
 
-function cu.Layer()
+function shim.Layer()
     return cc.Layer:create()
 end
 
-function cu.Scene()
+function shim.Scene()
     return cc.Scene:create()
 end
 
-function cu.Sprite(...)
+function shim.Sprite(...)
     return cc.Sprite:create(...)
 end
 
-function cu.SpriteButton(...)
+function shim.SpriteButton(...)
     return cc.MenuItemSprite:create(...)
 end
 
 -- ----- Utility ------
 
 -- Returns table{.x, .y} given (x, y)
-cu.p = cc.p
+shim.p = cc.p
 
-function cu.p3(x, y, z)
+function shim.p3(x, y, z)
     return {x=x, y=y, z=z}
 end
 
@@ -355,134 +335,134 @@ end
 
 --]]
 
-function cu.Sequence(...)
+function shim.Sequence(...)
     return cc.Sequence:create(...)
 end
 
-function cu.Animate(anim)
+function shim.Animate(anim)
     return cc.Animate:create(anim)
 end
 
-function cu.Animation(frames, dur)
+function shim.Animation(frames, dur)
     return cc.Animation:createWithSpriteFrames(frames, dur)
 end
 
-function cu.Call(fn)
+function shim.Call(fn)
     return cc.CallFunc:create(fn)
 end
 
-function cu.Delay(t)
+function shim.Delay(t)
     return cc.DelayTime:create(t)
 end
 
-function cu.EaseBackIn(act)
+function shim.EaseBackIn(act)
     return cc.EaseBackIn:create(act)
 end
 
-function cu.EaseBackInOut(act)
+function shim.EaseBackInOut(act)
     return cc.EaseBackInOut:create(act)
 end
 
-function cu.EaseBackOut(act)
+function shim.EaseBackOut(act)
     return cc.EaseBackOut:create(act)
 end
 
-function cu.EaseInOut(act, dur)
+function shim.EaseInOut(act, dur)
     return cc.EaseInOut:create(act, dur)
 end
 
-function cu.EaseIn(act, dur)
+function shim.EaseIn(act, dur)
     return cc.EaseIn:create(act, dur)
 end
 
-function cu.EaseOut(act, dur)
+function shim.EaseOut(act, dur)
     return cc.EaseOut:create(act, dur)
 end
 
-function cu.FadeIn(t)
+function shim.FadeIn(t)
     return cc.FadeIn:create(t)
 end
 
-function cu.FadeOut(t)
+function shim.FadeOut(t)
     return cc.FadeOut:create(t)
 end
 
-function cu.FadeTo(t, flt)
+function shim.FadeTo(t, flt)
     return cc.FadeTo:create(t, flt)
 end
 
-function cu.FadeEffectTo(sourceId, dur, dst, stop)
+function shim.FadeEffectTo(sourceId, dur, dst, stop)
     return cc.FadeEffectTo:create(sourceId, dur, dst, stop)
 end
 
-function cu.MoveTo(dur, pos)
+function shim.MoveTo(dur, pos)
     return cc.MoveTo:create(dur, pos)
 end
 
-function cu.Repeat(anim, times)
+function shim.Repeat(anim, times)
     return cc.Repeat:create(anim, times)
 end
 
-function cu.RepeatForever(anim)
+function shim.RepeatForever(anim)
     return cc.RepeatForever:create(anim)
 end
 
-function cu.RotateTo(dur, angle)
+function shim.RotateTo(dur, angle)
     return cc.RotateTo:create(dur, angle)
 end
 
-function cu.ScaleTo(t, flt)
+function shim.ScaleTo(t, flt)
     return cc.ScaleTo:create(t, flt)
 end
 
-function cu.TintTo(t, flt1, flt2, flt3)
+function shim.TintTo(t, flt1, flt2, flt3)
     return cc.TintTo:create(t, flt1, flt2, flt3)
 end
 
-function cu.TransitionFade(t, scene)
+function shim.TransitionFade(t, scene)
     return cc.TransitionFade:create(t, scene)
 end
 
 --[[ Conversions. ]]--
 
-function cu.DegToRad(radians)
+function shim.DegToRad(radians)
     return radians * 0.01745329252 -- PI / 180
 end
 
-function cu.RadToDeg(degrees)
+function shim.RadToDeg(degrees)
     return degrees * 57.29577951 -- PI * 180
 end
 
 -- Button z-index
-cu.Z_BUTTON = 42
+shim.Z_BUTTON = 42
 -- Z-index for faded black background
-cu.Z_SCENE_BG = 50
+shim.Z_SCENE_BG = 50
 
 -- @deprecated
-cu.runAction = cu.RunAction
-cu.scheduleFunc = cu.ScheduleFunc
-cu.unscheduleFunc = cu.UnscheduleFunc
-cu.isPaused = cu.IsPaused
-cu.pause = cu.Pause
-cu.resume = cu.Resume
-cu.fullPathForFilename = cu.GetFullFilepath
-cu.getFullFilepath = cu.GetFullFilepath
-cu.addSearchPath = cu.AddSearchPath
-cu.getVisibleSize = cu.GetVisibleSize
-cu.getOrigin = cu.GetOrigin
-cu.getWinSizeInPixels = cu.GetWinSizeInPixels
-cu.generateShader = cu.GenerateShader
-cu.getRandomPoint = cu.GetRandomPoint
-cu.getPointForLocation = cu.GetPointForLocation
-cu.getPointForHeading = cu.GetPointForHeading
-cu.getNextPosition = cu.GetNextPosition
-cu.getDistance = cu.GetDistance
-cu.getRenderedTexture = cu.GetRenderedTexture
-cu.fitImageInCenter = cu.FitImageInCenter
-cu.takeScreenShot = cu.TakeScreenShot
-cu.getMidPoint = cu.GetMidPoint
-cu.delayCall = cu.DelayCall
-cu.degToRad = cu.DegToRad
-cu.radToDeg = cu.RadToDeg
+shim.runAction = shim.RunAction
+shim.scheduleFunc = shim.ScheduleFunc
+shim.unscheduleFunc = shim.UnscheduleFunc
+shim.isPaused = shim.IsPaused
+shim.pause = shim.Pause
+shim.resume = shim.Resume
+shim.fullPathForFilename = shim.GetFullFilepath
+shim.getFullFilepath = shim.GetFullFilepath
+shim.addSearchPath = shim.AddSearchPath
+shim.getVisibleSize = shim.GetVisibleSize
+shim.getOrigin = shim.GetOrigin
+shim.getWinSizeInPixels = shim.GetWinSizeInPixels
+shim.generateShader = shim.GenerateShader
+shim.getRandomPoint = shim.GetRandomPoint
+shim.getPointForLocation = shim.GetPointForLocation
+shim.getPointForHeading = shim.GetPointForHeading
+shim.getNextPosition = shim.GetNextPosition
+shim.getDistance = shim.GetDistance
+shim.getRenderedTexture = shim.GetRenderedTexture
+shim.fitImageInCenter = shim.FitImageInCenter
+shim.takeScreenShot = shim.TakeScreenShot
+shim.getMidPoint = shim.GetMidPoint
+shim.delayCall = shim.DelayCall
+shim.degToRad = shim.DegToRad
+shim.radToDeg = shim.RadToDeg
 
-return cu
+return shim

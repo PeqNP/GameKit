@@ -7,6 +7,8 @@
 -- @copyright Upstart Illustration LLC. All rights reserved.
 --
 
+local shim = require("shim.Main")
+
 local AdVendor = Class()
 
 -- 
@@ -77,7 +79,7 @@ function AdVendor.new(self)
         local tiers = self.getNextTiers(amount)
         for _, tier in ipairs(tiers) do
             local sprite = tier.getButtonSprite() -- @todo Call 'stylize' fn here.
-            local button = cu.SpriteButton(sprite, sprite)
+            local button = shim.SpriteButton(sprite, sprite)
             local function fn__clicked()
                 fn__callback(tier)
             end

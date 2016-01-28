@@ -2,8 +2,6 @@ require "specs.busted"
 require "specs.Cocos2d-x"
 require "lang.Signal"
 
-require "Common"
-
 local Error = require("Error")
 local Promise = require("Promise")
 local BridgeCall = require("bridge.BridgeCall")

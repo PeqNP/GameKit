@@ -2,8 +2,6 @@ require "specs.busted"
 require "specs.Cocos2d-x"
 require "lang.Signal"
 
-require "Common"
-
 local BridgeCall = require("bridge.BridgeCall")
 local BridgeResponse = require("bridge.BridgeResponse")
 local Manager = require("social.Manager")

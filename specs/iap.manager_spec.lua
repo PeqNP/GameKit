@@ -3,7 +3,6 @@ require "specs.Cocos2d-x"
 require "lang.Signal"
 
 require "Logger"
-require "Common"
 
 Log.setLevel(LogLevel.Error)
 

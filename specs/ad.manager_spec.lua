@@ -5,9 +5,9 @@ require "Logger"
 
 Log.setLevel(LogLevel.Warning)
 
-require "Common"
 require "ad.Constants"
 
+local shim = require("shim.Main")
 local Error = require("Error")
 local BridgeCall = require("bridge.BridgeCall")
 local BridgeResponse = require("bridge.BridgeResponse")
@@ -519,12 +519,12 @@ describe("AdManager", function()
             local delayval
 
             before_each(function()
-                function cu.delayCall(fn, delay)
+                function shim.DelayCall(fn, delay)
                     delayfn = fn
                     delayval = delay
                 end
 
-                spy.on(cu, "delayCall")
+                spy.on(shim, "DelayCall")
 
                 requesti = requests[1]
                 promisei.reject(BridgeResponse(false, 100, "Cache failure"))
@@ -613,7 +613,7 @@ describe("AdManager", function()
                         promise = BridgeCall()
                         stub(adFactor, nextAd, nil)
                         stub(bridge, "show", responsei, promise)
-                        stub(cu, "delayCall")
+                        stub(shim, "DelayCall")
 
                         show_promise = subject.showAd(AdType.Video)
                         assert.truthy(show_promise) -- sanity
@@ -673,7 +673,7 @@ describe("AdManager", function()
                         end)
 
                         it("should attempt to cache module", function()
-                            assert.stub(cu.delayCall).was.called()
+                            assert.stub(shim.DelayCall).was.called()
                         end)
                     end)
                 end)
@@ -705,7 +705,7 @@ describe("AdManager when no ad factory", function()
         end
         bridge = mock(bridge)
 
-        stub(cu, "delayCall")
+        stub(shim, "DelayCall")
 
         subject = AdManager(bridge)
 
@@ -770,7 +770,7 @@ describe("AdManager when no ad factory", function()
         end)
 
         it("should try to rebuild the requests after 30 seconds", function()
-            assert.stub(cu.delayCall).was.called_with(match._, 30)
+            assert.stub(shim.DelayCall).was.called_with(match._, 30)
         end)
 
         it("should not have added request to tracked requests", function()

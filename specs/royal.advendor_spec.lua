@@ -1,10 +1,10 @@
 require "lang.Signal"
 require "specs.Cocos2d-x"
 require "Logger"
-require "Common"
 
 Log.setLevel(LogLevel.Info)
 
+local shim = require("shim.Main")
 local AdConfig = require("royal.AdConfig")
 local AdVendor = require("royal.AdVendor")
 local AdTier = require("royal.AdTier")
@@ -83,7 +83,7 @@ describe("AdVendor", function()
 
     describe("getNextTiers", function()
         before_each(function()
-            spy.on(cu, "SpriteButton")
+            spy.on(shim, "SpriteButton")
 
             evolutions = {3, 6, 9}
         end)
@@ -104,7 +104,7 @@ describe("AdVendor", function()
             end)
 
             it("should have made call to create a button sprite", function()
-                assert.stub(cu.SpriteButton).was.called()
+                assert.stub(shim.SpriteButton).was.called()
             end)
         end)
 
