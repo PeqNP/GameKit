@@ -72,17 +72,18 @@ class ProjectConfig (object):
         return ProjectConfig(path, **config)
 
     def __init__(self, path, **entries):
+        self.path = path
         self.__dict__.update(entries)
         self.checkvals()
 
     def checkvals(self):
         for val in self.requiredvals():
             if val not in self.__dict__ or len(str(self.__dict__[val])) < 1:
-                print("Project configuration {} must have value '{}'".format(path, val))
+                print("Project configuration {} must have value '{}'".format(self.path, val))
                 sys.exit(1)
         for val in self.optionalvals():
             if val not in self.__dict__:
-                print("Project configuration {} must contain key '{}'".format(path, val))
+                print("Project configuration {} must contain key '{}'".format(self.path, val))
 
     def requiredvals(self):
         return ["cocos", "bundle", "name", "executable", "version", "build", "device", "orientation", "design"]

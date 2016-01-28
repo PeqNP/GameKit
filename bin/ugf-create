@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+#
+# Creates a new GameKit project.
+#
+# @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
+#
+
+from datetime import datetime
+from subprocess import call
+
+import os
+import re
+import shutil
+import sys
+
+from ugf.config import configpath, checkconfig, Config, ProjectConfig
+from ugf.pathbuilder import CocosPathBuilder, GameKitPathBuilder, ProjectPathBuilder
+from ugf.interpolator import Interpolator
+
+VERSION = "ugf-create v1.0.0"
+
+LATEST_SUPPORTED_COCOS_VERSION = "3.8.1"
+
+# Creates the project's config.json file.
+def create_config(gamekit, source):
+    pass
+
+# Copies all of the contents in GameKit/template to the new project's path.
+def copy_files(cocos, source):
+    pass
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Upstart Game Framework - Creates a new GameKit project")
+    parser.add_argument('project', help="Name of the new GameKit project")
+    args = parser.parse_args()
+
+    print("{}, Time: {}".format(VERSION, str(datetime.now())))
+
+    config = Config.load(configpath())
+    conifg.project = args.project
+    checkconfig(config)
+
+    source = ProjectPathBuilder(config)
+    gamekit = GameKitPathBuilder(config)
+
+    if os.path.exists(source.basepath()):
+        print("Project {} already exists at path {}", args.project, source.basepath())
+        sys.exit(1)
+
+    os.makedirs(source.basepath())
+    copy_files(gamekit, source)
+    create_config(gamekit, source)
+    sys.exit(0)
