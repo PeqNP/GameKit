@@ -86,8 +86,6 @@ The features that the native GameKit libraries provide is equivalent to Cocos's 
 
 Except for analytics, GameKit is already feature parity with SDKBOX on the iOS platform. As soon as Android is complete it will be feature parity for both platforms.
 
-Note: GameKit already supports more than twice the number of mediation networks as SDKBOX on iOS as of this writing. It is incredibly easy to support new mediation servies. It takes only 30 minutes to 1 hour to support a new mediation network.
-
 ## FAQ
 
 **Q:** Why are you not using Lua's convention to use the built-in table mechanism to create classes?
