@@ -196,6 +196,10 @@ function shim.TakeScreenShot()
     return promise
 end
 
+function shim.OpenURL(url)
+    cc.Application:getInstance():openURL(url)
+end
+
 --
 -- Seed random number generator and pop a few random numbers to ensure that the
 -- numbers are random.
