@@ -18,46 +18,46 @@ function Music.new(self)
     local _bgPath
     local isOn = true
 
-    function self.preload(path)
+    function self.Preload(path)
         engine:preloadMusic(path)
     end
 
-    function self.play(path, loop)
+    function self.Play(path, loop)
         engine:playMusic(path, loop)
     end
 
-    function self.stop(release)
+    function self.Stop(release)
         engine:stopMusic(release)
     end
 
-    function self.setVolume(to)
+    function self.SetVolume(to)
         engine:setMusicVolume(to)
     end
     
-    function self.pause()
+    function self.Pause()
         engine:pauseMusic()
     end
 
-    function self.resume()
+    function self.Resume()
         engine:resumeMusic()
     end
 
-    function self.turnOn(vol)
+    function self.TurnOn(vol)
         Log.i("Music.on(%f)", vol)
         isOn = true
-        self.fadeTo(vol, 0.5, _bgPath)
+        self.FadeTo(vol, 0.5, _bgPath)
     end
 
-    function self.turnOff()
+    function self.TurnOff()
         Log.i("Music.off()")
-        local promise = self.fadeTo(0, 0.5)
+        local promise = self.FadeTo(0, 0.5)
         promise.done(function()
-            self.stop(true)
+            self.Stop(true)
         end)
         isOn = false
     end
 
-    function self.fadeTo(to, length, bgPath)
+    function self.FadeTo(to, length, bgPath)
         local p = Promise()
         -- Always set the bg path so that when the sound is turned back on
         -- it can be loaded.
@@ -81,11 +81,11 @@ function Music.new(self)
             -- This is for sanity only For some reason, isMusicPlaying always
             -- returns true... why? I don't know! But once it starts working
             -- again this should be removed and the above if statement re-instated.
-            self.stop(true)
+            self.Stop(true)
             Log.d("Not playing. Load: "..bgPath)
             from = 0.0
-            self.play(bgPath, true)
-            self.setVolume(0)
+            self.Play(bgPath, true)
+            self.SetVolume(0)
         else
             from = engine:getMusicVolume()
             Log.d("Playing music @ volume (%s)", from)
@@ -95,7 +95,7 @@ function Music.new(self)
             local diff = tweenEndTime - gettime()
             if diff <= 0.0 then
                 Log.d("Music finished")
-                self.setVolume(to)
+                self.SetVolume(to)
                 shim.UnscheduleFunc(tweenId)
                 tweenId = nil
                 p.resolve()
@@ -110,7 +110,7 @@ function Music.new(self)
                 -- Going up
                 volume = to - ((to - from) * delta)
             end
-            self.setVolume(volume)
+            self.SetVolume(volume)
         end
         tweenId = shim.ScheduleFunc(tweenTick, 0, false)
         return p

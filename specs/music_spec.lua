@@ -33,7 +33,7 @@ describe("Music", function()
             local promise = false
 
             before_each(function()
-                promise = subject.fadeTo(0, 0)
+                promise = subject.FadeTo(0, 0)
                 stub(promise, "resolve")
             end)
 
