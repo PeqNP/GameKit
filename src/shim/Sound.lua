@@ -11,19 +11,19 @@ local engine = cc.SimpleAudioEngine:getInstance()
 function Sound.new(self)
     local isOn = true
 
-    function self.setOn(on)
+    function self.SetOn(on)
         isOn = on
     end
 
-    function self.isOn()
+    function self.IsOn()
         return isOn
     end
 
-    function self.setVolume(to)
+    function self.SetVolume(to)
         engine:setEffectsVolume(to)
     end
 
-    function self.play(path, loop, pitch, pan, gain)
+    function self.Play(path, loop, pitch, pan, gain)
         pitch = pitch and pitch or 1
         pan = pan and pan or 0
         gain = gain and gain or 1
@@ -37,7 +37,7 @@ function Sound.new(self)
         return engine:playEffect(path, loop, pitch, pan, gain)
     end
 
-    function self.stop(fxId)
+    function self.Stop(fxId)
         if not isOn then
             Log.i("playSound - Off")
             return
@@ -45,23 +45,23 @@ function Sound.new(self)
         engine:stopEffect(fxId)
     end
 
-    function self.isPlaying(fxId)
+    function self.IsPlaying(fxId)
         return engine:effectIsPlaying(fxId)
     end
 
-    function self.preload(path)
+    function self.Preload(path)
         engine:preloadEffect(path)
     end
 
-    function self.unload(path)
+    function self.Unload(path)
         engine:unloadEffect(path)
     end
 
-    function self.setPan(fxId, pan)
+    function self.SetPan(fxId, pan)
         engine:setEffectPan(fxId, pan)
     end
 
-    function self.getLengthInSeconds(fxId)
+    function self.GetLengthInSeconds(fxId)
         return engine:getEffectLengthInSeconds(fxId)
     end
 end
