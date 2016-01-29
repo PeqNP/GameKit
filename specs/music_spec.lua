@@ -5,13 +5,13 @@ require "Logger"
 Log.setLevel(LogLevel.Warning)
 
 local shim = require("shim.Main")
-local Music = require("Music")
+local Music = require("shim.Music")
 
 describe("Music", function()
-    local subject = false
+    local subject
 
     before_each(function()
-        subject = Music()
+        subject = Music.getClass()()
     end)
 
     describe("when the music is turned on", function()

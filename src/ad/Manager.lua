@@ -7,7 +7,7 @@
 require "Logger"
 
 local shim = require("shim.Main")
-local Game = require("shim.Game")
+local App = require("shim.App")
 
 local Promise = require("Promise")
 local Error = require("Error")
@@ -144,7 +144,7 @@ function Manager.new(self)
         end
 
         if request.getAdType() ~= AdType.Banner then
-            Game.Pause()
+            App.Pause()
         end
 
         request.setState(AdState.Presenting)
@@ -165,7 +165,7 @@ function Manager.new(self)
             deferred.reject(_error)
         end)
         promise.always(function(response)
-            Game.Resume()
+            App.Resume()
         end)
         return deferred
     end

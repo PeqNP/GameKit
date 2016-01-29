@@ -374,8 +374,12 @@ end
 
 cc.SimpleAudioEngine = class()
 
+local SimpleAudioEngineInstance
 function cc.SimpleAudioEngine:getInstance()
-    return cc.SimpleAudioEngine()
+    if not SimpleAudioEngineInstance then
+        SimpleAudioEngineInstance = cc.SimpleAudioEngine()
+    end
+    return SimpleAudioEngineInstance
 end
 
 function cc.SimpleAudioEngine:getMusicVolume()

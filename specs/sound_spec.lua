@@ -2,19 +2,17 @@ require "lang.Signal"
 require "specs.Cocos2d-x"
 require "Logger"
 
-local Sound = require("Sound")
-
 Log.setLevel(LogLevel.Warning)
+
+local Sound = require("shim.Sound")
 
 describe("Sound", function()
     local subject
     local audio
 
     before_each(function()
-        audio = cc.SimpleAudioEngine()
-        Sound.setEngine(audio)
-
-        subject = Sound()
+        audio = cc.SimpleAudioEngine:getInstance()
+        subject = Sound.getClass()()
     end)
 
     it("should have sound", function()

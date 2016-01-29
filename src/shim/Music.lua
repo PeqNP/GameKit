@@ -117,4 +117,6 @@ function Music.new(self)
     end
 end
 
-return Music
+Singleton(Music)
+
+return Music.singleton

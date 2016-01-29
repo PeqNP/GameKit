@@ -225,14 +225,15 @@ end)
 -- This tests is for my own curiosity.
 describe("instantiating a class directly after require", function()
     local instance
+    local Error
 
     before_each(function()
-        instance = require("Music")()
+        Error = require("Error")
+        instance = require("Error")()
     end)
 
-    it("should be an instance of Music", function()
-        assert.truthy(instance)
-        assert.truthy(instance.stop)
+    it("should be an instance of Error", function()
+        assert.truthy(Error, instance.getClass())
     end)
 end)
 

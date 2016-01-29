@@ -1,11 +1,6 @@
 require "socket.core"
 
-local music = require("Music")()
-local sound = require("Sound")()
-
 local shim = require("shim.Main")
-local GameShim = require("shim.Game")
-GameShim.init(shim, music)
 
 local Game = Class()
 Game.implements("GameProtocol")

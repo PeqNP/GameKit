@@ -66,12 +66,6 @@ function Sound.new(self)
     end
 end
 
-function Sound.getEngine()
-    return engine
-end
+Singleton(Sound)
 
-function Sound.setEngine(e)
-    engine = e
-end
-
-return Sound
+return Sound.singleton

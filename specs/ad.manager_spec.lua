@@ -8,7 +8,7 @@ Log.setLevel(LogLevel.Warning)
 require "ad.Constants"
 
 local shim = require("shim.Main")
-local GameShim = require("shim.Game")
+local AppShim = require("shim.App")
 local Error = require("Error")
 local BridgeCall = require("bridge.BridgeCall")
 local BridgeResponse = require("bridge.BridgeResponse")
@@ -28,8 +28,6 @@ local AdColonyNetwork = require("ad.network.AdColonyNetwork")
 local match = require("specs.matchers")
 matchers_assert(assert)
 
-Singleton("Music")
-
 function reload(pckg)
     package.loaded[pckg] = nil
     return require(pckg)
@@ -48,7 +46,7 @@ describe("AdManager", function()
     local adFactory
 
     before_each(function()
-        mock(GameShim, true)
+        mock(AppShim, true)
         bridge = require("bridge.modules.ad")
         adFactory = mock(MediationAdFactory({}), true)
 

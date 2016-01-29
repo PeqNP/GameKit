@@ -2,15 +2,12 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
+local main = require("shim.Main")
+local music = require("shim.Music")
+
 local shim = {}
 
-local director
-local music
-
-function shim.init(d, m)
-    director = d
-    music = m
-end
+local director = main.Director()
 
 function shim.IsPaused()
     return director:isPaused()
