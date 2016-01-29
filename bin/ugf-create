@@ -14,15 +14,26 @@ import sys
 
 from ugf.config import configpath, checkconfig, Config, ProjectConfig
 from ugf.pathbuilder import CocosPathBuilder, GameKitPathBuilder, ProjectPathBuilder
-from ugf.interpolator import Interpolator
+from ugf.interpolator import SimpleInterpolator
 
 VERSION = "ugf-create v1.0.0"
 
 LATEST_SUPPORTED_COCOS_VERSION = "3.8.1"
 
 # Creates the project's config.json file.
-def create_config(gamekit, source):
-    pass
+def create_config(source, dest, project, orientation=None):
+    keys = {
+        "##UGF-COCOS-VERSION##": LATEST_SUPPORTED_COCOS_VERSION,
+        "##UGF-PROJECT-NAME##": project
+    }
+    # @todo Add orientation to config
+    interpolator = SimpleInterpolator(keys)
+    interpolator.interpolate(source, dest)
+
+def create_configs(source, project, types, orientation):
+    # @todo Create config for each type w/ correct name config-{type}.json.
+    # @todo If types given, remove the config.json file.
+    create_config(source.path("config.json"), source.path("config.json"), project, orientation)
 
 # Copies all of the contents in GameKit/template to the new project's path.
 def copy_files(gamekit, source):
@@ -35,6 +46,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Upstart Game Framework - Creates a new GameKit project")
     parser.add_argument('project', help="Name of the new GameKit project")
     parser.add_argument('--types', help="Comma delimated list of project types. e.g. free,premium")
+    parser.add_argument('--orientation', help="Orientation of game. Options are (portrait, landscape). Default: portrait")
     args = parser.parse_args()
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
@@ -52,7 +64,7 @@ if __name__ == "__main__":
 
     print("Creating project ({}) at path ({})".format(args.project, source.basepath()))
 
-    #os.makedirs(source.basepath())
     copy_files(gamekit, source)
-    create_config(gamekit, source)
+    create_configs(source, args.project, args.types, args.orientation)
+    print("Please modify this project's config file, located at ({}), before selecting the project.".format(source.basepath())
     sys.exit(0)

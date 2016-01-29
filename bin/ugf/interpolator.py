@@ -36,3 +36,21 @@ class Interpolator (object):
         fh.close()
         # Copy to target location.
         shutil.copyfile(stagepath, self.cocos.path(target))
+
+class SimpleInterpolator (object):
+    def __init__(self, keys):
+        self.keys = keys
+
+    def interpolate(self, source, destination, interpolator=None):
+        # Read
+        fh = open(source, "r")
+        blob = fh.read()
+        for key, val in self.keys.iteritems():
+            blob = re.sub(key, str(val), blob)
+        if interpolator:
+            blob = interpolator(blob)
+        fh.close()
+        # Write
+        fh = open(destination, "w")
+        fh.write(blob)
+        fh.close()
