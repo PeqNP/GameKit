@@ -4,6 +4,7 @@
 
 local Error = require("Error")
 local Promise = require("Promise")
+local AdManager = require("ad.Manager")
 
 local ServerManager = Class()
 
