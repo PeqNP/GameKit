@@ -48,7 +48,7 @@ function FeatureFactory.new(self)
 
         local service
         if adServer then
-            require("mediation.MediationService")
+            local MediationService = require("mediation.Service")
             service = MediationService(adServer.getHost(), adServer.getPort(), adServer.getPath())
         end
 

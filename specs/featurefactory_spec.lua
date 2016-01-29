@@ -1,5 +1,6 @@
 require "specs.Cocos2d-x"
 
+local AdServerConfig = require("ad.ServerConfig")
 local AdServerManager = require("ad.ServerManager")
 local AppManager = require("app.Manager")
 local BridgeAdaptor = require("bridge.BridgeAdaptor")
@@ -33,7 +34,7 @@ describe("FeatureFactory", function()
     it("should create an ad.ServerManager", function()
         local adConfig = {}
         local networks = {}
-        local adServer = nil
+        local adServer = AdServerConfig("http://www.example.com", 80, "/ad/ios/mediation.json")
         local server = subject.getAdManager(adConfig, networks, adServer)
         assert.equal(AdServerManager, server.getClass())
     end)
