@@ -437,31 +437,4 @@ shim.Z_BUTTON = 42
 -- Z-index for faded black background
 shim.Z_SCENE_BG = 50
 
--- @deprecated
-shim.runAction = shim.RunAction
-shim.scheduleFunc = shim.ScheduleFunc
-shim.unscheduleFunc = shim.UnscheduleFunc
-shim.isPaused = shim.IsPaused
-shim.pause = shim.Pause
-shim.resume = shim.Resume
-shim.fullPathForFilename = shim.GetFullFilepath
-shim.getFullFilepath = shim.GetFullFilepath
-shim.addSearchPath = shim.AddSearchPath
-shim.getVisibleSize = shim.GetVisibleSize
-shim.getOrigin = shim.GetOrigin
-shim.getWinSizeInPixels = shim.GetWinSizeInPixels
-shim.generateShader = shim.GenerateShader
-shim.getRandomPoint = shim.GetRandomPoint
-shim.getPointForLocation = shim.GetPointForLocation
-shim.getPointForHeading = shim.GetPointForHeading
-shim.getNextPosition = shim.GetNextPosition
-shim.getDistance = shim.GetDistance
-shim.getRenderedTexture = shim.GetRenderedTexture
-shim.fitImageInCenter = shim.FitImageInCenter
-shim.takeScreenShot = shim.TakeScreenShot
-shim.getMidPoint = shim.GetMidPoint
-shim.delayCall = shim.DelayCall
-shim.degToRad = shim.DegToRad
-shim.radToDeg = shim.RadToDeg
-
 return shim
