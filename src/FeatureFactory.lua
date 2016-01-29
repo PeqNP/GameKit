@@ -18,7 +18,7 @@ function FeatureFactory.new(self)
         end
         local Bridge = require("bridge.Bridge")
         local BridgeAdaptor = require("bridge.BridgeAdaptor")
-        platform = BridgeAdaptor.getAdaptor(device.platform)
+        platform = BridgeAdaptor.getAdaptor(platform)
         bridge = Bridge(platform)
         return bridge
     end
@@ -27,7 +27,7 @@ function FeatureFactory.new(self)
         local appModule = require("bridge.modules.app")
         appModule.init(getBridge())
 
-        local AppManager = require("app.AppManager")
+        local AppManager = require("app.Manager")
         return AppManager(appModule)
     end
 
@@ -52,7 +52,7 @@ function FeatureFactory.new(self)
             service = MediationService(adServer.getHost(), adServer.getPort(), adServer.getPath())
         end
 
-        local AdServerManager = require("ad.AdServerManager")
+        local AdServerManager = require("ad.ServerManager")
         return AdServerManager(adModule, adConfig, networks, service)
     end
 
