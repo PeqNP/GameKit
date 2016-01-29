@@ -57,7 +57,7 @@ function BridgeAdaptor.getAdaptor(platform)
     local paramFn
     if platform == "ios" then
         adaptor = require("cocos.cocos2d.luaoc")
-        controller = "AKGameRouter"
+        controller = "GKGameRouter"
         paramFn = iosparams
     elseif platform == "android" then
         adaptor = require("cocos.cocos2d.luaj")
