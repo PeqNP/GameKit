@@ -3,6 +3,7 @@
 --
 
 local Error = require("Error")
+local Promise = require("Promise")
 
 local ServerManager = Class()
 
@@ -36,7 +37,7 @@ function ServerManager.new(self)
     function self.fetchConfig()
         if not service then
             local promise = Promise()
-            promise.reject(Error(500, "MediationService was not been provided."))
+            promise.reject(Error(500, "mediation.Service was not provided."))
             return promise
         end
         if deferred then
