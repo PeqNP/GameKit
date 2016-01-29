@@ -107,15 +107,14 @@ class ProjectPathBuilder (object):
         self.check_platform(platform)
         return self.path("platform/{}/mediation.config.json".format(platform))
 
-# AdKit project path builder.
-class AdKitPathBuilder (object):
+class iOS_GameKitPathBuilder (object):
     # @param Config
     # @param str - project name
     def __init__(self, config):
         self.config = config
 
     def basepath(self):
-        return os.path.join(self.config.basepath, "AdKit")
+        return os.path.join(self.config.basepath, "GameKit-iOS")
 
     def path(self, path):
         return os.path.join(self.basepath(), path)

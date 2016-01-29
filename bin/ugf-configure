@@ -14,7 +14,7 @@ import shutil
 import sys
 
 from ugf.config import configpath, checkconfig, Config, ProjectConfig
-from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder, AdKitPathBuilder
+from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder, iOS_GameKitPathBuilder
 from ugf.interpolator import Interpolator
 from ugf.mediation import load_mediation_config, load_iap_config, pods_for_networks, lua_for_networks
 
@@ -85,7 +85,7 @@ def configure_sdk_dependencies(project, cocos, stage):
         "##UGF-SDK-DEPENDENCIES##": "\n".join(defines)
     }
     interpolator = Interpolator(project, cocos, stage, keys)
-    interpolator.interpolate("templates/project/ios/GKConfig.h", cocos.iosmacprojpath("AdKit/GameTools/GKConfig.h"))
+    interpolator.interpolate("templates/project/ios/GKConfig.h", cocos.iosmacprojpath("GameKit/GameTools/GKConfig.h"))
 
 def configure_ios_pods(networks, project, cocos, stage):
     # Add mediation networks to Podfile
@@ -97,13 +97,13 @@ def configure_ios_pods(networks, project, cocos, stage):
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/ios/Podfile", "frameworks/runtime-src/proj.ios_mac/Podfile")
 
-# Copies AdKit source files for only the mediation networks that have been selected.
+# Copies GameKit-iOS source files for only the mediation networks that have been selected.
 def copy_adkit_sources(networks, cocos, adkit):
     # Copy entire directory to Frameworks
     adkitsrc = adkit.sourcedir()
     if not os.path.isdir(adkitsrc):
-        raise Exception("AdKit source files are expected to be at '{}'".format(adkitsrc))
-    adkitdest = cocos.iosmacprojpath("AdKit")
+        raise Exception("GameKit source files are expected to be at '{}'".format(adkitsrc))
+    adkitdest = cocos.iosmacprojpath("GameKit")
     if os.path.isdir(adkitdest):
         shutil.rmtree(adkitdest)
     shutil.copytree(adkitsrc, adkitdest)
@@ -120,7 +120,7 @@ def copy_adkit_sources(networks, cocos, adkit):
             removepath = os.path.join(networkdir, network)
             shutil.rmtree(removepath)
     os.chdir(cocos.iosmacprojpath())
-    call(["./add_adkit_files.rb"])
+    call(["./add_gamekit_files.rb"])
 
 def configure_supported_networks_header(networks, cocos):
     defines = []
@@ -130,7 +130,7 @@ def configure_supported_networks_header(networks, cocos):
         "##UGF-MEDIATION-DEPENDENCIES##": "\n".join(defines)
     }
     interpolator = Interpolator(project, cocos, stage, keys)
-    interpolator.interpolate("templates/project/ios/SupportedNetworks.h", cocos.iosmacprojpath("AdKit/GameTools/AdKit/SupportedNetworks.h"))
+    interpolator.interpolate("templates/project/ios/SupportedNetworks.h", cocos.iosmacprojpath("GameKit/GameTools/AdKit/SupportedNetworks.h"))
 
 def create_lua_mediation(platform, mediation, networks, server, cocos):
     lua_networks = lua_for_networks(networks)
@@ -238,7 +238,7 @@ def configure_ios_targets(project, source, cocos, stage):
     interpolator.interpolate("templates/config.json", "config.json", interpolate_configjson)
     interpolator.interpolate("templates/project/config.lua", "src/config.lua", interpolate_projectconfig)
     interpolator.interpolate("stage/project.pbxproj", cocos.iosmacprojpath("GameTools.xcodeproj/project.pbxproj"), interpolate_iospbxproj)
-    interpolator.interpolate("templates/project/ios/GKConfig.m", cocos.iosmacprojpath("AdKit/GameTools/GKConfig.m"))
+    interpolator.interpolate("templates/project/ios/GKConfig.m", cocos.iosmacprojpath("GameKit/GameTools/GKConfig.m"))
 
     # @todo Cleanup stage directory
 
@@ -270,7 +270,7 @@ if __name__ == "__main__":
     source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
-    adkit = AdKitPathBuilder(config)
+    adkit = iOS_GameKitPathBuilder(config)
     stage = StagePathBuilder(cocos.basepath())
     mediation, networks, server = load_mediation("ios", source)
     iap = load_iap("ios", source)
