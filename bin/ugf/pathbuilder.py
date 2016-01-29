@@ -62,6 +62,9 @@ class GameKitPathBuilder (object):
     def path(self, path):
         return os.path.join(self.basepath(), path)
 
+    def templatepath(self):
+        return self.path("template")
+
 # Builds project related paths.
 class ProjectPathBuilder (object):
     # @param Config

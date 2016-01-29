@@ -1,0 +1,13 @@
+{
+  "cocos": "##UGF-COCOS-VERSION##",
+  "bundle": "com.example.##UGF-PROJECT-NAME##",
+  "name": "##UGF-PROJECT-NAME##",
+  "executable": "##UGF-PROJECT-NAME##",
+  "version": "1.0.0",
+  "build": 1,
+  "device": "universal",
+  "orientation": "portrait",
+  "design": {"width": 640, "height": 960},
+  "hockeyappid": "",
+  "facebookid": ""
+}

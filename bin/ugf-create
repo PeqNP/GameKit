@@ -9,7 +9,6 @@ from datetime import datetime
 from subprocess import call
 
 import os
-import re
 import shutil
 import sys
 
@@ -26,30 +25,34 @@ def create_config(gamekit, source):
     pass
 
 # Copies all of the contents in GameKit/template to the new project's path.
-def copy_files(cocos, source):
-    pass
+def copy_files(gamekit, source):
+    #call("cp", "-r", gamekit.templatepath(), source.basepath())
+    shutil.copytree(gamekit.templatepath(), source.basepath())
 
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Upstart Game Framework - Creates a new GameKit project")
     parser.add_argument('project', help="Name of the new GameKit project")
+    parser.add_argument('--types', help="Comma delimated list of project types. e.g. free,premium")
     args = parser.parse_args()
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
 
     config = Config.load(configpath())
-    conifg.project = args.project
+    config.project = args.project
     checkconfig(config)
 
     source = ProjectPathBuilder(config)
     gamekit = GameKitPathBuilder(config)
 
     if os.path.exists(source.basepath()):
-        print("Project {} already exists at path {}", args.project, source.basepath())
+        print("Project ({}) already exists at path ({})".format(args.project, source.basepath()))
         sys.exit(1)
 
-    os.makedirs(source.basepath())
+    print("Creating project ({}) at path ({})".format(args.project, source.basepath()))
+
+    #os.makedirs(source.basepath())
     copy_files(gamekit, source)
     create_config(gamekit, source)
     sys.exit(0)
