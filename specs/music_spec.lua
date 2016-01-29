@@ -4,7 +4,7 @@ require "Logger"
 
 Log.setLevel(LogLevel.Warning)
 
-local shim = require("shim.Main")
+local shim = require("shim.System")
 local Music = require("shim.Music")
 
 describe("Music", function()

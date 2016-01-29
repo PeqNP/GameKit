@@ -4,7 +4,7 @@ require "Logger"
 
 Log.setLevel(LogLevel.Info)
 
-local shim = require("shim.Main")
+local shim = require("shim.System")
 local AdConfig = require("royal.AdConfig")
 local AdVendor = require("royal.AdVendor")
 local AdTier = require("royal.AdTier")

@@ -7,7 +7,7 @@
 -- @copyright Upstart Illustration LLC. All rights reserved.
 --
 
-local shim = require("shim.Main")
+local shim = require("shim.System")
 
 local AdVendor = Class()
 

@@ -6,7 +6,7 @@
 
 require "Logger"
 
-local shim = require("shim.Main")
+local shim = require("shim.System")
 local App = require("shim.App")
 
 local Promise = require("Promise")

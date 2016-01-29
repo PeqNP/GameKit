@@ -2,7 +2,7 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
-local main = require("shim.Main")
+local main = require("shim.System")
 local music = require("shim.Music")
 
 local shim = {}

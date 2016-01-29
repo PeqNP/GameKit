@@ -1,6 +1,6 @@
 require "socket.core"
 
-local shim = require("shim.Main")
+local shim = require("shim.System")
 
 local Game = Class()
 Game.implements("GameProtocol")

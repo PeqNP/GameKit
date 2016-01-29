@@ -2,7 +2,7 @@
 require "lang.Signal"
 require "specs.Cocos2d-x"
 
-local shim = require("shim.Main")
+local shim = require("shim.System")
 
 describe("Sequence", function()
     local scene1

@@ -7,7 +7,7 @@ Log.setLevel(LogLevel.Warning)
 
 require "ad.Constants"
 
-local shim = require("shim.Main")
+local shim = require("shim.System")
 local AppShim = require("shim.App")
 local Error = require("Error")
 local BridgeCall = require("bridge.BridgeCall")
