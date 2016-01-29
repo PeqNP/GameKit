@@ -290,7 +290,7 @@ end
 --
 function shim.DelayCall(fn, delay)
     local sequence = shim.Sequence(shim.Delay(delay), shim.Call(fn))
-    shim.runAction(sequence)
+    shim.RunAction(sequence)
 end
 
 -- ----- Objects ------
