@@ -96,8 +96,3 @@ A trade-off was made to favor speed over memory usage; which is arguably negligi
 
 ## TODO
 
-Make all classes modules. Most classes can be included by doing the following:
-```
-local ClassName = require("ClassName")
-```
-The remainder of classes in src/ will eventually be changed.
