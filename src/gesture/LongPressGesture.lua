@@ -2,6 +2,8 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
+local System = require("shim.System")
+
 local LongPressGesture = Class()
 
 function LongPressGesture.new(self)
@@ -10,7 +12,7 @@ function LongPressGesture.new(self)
         self.prevPoint = prevPoint
         self.touch = touch
 
-        self.distance = cu.getDistance(point, prevPoint)
+        self.distance = System.GetDistance(point, prevPoint)
         self.angle = math.deg(math.atan2(prevPoint.y - point.y, prevPoint.x - point.x))
     end
 
