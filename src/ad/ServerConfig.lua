@@ -26,6 +26,10 @@ function ServerConfig.new(self)
     function self.getPath()
         return path
     end
+
+    function self.getFullPath()
+        return string.format("%s:%s%s", host, port, path)
+    end
 end
 
 return ServerConfig

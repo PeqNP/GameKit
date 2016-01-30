@@ -6,10 +6,13 @@ local FeatureFactory = Class()
 
 function FeatureFactory.new(self)
     local platform
+    local contentScaleFactor
+
     local bridge
 
-    function self.init(_platform)
+    function self.init(_platform, _contentScaleFactor)
         platform = _platform
+        contentScaleFactor = _contentScaleFactor
     end
 
     local function getBridge()
@@ -59,6 +62,32 @@ function FeatureFactory.new(self)
     function self.getSocialManager()
         local SocialManager = require("social.Manager")
         return SocialManager(getBridge())
+    end
+
+    local function getImageVariant()
+        if platform == "android" or contentScaleFactor == 1.0 then
+            return "hd"
+        end
+        return "xhd"
+    end
+
+    --
+    -- Returns a Royal client which can be used download Royal ad config from
+    -- a remote server.
+    --
+    -- This method has the side-effect of loading cached config!
+    --
+    function self.getRoyalClient(writablePath, adServer, supportedVersions)
+        local AdConfig = require("royal.AdConfig")
+        local Client = require("royal.Client")
+        local AdVendor = require("royal.AdVendor")
+
+        Log.i("Initializing the Royal Ad Network...")
+        AdConfig.singleton.setBasePath(writablePath)
+        AdConfig.singleton.setImageVariant(getImageVariant())
+        local network = Client(adServer.getHost(), adServer.getPort(), adServer.getPath(), supportedVersions)
+        network.loadFromCache()
+        return network
     end
 end
 

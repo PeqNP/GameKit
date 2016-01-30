@@ -26,6 +26,7 @@ function Client.new(self)
     local plistLoaded = false
 
     function self.init(host, port, path, maxVersions)
+        -- @fixme These should be local.
         self.host = host
         self.port = port
         self.path = path
@@ -68,7 +69,7 @@ function Client.new(self)
     end
 
     local function getRequest(file, responseType, callback)
-        local fullpath = self.host .. self.path .. file
+        local fullpath = string.format("%s:%s%s", self.host, self.port, self.path)
         Log.d("getRequest: GET (%s)", fullpath)
 
         local request = cc.XMLHttpRequest:new()
@@ -111,12 +112,12 @@ function Client.new(self)
         end
     end
 
-    --[[ Returns the path where the plist file will be/was saved locally. ]]--
+    -- Returns the path where the plist file will be/was saved locally.
     function self.getPlistFilepath()
         return AdConfig.singleton.getPath("ads.plist")
     end
 
-    --[[ Returns the number of in-flight requests. ]]--
+    -- Returns the number of in-flight requests.
     function self.getNumRequests()
         return #requests
     end
@@ -125,7 +126,7 @@ function Client.new(self)
         return errors
     end
 
-    --[[ Set ads to round-robin. This should only be used for testing. ]]--
+    -- Set ads to round-robin. This should only be used for testing.
     function self.setManifest(m)
         manifest = m
     end
@@ -170,6 +171,10 @@ function Client.new(self)
         return AdConfig.singleton.getPath("ads.json")
     end
 
+    --
+    -- Load config from cache. This step is necessary before downloading to ensure
+    -- that assets are not re-downloaded.
+    --
     function self.loadFromCache()
         local fh = io.open(self.getCacheFilepath(), "r")
         if not fh then
@@ -186,12 +191,13 @@ function Client.new(self)
         manifest = AdManifestParser.singleton.fromDictionary(dict)
     end
 
-    --[[ Download new ads from the server.
-
-      Please note that this will clear all previously downloads ads.
-
-      @return Promise
-    --]]
+    --
+    -- Download new ads from the server.
+    --
+    -- Please note that this will clear all previously downloads ads.
+    --
+    -- @return Promise
+    --
     function self.downloadAds()
         clean()
         errors = {}
