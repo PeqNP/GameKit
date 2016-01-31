@@ -8,14 +8,15 @@
 require "json"
 
 local Promise = require("Promise")
-local AdConfig = require("royal.AdConfig")
-local AdManifestParser = require("royal.AdManifestParser")
 local AdRequestCallback = require("royal.AdRequestCallback")
 
 local Client = Class()
 
 function Client.new(self)
-    self.delegate = false -- Assign if you wish to get callbacks in regards to progress, etc.
+    local config
+    local url
+    local cachedManifest
+    local delegate
 
     local manifest
     local promise
@@ -25,19 +26,17 @@ function Client.new(self)
 
     local plistLoaded = false
 
-    function self.init(host, port, path, maxVersions)
-        -- @fixme These should be local.
-        self.host = host
-        self.port = port
-        self.path = path
-        self.maxVersions = maxVersions
+    function self.init(_config, _url, _cachedManifest)
+        config = _config
+        url = _url
+        cachedManifest = _cachedManifest
     end
 
     local function clean()
         callbacks = {}
 
         if plistLoaded then
-            cc.SpriteFrameCache:getInstance():removeSpriteFrames(self.getPlistFilepath())
+            cc.SpriteFrameCache:getInstance():removeSpriteFrames(config.getPlistFilepath())
             plistLoaded = false
         end
     end
@@ -55,22 +54,22 @@ function Client.new(self)
             -- 'execute' was called.
             if #requests == 0 then
                 -- @todo Probably need to set the search resolution path to this path.
-                cc.SpriteFrameCache:getInstance():addSpriteFrames(self.getPlistFilepath())
+                cc.SpriteFrameCache:getInstance():addSpriteFrames(config.getPlistFilepath())
                 plistLoaded = true
-                promise.resolve(true)
+                promise.resolve(manifest)
             else
                 -- Clean callbacks if there are more requests.
                 callbacks = {}
             end
         else
             clean()
-            promise.resolve(false)
+            promise.reject(Error(1, "Failed to download Royal ad config."))
         end
     end
 
     local function getRequest(file, responseType, callback)
-        local fullpath = string.format("%s:%s%s", self.host, self.port, self.path)
-        Log.d("getRequest: GET (%s)", fullpath)
+        local fullpath = url .. file
+        Log.d("royal.Client:getRequest() - GET (%s)", fullpath)
 
         local request = cc.XMLHttpRequest:new()
         local function callback__complete()
@@ -88,7 +87,7 @@ function Client.new(self)
                 end
                 pos = pos + 1
             end
-            Log.d("File (%s) status (%s)", fullpath, request.status)
+            Log.d("royal.Client:getRequest() - File (%s) status (%s)", fullpath, request.status)
             finish()
         end
         request.responseType = responseType
@@ -112,11 +111,6 @@ function Client.new(self)
         end
     end
 
-    -- Returns the path where the plist file will be/was saved locally.
-    function self.getPlistFilepath()
-        return AdConfig.singleton.getPath("ads.plist")
-    end
-
     -- Returns the number of in-flight requests.
     function self.getNumRequests()
         return #requests
@@ -126,20 +120,11 @@ function Client.new(self)
         return errors
     end
 
-    -- Set ads to round-robin. This should only be used for testing.
-    function self.setManifest(m)
-        manifest = m
-    end
-
-    function self.getManifest()
-        return manifest
-    end
-
     local function callback__file(file, response)
         -- Get only the last part of the file.
         local parts = string.split(file, "/")
         local f = parts[#parts]
-        local p = AdConfig.singleton.getPath(f)
+        local p = config.getPath(f)
         local fh = io.open(p, "wb")
         io.output(fh)
         io.write(response)
@@ -154,58 +139,35 @@ function Client.new(self)
     local function callback__ads(file, response)
         local dict = json.decode(response)
         local dlManifest = AdManifestParser.singleton.fromDictionary(dict)
-        if manifest and manifest.isActive(dlManifest.getCreated()) then
-            Log.i("Using cached ads.json manifest")
+        if cachedManifest and cachedManifest.isActive(dlManifest.getCreated()) then
+            Log.i("royal.Client:callback__ads() - Using cached manifest")
             return
         else
-            Log.i("Saving ads.json to cache")
-            callback__file(self.getCacheFilepath(), response)
+            Log.i("royal.Client:callback__ads() - Saving manifest to cache")
+            callback__file(config.getConfigFilepath(), response)
             manifest = dlManifest
         end
-        pushRequest(AdConfig.singleton.getImageVariant() .. "/ads.plist", cc.XMLHTTPREQUEST_RESPONSE_STRING, callback__plist)
-        pushRequest(AdConfig.singleton.getImageVariant() .. "/ads.png", cc.XMLHTTPREQUEST_RESPONSE_BLOB, callback__file)
+        pushRequest(config.getImageVariant() .. "/" .. config.getPlistFilename(), cc.XMLHTTPREQUEST_RESPONSE_STRING, callback__plist)
+        pushRequest(config.getImageVariant() .. "/" .. config.getImageFilename(), cc.XMLHTTPREQUEST_RESPONSE_BLOB, callback__file)
         sendRequests()
     end
 
-    function self.getCacheFilepath()
-        return AdConfig.singleton.getPath("ads.json")
-    end
-
     --
-    -- Load config from cache. This step is necessary before downloading to ensure
-    -- that assets are not re-downloaded.
+    -- Download ad configuration from the server.
     --
-    function self.loadFromCache()
-        local fh = io.open(self.getCacheFilepath(), "r")
-        if not fh then
-            return
-        end
-        io.input(fh)
-        local jsonStr = io.read("*all")
-        io.close(fh)
-        if not jsonStr or string.len(jsonStr) < 1 then
-            Log.d("Cached ads.json file does not exist")
-            return
-        end
-        local dict = json.decode(jsonStr)
-        manifest = AdManifestParser.singleton.fromDictionary(dict)
-    end
-
-    --
-    -- Download new ads from the server.
-    --
-    -- Please note that this will clear all previously downloads ads.
+    -- Please note that this will clear all previously downloads ad config.
     --
     -- @return Promise
     --
-    function self.downloadAds()
+    function self.fetchConfig()
         clean()
         errors = {}
         promise = Promise()
-        pushRequest("ads.json", cc.XMLHTTPREQUEST_RESPONSE_STRING, callback__ads)
+        pushRequest(config.getConfigFilename(), cc.XMLHTTPREQUEST_RESPONSE_STRING, callback__ads)
         sendRequests()
         return promise
     end
 end
+
 
 return Client

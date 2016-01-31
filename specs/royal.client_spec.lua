@@ -19,22 +19,16 @@ local AdManifest = require("royal.AdManifest")
 local AdClient = require("royal.Client")
 local AdUnit = require("royal.AdUnit")
 
-AdConfig.singleton.setBasePath("/path/")
-
 describe("AdClient", function()
-    local subject = false
-
-    local host
-    local port
-    local path
-    local maxVersions
+    local subject
+    local config
+    local url
 
     before_each(function()
-        host = "http://www.example.com"
-        port = 80
-        path = "/ad/com.example.game/"
-        maxVersions = {1, 2}
-        subject = AdClient(host, port, path, maxVersions)
+        config = AdConfig("/path/")
+        url = "http://www.example.com:80/ad/com.example.game"
+
+        subject = AdClient(config, url)
 
         -- Never read/write/close an actual file.
         stub(io, "open")
@@ -43,22 +37,15 @@ describe("AdClient", function()
         stub(io, "close")
     end)
 
-    it("should have set all values", function()
-        assert.equals(host, subject.host)
-        assert.equals(port, subject.port)
-        assert.equals(path, subject.path)
-        assert.equals(maxVersions, subject.maxVersions)
-    end)
-
     it("should return the correct local path to the plist file", function()
-        assert.equals("/path/ads.plist", subject.getPlistFilepath())
+        assert.equals("/path/royal.plist", subject.getPlistFilepath())
     end)
 
     it("should return the correct cached path", function()
-        assert.equals("/path/ads.json", subject.getCacheFilepath())
+        assert.equals("/path/royal.json", subject.getCacheFilepath())
     end)
 
-    describe("downloadAds", function()
+    describe("fetch config", function()
         local cache 
         local promise
         local adRequest
@@ -101,10 +88,14 @@ describe("AdClient", function()
             end
 
             wasCalled = false
-            promise = subject.downloadAds()
-            promise.done(function(s)
+            promise = subject.fetchConfig()
+            promise.done(function(_manifest)
+                manifest = _manifest
                 wasCalled = true
-                success = s
+            end)
+            promise.fail(function(__error)
+                _error = __error
+                wasCalled = true
             end)
         end)
 
@@ -244,8 +235,9 @@ describe("AdClient", function()
                         assert.truthy(wasCalled)
                     end)
 
-                    it("should have returned success", function()
-                        assert.truthy(success)
+                    it("should have returned the manifest", function()
+                        assert.truthy(manifest)
+                        assert.equal(AdManifest, manifest.getClass())
                     end)
 
                     it("should have returned ads", function()
@@ -294,17 +286,13 @@ describe("AdClient", function()
                     end)
 
                     it("should have returned failure", function()
-                        assert.falsy(success)
+                        assert.truthy(_error)
+                        assert.equal(Error, _error.getClass())
                     end)
 
                     it("should have created two errors", function()
                         local e = subject.getErrors()
                         assert.equals(2, #e)
-                    end)
-
-                    -- @note There's no reason to delete the manifest if the other files failed.
-                    it("should still have a manifest", function()
-                        assert.truthy(subject.getManifest())
                     end)
 
                     it("should NOT have written the plist to disk", function()
@@ -315,9 +303,9 @@ describe("AdClient", function()
                         assert.stub(io.open).was.not_called_with("/path/ads.png", "wb")
                     end)
 
-                    describe("when downloadAds is called a subsequent time", function()
+                    describe("when fetch config is called a subsequent time", function()
                         before_each(function()
-                            subject.downloadAds()
+                            subject.fetchConfig()
                         end)
 
                         it("should have cleared the errors", function()
@@ -352,12 +340,9 @@ describe("AdClient", function()
                     assert.truthy(wasCalled)
                 end)
 
-                it("should have returned success", function()
-                    assert.truthy(success)
-                end)
-
-                it("should still use the old manifest", function()
-                    assert.equals(manifest, subject.getManifest())
+                it("should have returned the same manifest", function()
+                    assert.truthy(manifest)
+                    -- @todo Compare manifest
                 end)
 
                 it("should NOT have made request for plist", function()
@@ -409,12 +394,8 @@ describe("AdClient", function()
                 adRequest.fn()
             end)
 
-            it("should have resolved promise", function()
-                assert.truthy(wasCalled)
-            end)
-
-            it("should have returned failure", function()
-                assert.falsy(success)
+            it("should have failed", function()
+                assert.truthy(_error)
             end)
 
             it("should NOT have made request for plist", function()
@@ -434,10 +415,6 @@ describe("AdClient", function()
                 assert.equals(1, #e)
             end)
 
-            it("should have no ads", function()
-                assert.is_nil(subject.getManifest())
-            end)
-
             it("should NOT have written plist to disk", function()
                 assert.stub(io.open).was.not_called()
             end)
@@ -445,19 +422,6 @@ describe("AdClient", function()
             it("should NOT have written png to disk", function()
                 assert.stub(io.open).was.not_called()
             end)
-        end)
-    end)
-
-    describe("setManifest", function()
-        local manifest
-
-        before_each(function()
-            manifest = {}
-            subject.setManifest(manifest)
-        end)
-
-        it("should have set the manifest", function()
-            assert.equals(manifest, subject.getManifest())
         end)
     end)
 
@@ -471,10 +435,12 @@ describe("AdClient", function()
 
         describe("when the file exists", function()
             local fakeManifest
+            local manifest
+            local cachedManifest
+            local _error
 
             before_each(function()
                 fakeManifest = {}
-                stub(AdManifestParser.singleton, "fromDictionary", fakeManifest)
 
                 local jsonStr = "{'version': 1, 'created': 10000, 'ttl': 86500, 'units': [{'id': 2, 'reward': 25, 'startdate': 4, 'enddate': 5, 'waitsecs': 86400, 'maxclicks': 1, 'tiers': [{'id': 4, 'config': {}}]}]}"
                 local jsonDict = json.decode(jsonStr)
@@ -483,15 +449,23 @@ describe("AdClient", function()
                 stub(io, "read", jsonStr)
                 stub(json, "decode", jsonDict)
 
-                subject.loadFromCache()
+                cachedManifest = subject.loadConfigFromCache()
             end)
 
-            it("should have made call to inflate manifest from dictionary", function()
-                assert.equals(fakeManifest, subject.getManifest())
-            end)
+            context("when the config is fetched",function()
+                before_each(function()
+                    local promise = subject.fetchConfig()
+                    promise.done(function(_manifest)
+                        manifest = _manifest
+                    end)
+                    promise.fail(function(__error)
+                        _error = __error
+                    end)
+                end)
 
-            it("should have made call to AdManifestParser to inflate", function()
-                assert.stub(AdManifestParser.singleton.fromDictionary).was.called_with(jsonDict)
+                it("should return the manifest that was on disk", function()
+                    assert.equal(cachedManifest, manifest)
+                end)
             end)
         end)
 
@@ -502,15 +476,15 @@ describe("AdClient", function()
                 stub(io, "open", true)
                 stub(io, "read", "")
                 
-                subject.loadFromCache()
-            end)
-
-            it("should have returned nil", function()
-                assert.falsy(subject.getManifest())
+                subject.loadConfigFromCache()
             end)
 
             it("should NOT have made call to inflate dictionary", function()
                 assert.stub(AdManifestParser.singleton.fromDictionary).was_not.called()
+            end)
+
+            context("when the config is fetched", function()
+                -- @todo it should download the config.
             end)
         end)
 
@@ -521,11 +495,7 @@ describe("AdClient", function()
                 stub(io, "open", false)
                 stub(io, "read", nil)
                 
-                subject.loadFromCache()
-            end)
-
-            it("should have returned nil", function()
-                assert.falsy(subject.getManifest())
+                subject.loadConfigFromCache()
             end)
 
             it("should NOT have made call to inflate dictionary", function()
