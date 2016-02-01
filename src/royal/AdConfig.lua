@@ -44,6 +44,10 @@ function AdConfig.new(self)
         return "royal.json"
     end
 
+    function self.getImageFilepath()
+        return config.getPath(self.getImageFilename())
+    end
+
     -- Returns the path where the plist file will be/was saved locally.
     function self.getPlistFilepath()
         return config.getPath(self.getPlistFilename())

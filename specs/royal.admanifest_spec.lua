@@ -102,7 +102,7 @@ describe("load manifest from file", function()
 
         before_each(function()
             fakeManifest = AdManifest()
-            stub(file, "getContents")
+            stub(file, "read")
             stub(AdManifest, "fromDictionary", fakeManifest)
 
             manifest = AdManifest.loadFromFile(file)
@@ -117,7 +117,7 @@ describe("load manifest from file", function()
         before_each(function()
             -- partial data write.
             local jsonStr = "{'version': 1, 'created': 10000, 'ttl': 86500, 'units': [{'id': 2, 'reward': 25, 'startdate': 4, 'enddate': 5, 'waitsecs': 86400, 'conf"
-            stub(file, "getContents", jsonStr)
+            stub(file, "read", jsonStr)
             stub(AdManifest, "fromDictionary")
 
             manifest = AdManifest.loadFromFile(file)
@@ -135,7 +135,7 @@ describe("load manifest from file", function()
     describe("when the file contains no data", function()
         before_each(function()
             stub(AdManifestParser.singleton, "fromDictionary")
-            stub(file, "getContents", "")
+            stub(file, "read", "")
 
             local manifest = subject.loadFromFile(file)
         end)
@@ -148,7 +148,7 @@ describe("load manifest from file", function()
     describe("when the file does not exist", function()
         before_each(function()
             stub(AdManifestParser.singleton, "fromDictionary")
-            stub(file, "getContents", nil)
+            stub(file, "read", nil)
             
             local manifest = subject.loadFromFile(file)
         end)

@@ -4,22 +4,14 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
-HTTPResponseType = enum(1, 'Blob', 'String')
-
-local ResponseTypeMap = {
-    HTTPResponseType.Blob = cc.XMLHTTPREQUEST_RESPONSE_BLOB
-    HTTPResponseType.String = cc.XMLHTTPREQUEST_RESPONSE_STRING
-}
+require "Logger"
+require "HTTPResponseType"
 
 local Promise = require("Promise")
 
 local HTTP = Class()
 
 function HTTP.new(self)
-    function self.getMappedResponseType(_type)
-        return ResponseTypeMap[_type]
-    end
-
     --
     -- Query endpoint using GET as the given response type.
     --
@@ -45,12 +37,22 @@ function HTTP.new(self)
                 promise.resolve(request.status, request.response)
             end
         end
-        request.responseType = self.getMappedResponseType(responseType)
+        request.responseType = HTTP.getMappedResponseType(responseType)
         request:registerScriptHandler(callback__complete)
         request:open("GET", query, true)
         request:send()
         return promise
     end
+end
+
+function HTTP.getMappedResponseType(_type)
+    if _type == HTTPResponseType.Blob then
+        return cc.XMLHTTPREQUEST_RESPONSE_BLOB
+    elseif _type == HTTPResponseType.String then
+        return cc.XMLHTTPREQUEST_RESPONSE_STRING
+    end
+    Log.w("Response type (%s) is not mapped to a known response type!", _type)
+    return nil
 end
 
 return HTTP

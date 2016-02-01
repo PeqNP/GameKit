@@ -17,19 +17,21 @@ function LuaFile.new(self)
         return path
     end
 
-    function self.getContents(mode)
+    function self.read(mode)
         if not mode then
             mode = "r"
         end
         local fh = io.open(path, mode)
         if not fh then
+            return nil
+        end
         io.input(fh)
         local blob = io.read("*all")
         io.close(fh)
         return blob
     end
 
-    function self.setContents(contents, mode)
+    function self.write(contents, mode)
         if not mode then
             mode = "w"
         end

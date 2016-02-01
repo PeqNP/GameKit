@@ -56,7 +56,7 @@ end
 -- that assets are not re-downloaded.
 --
 function AdManifest.loadFromFile(file)
-    local jsonStr = file.getContents()
+    local jsonStr = file.read()
     if not jsonStr or string.len(jsonStr) < 1 then
         Log.d("royal.Client:loadFromFile() - Cached royal.json file does not exist")
         return nil

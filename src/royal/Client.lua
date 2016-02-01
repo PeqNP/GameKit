@@ -6,6 +6,7 @@
 --
 
 require "json"
+require "HTTPResponseType"
 
 local Promise = require("Promise")
 local AdRequestCallback = require("royal.AdRequestCallback")
@@ -14,6 +15,7 @@ local Client = Class()
 
 function Client.new(self)
     local http
+    local writer
     local config
     local url
     local cachedManifest
@@ -27,8 +29,9 @@ function Client.new(self)
     local inTransaction = false
     local plistLoaded = false
 
-    function self.init(_http, _config, _url, _cachedManifest)
+    function self.init(_http, _writer, _config, _url, _cachedManifest)
         http = _http
+        writer = _writer
         config = _config
         url = _url
         cachedManifest = _cachedManifest
@@ -107,6 +110,10 @@ function Client.new(self)
         table.insert(requests, getRequest(file, responseType, callback))
     end
 
+    function self.setCachedManifest(m)
+        cachedManifest = m
+    end
+
     -- Returns the number of in-flight requests.
     function self.getNumRequests()
         return #requests
@@ -122,7 +129,7 @@ function Client.new(self)
         local filename = parts[#parts]
         local path = config.getPath(filename)
         local file = LuaFile(path)
-        file.setContents(response, "wb")
+        file.write(response, "wb")
         return path
     end
 
@@ -142,8 +149,8 @@ function Client.new(self)
             manifest = dlManifest
         end
         startTransaction()
-        pushRequest(config.getImageVariant() .. "/" .. config.getPlistFilename(), cc.XMLHTTPREQUEST_RESPONSE_STRING, callback__plist)
-        pushRequest(config.getImageVariant() .. "/" .. config.getImageFilename(), cc.XMLHTTPREQUEST_RESPONSE_BLOB, callback__file)
+        pushRequest(config.getImageVariant() .. "/" .. config.getPlistFilename(), HTTPResponseType.String, callback__plist)
+        pushRequest(config.getImageVariant() .. "/" .. config.getImageFilename(), HTTPResponseType.Blob, callback__file)
         commitTransaction()
     end
 
@@ -159,7 +166,7 @@ function Client.new(self)
         errors = {}
         promise = Promise()
         startTransaction()
-        pushRequest(config.getConfigFilename(), cc.XMLHTTPREQUEST_RESPONSE_STRING, callback__ads)
+        pushRequest(config.getConfigFilename(), HTTPResponseType.String, callback__ads)
         commitTransaction()
         return promise
     end
