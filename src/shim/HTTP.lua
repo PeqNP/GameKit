@@ -42,12 +42,13 @@ function HTTP.new(self)
             if request.status < 200 or request.status > 299 then
                 promise.reject(request.status, request.statusText)
             else
-                promise.resolve(request.status)
+                promise.resolve(request.status, request.response)
             end
         end
         request.responseType = self.getMappedResponseType(responseType)
         request:registerScriptHandler(callback__complete)
         request:open("GET", query, true)
+        request:send()
         return promise
     end
 end

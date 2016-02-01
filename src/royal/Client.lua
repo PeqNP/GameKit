@@ -13,10 +13,10 @@ local AdRequestCallback = require("royal.AdRequestCallback")
 local Client = Class()
 
 function Client.new(self)
+    local http
     local config
     local url
     local cachedManifest
-    local delegate
 
     local manifest
     local promise
@@ -24,12 +24,22 @@ function Client.new(self)
     local errors = {}
     local callbacks = {}
 
+    local inTransaction = false
     local plistLoaded = false
 
-    function self.init(_config, _url, _cachedManifest)
+    function self.init(_http, _config, _url, _cachedManifest)
+        http = _http
         config = _config
         url = _url
         cachedManifest = _cachedManifest
+    end
+
+    local function startTransaction()
+        inTransaction = true
+    end
+
+    local function commitTransaction()
+        inTransaction = false
     end
 
     local function clean()
@@ -43,6 +53,9 @@ function Client.new(self)
 
     local function finish()
         if #requests > 0 then
+            return
+        end
+        if inTransaction then
             return
         end
         local success = #errors == 0 and true or false
@@ -68,17 +81,14 @@ function Client.new(self)
     end
 
     local function getRequest(file, responseType, callback)
-        local fullpath = url .. file
-        Log.d("royal.Client:getRequest() - GET (%s)", fullpath)
-
-        local request = cc.XMLHttpRequest:new()
-        local function callback__complete()
-            -- @todo Process data; write to disk, etc.
-            if request.status < 200 or request.status > 299 then
-                table.insert(errors, request.statusText)
-            else
-                table.insert(callbacks, AdRequestCallback(callback, file, request.response))
-            end
+        local request = http.get(url .. file, responseType)
+        request.done(function(status, contents)
+            table.insert(callbacks, AdRequestCallback(callback, file, contents))
+        end)
+        request.fail(function(status, _error)
+            table.insert(errors, _error)
+        end)
+        request.always(function(status)
             local pos = 1
             for _, v in ipairs(requests) do
                 if v == request then
@@ -87,28 +97,14 @@ function Client.new(self)
                 end
                 pos = pos + 1
             end
-            Log.d("royal.Client:getRequest() - File (%s) status (%s)", fullpath, request.status)
+            Log.d("royal.Client:getRequest() - File (%s) status (%s)", file, status)
             finish()
-        end
-        request.responseType = responseType
-        request:registerScriptHandler(callback__complete)
-        request:open("GET", fullpath, true)
+        end)
         return request
     end
 
     local function pushRequest(file, responseType, callback)
         table.insert(requests, getRequest(file, responseType, callback))
-    end
-
-    local function sendRequests()
-        -- Create all requests at the same time. This is necessary to ensure
-        -- possible race-conditions which could prevent the promise to be
-        -- resolved prematurely. All requests must be known before we send
-        -- them.
-        for _, r in ipairs(requests) do
-            -- @fixme Do not send if already sent.
-            r:send()
-        end
     end
 
     -- Returns the number of in-flight requests.
@@ -145,9 +141,10 @@ function Client.new(self)
             callback__file(config.getConfigFilepath(), response)
             manifest = dlManifest
         end
+        startTransaction()
         pushRequest(config.getImageVariant() .. "/" .. config.getPlistFilename(), cc.XMLHTTPREQUEST_RESPONSE_STRING, callback__plist)
         pushRequest(config.getImageVariant() .. "/" .. config.getImageFilename(), cc.XMLHTTPREQUEST_RESPONSE_BLOB, callback__file)
-        sendRequests()
+        commitTransaction()
     end
 
     --
@@ -161,11 +158,11 @@ function Client.new(self)
         clean()
         errors = {}
         promise = Promise()
+        startTransaction()
         pushRequest(config.getConfigFilename(), cc.XMLHTTPREQUEST_RESPONSE_STRING, callback__ads)
-        sendRequests()
+        commitTransaction()
         return promise
     end
 end
-
 
 return Client
