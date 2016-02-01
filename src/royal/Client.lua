@@ -123,13 +123,11 @@ function Client.new(self)
     local function callback__file(file, response)
         -- Get only the last part of the file.
         local parts = string.split(file, "/")
-        local f = parts[#parts]
-        local p = config.getPath(f)
-        local fh = io.open(p, "wb")
-        io.output(fh)
-        io.write(response)
-        io.close(fh)
-        return p
+        local filename = parts[#parts]
+        local path = config.getPath(filename)
+        local file = LuaFile(path)
+        file.setContents(response, "wb")
+        return path
     end
 
     local function callback__plist(file, response)

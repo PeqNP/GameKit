@@ -4,7 +4,7 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
-LuaFile = Class()
+local LuaFile = Class()
 
 function LuaFile.new(self)
     local path
@@ -17,8 +17,11 @@ function LuaFile.new(self)
         return path
     end
 
-    function self.getContents()
-        local fh = io.open(path, "r")
+    function self.getContents(mode)
+        if not mode then
+            mode = "r"
+        end
+        local fh = io.open(path, mode)
         if not fh then
         io.input(fh)
         local blob = io.read("*all")
@@ -26,7 +29,15 @@ function LuaFile.new(self)
         return blob
     end
 
-    function self.setContents()
-        -- @todo
+    function self.setContents(contents, mode)
+        if not mode then
+            mode = "w"
+        end
+        local fh = io.open(path, mode)
+        io.output(fh)
+        io.write(contents)
+        io.close(fh)
     end
 end
+
+return LuaFile
