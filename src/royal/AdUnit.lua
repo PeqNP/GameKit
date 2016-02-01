@@ -1,74 +1,65 @@
---[[ Provides an AdUnit, a structure that defines the version, id and tiers
-     of a given Ad.
-
- @since 2015.05.27
- @copyright Upstart Illustration LLC
-
---]]
-
-local AdTier = require("royal.AdTier")
+--
+-- Provides an AdUnit, a structure that defines the version, id and tiers
+-- of a given Ad.
+--
+-- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
+--
 
 local AdUnit = Class()
 
---[[ Create a new AdUnit.
-
-  @param id - id of the AdUnit
-  @param tiers - the individual tiers that provide reward/config info, for a given state within the app.
---]]
 function AdUnit.new(self)
-    local tiers
+    local id
+    local startDate
+    local endDate
+    local url
+    local reward
+    local title
+    local config
 
-    function self.init(id, startdate, enddate, waitsecs, maxclicks, _tiers)
-        self.id = id
-        self.startdate = startdate
-        self.enddate = enddate
-        self.waitsecs = waitsecs
-        self.maxclicks = maxclicks
-
-        self.setTiers(_tiers)
-    end
-
-    function convertDictionaryToAdTiers(t)
-        if not t then
-            return {}
-        end
-        local ret = {}
-        for _, dict in ipairs(t) do
-            if dict.getClass then -- This is assumed to be an AdTier.
-                table.insert(ret, dict)
-            else
-                table.insert(ret, AdTier(dict["id"], dict["url"], dict["reward"], dict["title"], dict["waitsecs"], dict["maxclicks"], dict["config"]))
-            end
-        end
-        return ret
-    end
-
-    function self.setTiers(t)
-        tiers = convertDictionaryToAdTiers(t)
-    end
-
-    function self.getTiers()
-        return tiers
+    function self.init(id, startdate, enddate, url, reward, title, config)
+        id = _id
+        startDate = _startDate
+        endDate = _endDate
+        url = _url
+        reward = _reward
+        title = _title
+        config = _config
     end
 
     function self.isActive()
         local ctime = socket.gettime()
-        if ctime < self.startdate or ctime > self.enddate then
+        if ctime < startdate or ctime > enddate then
             return false
         end
+        return true
+    end
 
-        local active = 0
-        local totalClicks = 0
-        for _, tier in ipairs(tiers) do
-            totalClicks = totalClicks + tier.getNumClicks()
-            if totalClicks >= self.maxclicks then
-                return false
-            end
-            if not tier.isActive() then
-                active = active + 1
-            end
-        end
-        return active ~= #tiers
+    function self.getId()
+        return id
+    end
+
+    function self.getStartDate()
+        return startDate
+    end
+
+    function self.getEndDate()
+        return endDate
+    end
+
+    function self.getURL()
+        return url
+    end
+
+    function self.getReward()
+        return reward
+    end
+
+    function self.getTitle()
+        return title
+    end
+
+    function self.getConfig()
+        return config
     end
 end
 

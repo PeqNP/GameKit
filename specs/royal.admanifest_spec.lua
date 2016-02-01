@@ -2,46 +2,34 @@ require "lang.Signal"
 
 local AdManifest = require("royal.AdManifest")
 local AdUnit = require("royal.AdUnit")
+local LuaFile = require("LuaFile")
 
 describe("AdManifest", function()
     local subject
-
-    local version
     local created
     local ttl
     local units
 
     before_each(function()
-        version = 1
         created = 1433289600
-        ttl = 86500
         units = {{
             id = 1
           , startdate = 15
           , enddate = 16
-          , waitsecs = 30
-          , maxclicks = 10
-          , tiers = {}
+          , url = "http://www.example.com"
+          , reward = 25
+          , title = "Title..."
+          , config = {}
         }}
-        subject = AdManifest(version, created, ttl, units)
+        subject = AdManifest(created, units)
     end)
 
     it("should have set all values", function()
-        assert.equals(1, subject.getVersion())
         assert.equals(1433289600, subject.getCreated())
-        assert.equals(86500, subject.getTtl())
     end)
 
     it("should have created AdUnit from dictionary", function()
-        local units = subject.getAdUnits()
-        assert.equal(1, #units)
-        local unit = units[1]
-        assert.truthy(unit.kindOf(AdUnit))
-        assert.equal(1, unit.id)
-        assert.equal(15, unit.startdate)
-        assert.equal(16, unit.enddate)
-        assert.equal(30, unit.waitsecs)
-        assert.equal(10, unit.maxclicks)
+        assert.equal(units, subject.getAdUnits())
     end)
 
     describe("isActive", function()
@@ -59,41 +47,114 @@ describe("AdManifest", function()
     end)
 
     describe("setAdUnits", function()
-        describe("when the ad tiers are a dictionary", function()
-            before_each(function()
-                units = {{
-                    id = 4
-                  , startedate = 1
-                  , enddate = 2
-                  , waitsecs = 30
-                  , maxclicks = 2
-                  , tiers = {}
-                }}
-                subject.setAdUnits(units)
-            end)
+        local new_units
 
-            it("should have set the ad units", function()
-                local adUnits = subject.getAdUnits()
-                assert.equals(1, #adUnits)
-                local unit = adUnits[1]
-                assert.truthy(unit.kindOf(AdUnit))
-                assert.equal(4, unit.id)
-            end)
+        before_each(function()
+            new_units = {}
+            subject.setAdUnits(new_units)
         end)
 
-        describe("when the ad tiers are objects", function()
-            local unit
+        it("should have set the ad units", function()
+            assert.equal(new_units, subject.getAdUnits())
+        end)
+    end)
+end)
 
-            before_each(function()
-                unit = AdUnit(5, 4, 5, 30, 1, {})
-                subject.setAdUnits({unit})
-            end)
+describe("convert dictionary into AdManifest", function()
+    local manifest
 
-            it("should have set the ad units", function()
-                local adUnits = subject.getAdUnits()
-                assert.equals(1, #adUnits)
-                assert.equal(unit, adUnits[1])
-            end)
+    before_each(function()
+        -- config will be triggered on evolution 1,4,5 and when the game ends.
+        local jsonStr = "{'created': 10000, 'units': [{'id': 2, 'startdate': 4,  'enddate': 5, 'url': 'http://www.example.com/endpoint', 'reward': 25, 'title': 'A title!', 'config': [1,4,5,'END']}]}}"
+        local jsonDict = json.decode(jsonStr)
+        manifest = AdManifest.fromDictionary(file)
+    end)
+
+    it("should have inflated AdManifest completely", function()
+        assert.truthy(manifest)
+        assert.equal(AdManifest, manifest.getClass())
+        assert.equal(10000, manifest.getCreated())
+
+        local units = manifest.getAdUnits()
+        assert.equal(1, #units)
+
+        local unit = units[1]
+        assert.equal(2, unit.getId())
+        assert.equal(4, unit.getStartDate())
+        assert.equal(5, unit.getEndDate())
+        assert.equal("http://www.example.com/endpoint", unit.getURL())
+        assert.equal(25, unit.getReward())
+        assert.equal("A title!", unit.getTitle())
+        assert.truthy(table.equals([1,4,5,'END'], unit.getConfig()))
+    end)
+end)
+
+describe("load manifest from file", function()
+    local file
+    local manifest
+
+    before_each(function()
+        file = LuaFile("/path/to/royal.json")
+    end)
+
+    describe("when the file exists", function()
+        local fakeManifest
+
+        before_each(function()
+            fakeManifest = AdManifest()
+            stub(file, "getContents")
+            stub(AdManifest, "fromDictionary", fakeManifest)
+
+            manifest = AdManifest.loadFromFile(file)
+        end)
+
+        it("should have called method to convert JSON into AdManifest", function()
+            assert.equal(fakeManifest, manifest)
+        end)
+    end)
+
+    describe("when the file is corrupt", function()
+        before_each(function()
+            -- partial data write.
+            local jsonStr = "{'version': 1, 'created': 10000, 'ttl': 86500, 'units': [{'id': 2, 'reward': 25, 'startdate': 4, 'enddate': 5, 'waitsecs': 86400, 'conf"
+            stub(file, "getContents", jsonStr)
+            stub(AdManifest, "fromDictionary")
+
+            manifest = AdManifest.loadFromFile(file)
+        end)
+
+        it("should have called method to convert JSON into AdManifest", function()
+            assert.falsy(manifest)
+        end)
+
+        it("should not have attempted to create a dictionary", function()
+            assert.stub(AdManifst.fromDictionary).was_not.called()
+        end)
+    end)
+
+    describe("when the file contains no data", function()
+        before_each(function()
+            stub(AdManifestParser.singleton, "fromDictionary")
+            stub(file, "getContents", "")
+
+            local manifest = subject.loadFromFile(file)
+        end)
+
+        it("should not have created a manfiest", function()
+            assert.falsy(manifest)
+        end)
+    end)
+
+    describe("when the file does not exist", function()
+        before_each(function()
+            stub(AdManifestParser.singleton, "fromDictionary")
+            stub(file, "getContents", nil)
+            
+            local manifest = subject.loadFromFile(file)
+        end)
+
+        it("should not have created a manifest", function()
+            assert.falsy(manifest)
         end)
     end)
 end)

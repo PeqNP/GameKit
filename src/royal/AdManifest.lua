@@ -1,6 +1,7 @@
 --
--- Provides an AdManifest, a structure that defines the version and TTL
--- of AdUnits.
+-- Provides payload for AdUnits. The payload is necessary to determine whether
+-- an AdManifest is older than another. This is then used to download respective
+-- assets.
 --
 -- @copyright Upstart Illustration LLC
 --
@@ -14,12 +15,10 @@ local AdManifest = Class()
 
 function AdManifest.new(self)
     local created
-    local ttl
     local units
 
-    function self.init(_created, _ttl, _units)
+    function self.init(_created, _units)
         created = _created
-        ttl = _ttl
         units = _units
     end
 
@@ -29,10 +28,6 @@ function AdManifest.new(self)
 
     function self.getCreated()
         return created
-    end
-
-    function self.getTtl()
-        return ttl
     end
 
     function self.setAdUnits(u)
@@ -51,7 +46,7 @@ end
 function AdManifest.fromDictionary(dict)
     local units = {}
     for _, dict in ipairs(dict["units"]) do
-        table.insert(units, AdUnit(dict["id"], dict["startdate"], dict["enddate"], dict["waitsecs"], dict["maxclicks"], dict["tiers"]))
+        table.insert(units, AdTier(dict["id"], dict["startdate"], dict["enddate"], dict["url"], dict["reward"], dict["title"], dict["config"]))
     end
     local manifest = AdManifest(dict["created"], dict["ttl"], units)
 end
@@ -60,17 +55,11 @@ end
 -- Load config from cache. This step is necessary before downloading to ensure
 -- that assets are not re-downloaded.
 --
-function AdManifest.loadFromFilepath(path)
-    local fh = io.open(path, "r")
-    if not fh then
-        return nil
-    end
-    io.input(fh)
-    local jsonStr = io.read("*all")
-    io.close(fh)
+function AdManifest.loadFromFile(file)
+    local jsonStr = file.getContents()
     if not jsonStr or string.len(jsonStr) < 1 then
-        Log.d("royal.Client:loadFromCache() - Cached royal.json file does not exist")
-        return
+        Log.d("royal.Client:loadFromFile() - Cached royal.json file does not exist")
+        return nil
     end
     local dict = json.decode(jsonStr)
     return AdManifest.fromDictionary(dict)
