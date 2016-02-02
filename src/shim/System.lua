@@ -311,8 +311,12 @@ function shim.Sprite(...)
     return cc.Sprite:create(...)
 end
 
-function shim.SpriteButton(...)
-    return cc.MenuItemSprite:create(...)
+function shim.SpriteButton(normal, selected, disabled, callback)
+    local button = cc.MenuItemSprite:create(normal, selected, disabled)
+    if callback then
+        button:registerScriptTapHandler(callback)
+    end
+    return button
 end
 
 -- ----- Utility ------

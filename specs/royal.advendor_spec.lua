@@ -4,49 +4,40 @@ require "Logger"
 
 Log.setLevel(LogLevel.Info)
 
-local shim = require("shim.System")
+local AdStylizer = require("royal.AdStylizer")
 local AdConfig = require("royal.AdConfig")
 local AdVendor = require("royal.AdVendor")
-local AdTier = require("royal.AdTier")
 local AdUnit = require("royal.AdUnit")
 local AdManifest = require("royal.AdManifest")
 
-AdConfig.singleton.setBasePath("/path/")
-
 describe("AdVendor", function()
-    local subject = false
+    local subject
+    local stylizer
 
     local evolutions
 
     local adUnit1
     local adUnit2
     local adUnit3
-    local tier1
-    local tier2
-    local tier3
-    local tier4
-    local tier5
 
     local fn__callback
     local wasCalled
-    local tier
+    local adUnit
+
+    -- Convenience method to print all memory addresses of ad units. Used for debugging
+    -- only.
+    local function print_ad_units(adUnit)
+        print("adUnit1", adUnit1)
+        print("adUnit2", adUnit2)
+        print("adUnit3", adUnit3)
+        print("Actual:", adUnit)
+    end
     
     before_each(function()
-        -- Prevent AdTier from loading clicks from disk.
-        stub(io, "open")
-        stub(io, "input")
-        stub(io, "output")
-        stub(io, "read")
-        stub(io, "write")
-        stub(io, "close")
-
-        evolutions = {}
-
         wasCalled = false
-        tier = false
-        fn__callback = function(t)
+        fn__callback = function(_adUnit)
             wasCalled = true
-            tier = t
+            adUnit = _adUnit
         end
 
         local function fn__shouldShowTier(config)
@@ -54,84 +45,92 @@ describe("AdVendor", function()
                 return false
             end
             for _, v in ipairs(evolutions) do
-                if v == config.evolution then
-                    return true
+                if table.contains(config.evolutions, v) then
+                    return true, config.evolution
                 end
             end
             return false
         end
 
-        tier1 = AdTier(1000, "http://www.example.com/tier/1000", 20, "Click 1", 86400, 1, {evolution = 3})
-        tier2 = AdTier(1001, "http://www.example.com/tier/1001", 50, "Click 2", 86400, 2, {evolution = 6})
-        tier3 = AdTier(1002, "http://www.example.com/tier/1002", 70, "Click 3", 86400, 1, {evolution = 9})
-        adUnit1 = AdUnit(100, 86400, 86500, 4, 86400, {tier1, tier2, tier3})
+        adUnit1 = AdUnit(100, 86400, 86500, "http://www.example.com/click1", 1000, "Title1", {evolutions={3,6,9}})
+        -- NOTE: Ad units 2 and 3 have no config and, therefore, are always true.
+        adUnit2 = AdUnit(200, 85000, 87000, "http://www.example.com/click2", 2000, "Title2")
+        adUnit3 = AdUnit(300, 85000, 87000, "http://www.example.com/click3", 3000, "Title3")
 
-        tier4 = AdTier(2000, "http://www.example.com/tier/2000", 100, "Click 4", 86400, 1)
-        stub(tier4, "isActive", true)
-        adUnit2 = AdUnit(200, 85000, 87000, 1, 86400, {tier4})
-        stub(adUnit2, "isActive", true)
-
-        tier5 = AdTier(3000, "http://www.example.com/tier/3000", 100, "Click 5", 86400, 1)
-        stub(tier5, "isActive", true)
-        adUnit3 = AdUnit(300, 85000, 87000, 1, 86400, {tier5})
-        stub(adUnit3, "isActive", true)
-
-        local manifest = AdManifest()
-        manifest.setAdUnits({adUnit1, adUnit2, adUnit3})
-        subject = AdVendor(manifest, fn__shouldShowTier)
+        stylizer = AdStylizer()
+        subject = AdVendor(stylizer, {adUnit1, adUnit2, adUnit3}, fn__shouldShowTier)
     end)
 
-    describe("getNextTiers", function()
-        before_each(function()
-            spy.on(shim, "SpriteButton")
+    pending("isActive")
 
-            evolutions = {3, 6, 9}
+    describe("when getting ad units", function()
+        local ads
+
+        context("when the evolutions are in ad unit 1", function()
+            before_each(function()
+                evolutions = {3, 6, 9}
+            end)
+
+            describe("when all ad units are active", function()
+                before_each(function()
+                    stub(adUnit1, "isActive", true)
+                    stub(adUnit2, "isActive", true)
+                    stub(adUnit3, "isActive", true)
+
+                    ads = subject.getNextAdUnits(1, fn__callback)
+                end)
+
+                it("should return the second ad unit #f", function()
+                    assert.equals(adUnit1, ads[1])
+                end)
+            end)
+
+            describe("when the first ad unit is inactive", function()
+                before_each(function()
+                    stub(adUnit1, "isActive", false)
+                    stub(adUnit2, "isActive", true)
+                    stub(adUnit3, "isActive", true)
+
+                    ads = subject.getNextAdUnits(1, fn__callback)
+                end)
+
+                it("should return the second ad unit", function()
+                    assert.equals(adUnit2, ads[1])
+                end)
+            end)
+
+            describe("when all ad units are inactive", function()
+                before_each(function()
+                    stub(adUnit1, "isActive", false)
+                    stub(adUnit2, "isActive", false)
+                    stub(adUnit3, "isActive", false)
+
+                    ads = subject.getNextAdUnits(1, fn__callback)
+                end)
+
+                it("should return no ads", function()
+                    assert.equals(0, #ads)
+                end)
+            end)
         end)
 
-        describe("when the first button's tier is inactive", function()
+        context("when the evolutions are NOT in ad unit 1", function()
             before_each(function()
-                stub(adUnit1, "isActive", true)
-                stub(tier1, "isActive", false)
-                stub(tier2, "isActive", true)
-                stub(tier3, "isActive", true)
-
-                buttons = subject.getNextTierButtons(1, fn__callback)
-                buttons[1]:activate()
+                evolutions = {7}
             end)
 
-            it("should have returned/clicked the second tier", function()
-                assert.equals(1001, tier.id)
-            end)
+            describe("when all the ad units are active", function()
+                before_each(function()
+                    stub(adUnit1, "isActive", true)
+                    stub(adUnit2, "isActive", true)
+                    stub(adUnit3, "isActive", true)
 
-            it("should have made call to create a button sprite", function()
-                assert.stub(shim.SpriteButton).was.called()
-            end)
-        end)
+                    ads = subject.getNextAdUnits(1, fn__callback)
+                end)
 
-        describe("when the first ad unit is inactive", function()
-            before_each(function()
-                stub(adUnit1, "isActive", false)
-
-                buttons = subject.getNextTierButtons(1, fn__callback)
-                buttons[1]:activate()
-            end)
-
-            it("should have returned/clicked the second ad unit's first tier", function()
-                assert.equals(2000, tier.id)
-            end)
-        end)
-
-        describe("when all buttons are inactive", function()
-            before_each(function()
-                stub(adUnit1, "isActive", false)
-                stub(adUnit2, "isActive", false)
-                stub(adUnit3, "isActive", false)
-
-                buttons = subject.getNextTierButtons(1, fn__callback)
-            end)
-
-            it("should return no buttons", function()
-                assert.equals(0, #buttons)
+                it("should return the second ad unit", function()
+                    assert.equals(adUnit2, ads[1])
+                end)
             end)
         end)
     end)
@@ -143,11 +142,9 @@ describe("AdVendor", function()
             evolutions = {3, 6, 9}
 
             stub(adUnit1, "isActive", true)
-            stub(tier1, "isActive", true)
-            stub(tier2, "isActive", true)
-            stub(tier3, "isActive", true)
-
-            ads = subject.getNextTiers(4)
+            stub(adUnit2, "isActive", true)
+            stub(adUnit3, "isActive", true)
+            ads = subject.getNextAdUnits(4)
         end)
 
         it("should only return the total number of ads", function()
@@ -155,24 +152,23 @@ describe("AdVendor", function()
         end)
 
         it("should have returned the correct ads", function()
-            assert.equals(tier1, ads[1])
-            assert.equals(tier4, ads[2])
-            assert.equals(tier5, ads[3])
+            assert.equals(adUnit1, ads[1])
+            assert.equals(adUnit2, ads[2])
+            assert.equals(adUnit3, ads[3])
         end)
     end)
 
-    describe("when getting ads within the total number of ads", function()
+    describe("when getting ad units sequentially", function()
         local ads
 
         before_each(function()
             evolutions = {3, 6, 9}
 
             stub(adUnit1, "isActive", true)
-            stub(tier1, "isActive", true)
-            stub(tier2, "isActive", true)
-            stub(tier3, "isActive", true)
+            stub(adUnit2, "isActive", true)
+            stub(adUnit3, "isActive", true)
 
-            ads = subject.getNextTiers(1)
+            ads = subject.getNextAdUnits(1)
         end)
 
         it("should have returned only one ad unit", function()
@@ -180,71 +176,71 @@ describe("AdVendor", function()
         end)
 
         it("should have returned the first ad", function()
-            assert.equals(1000, ads[1].id)
+            assert.equals(adUnit1, ads[1])
         end)
 
         describe("call 2", function()
             before_each(function()
-                ads = subject.getNextTiers(1)
+                ads = subject.getNextAdUnits(1)
             end)
 
             it("should have returned only one ad unit", function()
                 assert.equals(1, #ads)
             end)
 
-            it("should have returned the first ad", function()
-                assert.equals(2000, ads[1].id)
+            it("should have returned the second ad", function()
+                assert.equals(adUnit2, ads[1])
             end)
 
             describe("call 3", function()
                 before_each(function()
-                    ads = subject.getNextTiers(1)
+                    ads = subject.getNextAdUnits(1)
                 end)
 
                 it("should have returned only one ad unit", function()
                     assert.equals(1, #ads)
                 end)
 
-                it("should have returned the first ad", function()
-                    assert.equals(3000, ads[1].id)
+                it("should have returned the third ad", function()
+                    assert.equals(adUnit3, ads[1])
                 end)
 
-                describe("when querying for two ad units", function()
+                describe("when querying for two additional ad units", function()
                     before_each(function()
-                        ads = subject.getNextTiers(2)
+                        ads = subject.getNextAdUnits(2)
                     end)
 
-                    it("should have returned only one ad unit", function()
+                    it("should have returned two ad units", function()
                         assert.equals(2, #ads)
                     end)
 
                     it("should have returned the first two ads", function()
-                        assert.equals(1000, ads[1].id)
-                        assert.equals(2000, ads[2].id)
+                        assert.equals(adUnit1, ads[1])
+                        assert.equals(adUnit2, ads[2])
                     end)
 
                     describe("call 4", function()
                         before_each(function()
-                            ads = subject.getNextTiers(2)
+                            ads = subject.getNextAdUnits(2)
                         end)
 
-                        it("should have returned only one ad unit", function()
+                        it("should have returned two ad units", function()
                             assert.equals(2, #ads)
                         end)
 
-                        it("should have returned the last and first ad", function()
-                            assert.equals(3000, ads[1].id)
-                            assert.equals(1000, ads[2].id)
+                        it("should have returned the last and first ad (round-robin)", function()
+                            assert.equals(adUnit3, ads[1])
+                            assert.equals(adUnit1, ads[2])
                         end)
 
                         describe("when the position is reset", function()
                             before_each(function()
                                 subject.reset()
-                                ads = subject.getNextTiers(1)
+                                ads = subject.getNextAdUnits(1)
                             end)
 
                             it("should have returned the first button", function()
-                                assert.equals(1000, ads[1].id)
+                                assert.equals(adUnit1, ads[1])
                             end)
                         end)
                     end)
@@ -253,7 +249,7 @@ describe("AdVendor", function()
         end)
     end)
 
-    describe("getNextTierButtons", function()
+    describe("get ad unit buttons", function()
         local buttons
         
         describe("when the evolution is 3", function()
@@ -261,11 +257,10 @@ describe("AdVendor", function()
                 evolutions = {3}
 
                 stub(adUnit1, "isActive", true)
-                stub(tier1, "isActive", true)
-                stub(tier2, "isActive", true)
-                stub(tier3, "isActive", true)
+                stub(adUnit2, "isActive", true)
+                stub(adUnit3, "isActive", true)
 
-                buttons = subject.getNextTierButtons(1, fn__callback)
+                buttons = subject.getNextAdUnitButtons(1, fn__callback)
             end)
 
             it("should return one button", function()
@@ -285,22 +280,21 @@ describe("AdVendor", function()
                     assert.truthy(wasCalled)
                 end)
 
-                it("should have returned tier w/ id 1000", function()
-                    assert.equals(1000, tier.id)
+                it("should have returned the first ad unit", function()
+                    assert.equals(adUnit1, adUnit)
                 end)
             end)
         end)
 
-        describe("when the evolution is 9", function()
+        describe("when the evolution is 7 (does not include ad unit 1)", function()
             before_each(function()
-                evolutions = {9}
+                evolutions = {7}
 
                 stub(adUnit1, "isActive", true)
-                stub(tier1, "isActive", true)
-                stub(tier2, "isActive", true)
-                stub(tier3, "isActive", true)
+                stub(adUnit2, "isActive", true)
+                stub(adUnit3, "isActive", true)
 
-                buttons = subject.getNextTierButtons(1, fn__callback)
+                buttons = subject.getNextAdUnitButtons(1, fn__callback)
             end)
 
             it("should return one button", function()
@@ -311,7 +305,7 @@ describe("AdVendor", function()
                 assert.falsy(wasCalled)
             end)
 
-            describe("when the first button is tapped", function()
+            describe("when the button is tapped", function()
                 before_each(function()
                     buttons[1]:activate()
                 end)
@@ -320,8 +314,8 @@ describe("AdVendor", function()
                     assert.truthy(wasCalled)
                 end)
 
-                it("should have returned tier w/ id 1000", function()
-                    assert.equals(1002, tier.id)
+                it("should have returned the second ad unit", function()
+                    assert.equals(adUnit2, adUnit)
                 end)
             end)
         end)

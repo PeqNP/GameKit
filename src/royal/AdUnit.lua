@@ -16,7 +16,7 @@ function AdUnit.new(self)
     local title
     local config
 
-    function self.init(id, startdate, enddate, url, reward, title, config)
+    function self.init(_id, _startDate, _endDate, _url, _reward, _title, _config)
         id = _id
         startDate = _startDate
         endDate = _endDate
@@ -28,7 +28,7 @@ function AdUnit.new(self)
 
     function self.isActive()
         local ctime = socket.gettime()
-        if ctime < startdate or ctime > enddate then
+        if ctime < startDate or ctime > endDate then
             return false
         end
         return true
@@ -60,6 +60,14 @@ function AdUnit.new(self)
 
     function self.getConfig()
         return config
+    end
+
+    function self.getBannerName()
+        return string.format("banner-%s.png", id)
+    end
+
+    function self.getButtonName()
+        return string.format("button-%s.png", id)
     end
 end
 
