@@ -32,7 +32,7 @@ function AdConfig.new(self)
         return imageVariant
     end
 
-    function elf.getImageFilename()
+    function self.getImageFilename()
         return "royal.png"
     end
 
@@ -45,16 +45,16 @@ function AdConfig.new(self)
     end
 
     function self.getImageFilepath()
-        return config.getPath(self.getImageFilename())
+        return self.getPath(self.getImageFilename())
     end
 
     -- Returns the path where the plist file will be/was saved locally.
     function self.getPlistFilepath()
-        return config.getPath(self.getPlistFilename())
+        return self.getPath(self.getPlistFilename())
     end
 
     function self.getConfigFilepath()
-        return config.getPath(self.getConfigFilename())
+        return self.getPath(self.getConfigFilename())
     end
 end
 

@@ -9,7 +9,8 @@ require "json"
 require "HTTPResponseType"
 
 local Promise = require("Promise")
-local AdRequestCallback = require("royal.AdRequestCallback")
+local AdManifest = require("royal.AdManifest")
+local Error = require("Error")
 
 local Client = Class()
 
@@ -18,7 +19,6 @@ function Client.new(self)
     local writer
     local config
     local url
-    local cachedManifest
 
     local manifest
     local promise
@@ -26,27 +26,18 @@ function Client.new(self)
     local errors = {}
     local callbacks = {}
 
-    local inTransaction = false
     local plistLoaded = false
 
-    function self.init(_http, _writer, _config, _url, _cachedManifest)
+    function self.init(_http, _writer, _config, _url)
         http = _http
         writer = _writer
         config = _config
         url = _url
-        cachedManifest = _cachedManifest
-    end
-
-    local function startTransaction()
-        inTransaction = true
-    end
-
-    local function commitTransaction()
-        inTransaction = false
     end
 
     local function clean()
         callbacks = {}
+        errors = {}
 
         if plistLoaded then
             cc.SpriteFrameCache:getInstance():removeSpriteFrames(config.getPlistFilepath())
@@ -54,104 +45,53 @@ function Client.new(self)
         end
     end
 
-    local function finish()
-        if #requests > 0 then
-            return
-        end
-        if inTransaction then
-            return
-        end
-        local success = #errors == 0 and true or false
-        if success then
-            for _, c in ipairs(callbacks) do
-                c.execute()
-            end
-            -- @note More requests may have been added to the stack since
-            -- 'execute' was called.
-            if #requests == 0 then
-                -- @todo Probably need to set the search resolution path to this path.
-                cc.SpriteFrameCache:getInstance():addSpriteFrames(config.getPlistFilepath())
-                plistLoaded = true
-                promise.resolve(manifest)
-            else
-                -- Clean callbacks if there are more requests.
-                callbacks = {}
-            end
-        else
-            clean()
-            promise.reject(Error(1, "Failed to download Royal ad config."))
-        end
-    end
-
     local function getRequest(file, responseType, callback)
         local request = http.get(url .. file, responseType)
         request.done(function(status, contents)
-            table.insert(callbacks, AdRequestCallback(callback, file, contents))
+            if callback then
+                callback(file, contents)
+            end
         end)
         request.fail(function(status, _error)
             table.insert(errors, _error)
         end)
         request.always(function(status)
-            local pos = 1
-            for _, v in ipairs(requests) do
-                if v == request then
-                    table.remove(requests, pos)
-                    break
-                end
-                pos = pos + 1
-            end
             Log.d("royal.Client:getRequest() - File (%s) status (%s)", file, status)
-            finish()
         end)
         return request
-    end
-
-    local function pushRequest(file, responseType, callback)
-        table.insert(requests, getRequest(file, responseType, callback))
-    end
-
-    function self.setCachedManifest(m)
-        cachedManifest = m
-    end
-
-    -- Returns the number of in-flight requests.
-    function self.getNumRequests()
-        return #requests
     end
 
     function self.getErrors()
         return errors
     end
 
-    local function callback__file(file, response)
-        -- Get only the last part of the file.
+    local function writeFile(file, contents)
+        -- Get only the last part of the file (remove 'sd', 'hd', etc.)
         local parts = string.split(file, "/")
         local filename = parts[#parts]
         local path = config.getPath(filename)
-        local file = LuaFile(path)
-        file.write(response, "wb")
+        writer.write(path, response, "wb")
         return path
     end
 
-    local function callback__plist(file, response)
-        local p = callback__file(file, response)
+    local function writeManifest(contents, cachedManifest)
+        local dict = json.decode(contents)
+        local manifest = AdManifest.fromDictionary(dict)
+        if cachedManifest and cachedManifest.isActive(manifest.getCreated()) then
+            Log.i("royal.Client:callback__ads() - Using cached manifest")
+            return cachedManifest, false
+        end
+        Log.i("royal.Client:callback__ads() - Saving manifest to cache")
+        writeFile(config.getConfigFilename(), contents)
+        return manifest, true
     end
 
-    local function callback__ads(file, response)
-        local dict = json.decode(response)
-        local dlManifest = AdManifestParser.singleton.fromDictionary(dict)
-        if cachedManifest and cachedManifest.isActive(dlManifest.getCreated()) then
-            Log.i("royal.Client:callback__ads() - Using cached manifest")
-            return
-        else
-            Log.i("royal.Client:callback__ads() - Saving manifest to cache")
-            callback__file(config.getConfigFilepath(), response)
-            manifest = dlManifest
-        end
-        startTransaction()
-        pushRequest(config.getImageVariant() .. "/" .. config.getPlistFilename(), HTTPResponseType.String, callback__plist)
-        pushRequest(config.getImageVariant() .. "/" .. config.getImageFilename(), HTTPResponseType.Blob, callback__file)
-        commitTransaction()
+    local function downloadResources(manifest)
+        local promises = {
+            getRequest(config.getImageVariant() .. "/" .. config.getPlistFilename(), HTTPResponseType.String, writeFile),
+            getRequest(config.getImageVariant() .. "/" .. config.getImageFilename(), HTTPResponseType.Blob, writeFile)
+        }
+        return Promise.when(promises)
     end
 
     --
@@ -161,13 +101,30 @@ function Client.new(self)
     --
     -- @return Promise
     --
-    function self.fetchConfig()
+    function self.fetchConfig(cachedManifest)
         clean()
-        errors = {}
         promise = Promise()
-        startTransaction()
-        pushRequest(config.getConfigFilename(), HTTPResponseType.String, callback__ads)
-        commitTransaction()
+        local request = getRequest(config.getConfigFilename(), HTTPResponseType.String)
+        request.done(function(status, contents)
+            local manifest, download = writeManifest(contents, cachedManifest)
+            if download then
+                local promise = downloadResources()
+                promise.done(function()
+                    -- @todo Should this add the sprite frames immediately?
+                    cc.SpriteFrameCache:getInstance():addSpriteFrames(config.getPlistFilepath())
+                    plistLoaded = true
+                    promise.resolve(manifest)
+                end)
+                promise.fail(function(status, _error)
+                    promise.reject(Error(status, _error))
+                end)
+            else
+                promise.resolve(manifest)
+            end
+        end)
+        request.fail(function(status, _error)
+            promise.reject(Error(status, _error))
+        end)
         return promise
     end
 end

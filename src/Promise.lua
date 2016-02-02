@@ -27,7 +27,7 @@ function Promise.new(self)
 
     function self.reject(...)
         local arg = {...}
-        assert(_state == 'pending')
+        assert(_state == 'pending', "Trying to resolve a promise that has already been resolved")
         _value = arg
         _state = 'rejected'
 
@@ -41,7 +41,7 @@ function Promise.new(self)
 
     function self.resolve(...)
         local arg = {...}
-        assert(_state == 'pending')
+        assert(_state == 'pending', "Trying to resolve a promise that has already been resolved")
         _value = arg
         _state = 'resolved'
 
@@ -55,7 +55,7 @@ function Promise.new(self)
 
     function self.notify(...)
         local arg = {...}
-        assert(_state == 'pending')
+        assert(_state == 'pending', "Trying to resolve a promise that has already been resolved")
         for i,v in ipairs(_callbacks) do
             if v.event == 'progress' then
                 v.callback(null_or_unpack(arg))
@@ -105,8 +105,12 @@ function Promise.new(self)
     -- utility functions
     --
 
-    function self.state()
+    function self.getState()
         return _state
+    end
+
+    function self.isComplete()
+        return table.contains({"rejected", "resolved"}, _state)
     end
 end
 
@@ -130,7 +134,7 @@ function Promise.when(...)
         if (v and type(v) == 'table' and v.is_deferred) then
             local promise = v
             v.always(function(val)
-                if promise.state() == 'rejected' then
+                if promise.getState() == 'rejected' then
                     failed = failed + 1
                 end
                 completed = completed + 1

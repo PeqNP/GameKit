@@ -2,64 +2,55 @@ require "lang.Signal"
 
 local Promise = require("Promise" )
 
-describe("new", function()
-
-	it('can construct', function()
-		local promise = Promise()
-		assert.truthy(promise.state)
-		assert.truthy(promise.reject)
-		assert.truthy(promise.resolve)
-		assert.truthy(promise.notify)
-		assert.truthy(promise.always)
-		assert.truthy(promise.done)
-		assert.truthy(promise.fail)
-		assert.truthy(promise.progress)
-	end)
-
-end)
-
 describe("resolve", function()
-
 	it("should pass in the accepted value", function()
 		local val, test = 'pizza'
 		local p = Promise()
 		p.done(function(x) test = x end)
+        assert.falsy(p.isComplete())
 		p.resolve(val)
 		assert.equals(val, test)
+        assert.equal("resolved", p.getState())
+        assert.truthy(p.isComplete())
 	end)
 
-	it("will directly call callback if it is already resolved", function()
+	it("should directly call callback if it is already resolved", function()
 		local val, test = 'pizza'
 		local p = Promise()
+        assert.falsy(p.isComplete())
 		p.resolve(val)
 		p.done(function(x) test = x end)
 		assert.equals(val, test)
+        assert.equal("resolved", p.getState())
+        assert.truthy(p.isComplete())
 	end)
-
 end)
 
 describe("reject", function()
-
 	it("should pass in the accepted value", function()
 		local val, test = 'pizza'
 		local p = Promise()
+        assert.falsy(p.isComplete())
 		p.fail(function(x) test = x end)
 		p.reject(val)
 		assert.equals(val, test)
+        assert.equal("rejected", p.getState())
+        assert.truthy(p.isComplete())
 	end)
 
-	it("will directly call callback if it is already rejected", function()
+	it("should directly call callback if it is already rejected", function()
 		local val, test = 'pizza'
 		local p = Promise()
+        assert.falsy(p.isComplete())
 		p.reject(val)
 		p.fail(function(x) test = x end)
 		assert.equals(val, test)
+        assert.equal("rejected", p.getState())
+        assert.truthy(p.isComplete())
 	end)
-
 end)
 
 describe("always", function()
-
 	it("should fire a callback if resolved", function()
 		local val, test = 'pizza'
 		local p = Promise()
@@ -76,7 +67,7 @@ describe("always", function()
 		assert.equals(val, test)
 	end)
 
-	it("will directly call callback if it is already resolved", function()
+	it("should directly call callback if it is already resolved", function()
 		local val, test = 'pizza'
 		local p = Promise()
 		p.resolve(val)
@@ -84,18 +75,16 @@ describe("always", function()
 		assert.equals(val, test)
 	end)
 
-	it("will directly call callback if it is already rejected", function()
+	it("should directly call callback if it is already rejected", function()
 		local val, test = 'pizza'
 		local p = Promise()
 		p.reject(val)
 		p.always(function(x) test = x end)
 		assert.equals(val, test)
 	end)
-
 end)
 
 describe("done", function()
-
 	it("should fire a callback if resolved", function()
 		local val, test = 'pizza'
 		local p = Promise()
@@ -112,7 +101,7 @@ describe("done", function()
 		assert.equals(test, nil)
 	end)
 
-	it("will directly call callback if it is already resolved", function()
+	it("should directly call callback if it is already resolved", function()
 		local val, test = 'pizza'
 		local p = Promise()
 		p.resolve(val)
@@ -120,18 +109,16 @@ describe("done", function()
 		assert.equals(val, test)
 	end)
 
-	it("will not directly call callback if it is already rejected", function()
+	it("should not directly call callback if it is already rejected", function()
 		local val, test = 'pizza'
 		local p = Promise()
 		p.reject(val)
 		p.done(function(x) test = x end)
 		assert.equals(test, nil)
 	end)
-
 end)
 
 describe("fail", function()
-
 	it("should not fire a callback if resolved", function()
 		local val, test = 'pizza'
 		local p = Promise()
@@ -148,7 +135,7 @@ describe("fail", function()
 		assert.equals(test, val)
 	end)
 
-	it("will not directly call callback if it is already resolved", function()
+	it("should not directly call callback if it is already resolved", function()
 		local val, test = 'pizza'
 		local p = Promise()
 		p.resolve(val)
@@ -156,7 +143,7 @@ describe("fail", function()
 		assert.equals(test, nil)
 	end)
 
-	it("will directly call callback if it is already rejected", function()
+	it("should directly call callback if it is already rejected", function()
 		local val, test = 'pizza'
 		local p = Promise()
 		p.reject(val)
@@ -167,8 +154,7 @@ describe("fail", function()
 end)
 
 describe("notify", function()
-
-	it("updates progress subscribers", function()
+	it("should update progress subscribers", function()
 		local p = Promise()
 		local count = 0
 		p.progress(function(x) count = count + x end)
@@ -176,25 +162,15 @@ describe("notify", function()
 		p.notify(2)
 		assert.equals(count, 3)
 	end)
-
 end)
 
 describe("when", function()
-
-	it("returns a promise", function()
+	it("should return a promise", function()
 		local promise = Promise.when()
-		assert.truthy(promise.state)
-		assert.truthy(promise.reject)
-		assert.truthy(promise.resolve)
-		assert.truthy(promise.notify)
-		assert.truthy(promise.always)
-		assert.truthy(promise.done)
-		assert.truthy(promise.fail)
-		assert.truthy(promise.progress)
+        assert.equal(Promise, promise.getClass())
 	end)
 
-	it("resolves when all promises are met", function()
-
+	it("should resolve when all promises are met", function()
 		local p1 = Promise()
 		local p2 = Promise()
 		local y1, y2
@@ -211,7 +187,7 @@ describe("when", function()
 		assert.equals(y2, 2)
 	end)
 
-	it("is rejects if any of the promises are broken", function()
+	it("should reject if any of the promises are broken", function()
 		local p1 = Promise()
 		local p2 = Promise()
 		local y1, y2
@@ -228,7 +204,7 @@ describe("when", function()
 		assert.equals(y2, 2)
 	end)
 
-	it("can handle non deferred values", function()
+	it("should handle non deferred values", function()
 		local p1 = 1
 		local p2 = Promise()
 		local y1, y2
@@ -242,7 +218,5 @@ describe("when", function()
 
 		assert.equals(y1, 1)
 		assert.equals(y2, 2)
-
 	end)
-
 end)

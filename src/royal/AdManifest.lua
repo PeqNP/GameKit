@@ -46,7 +46,7 @@ end
 function AdManifest.fromDictionary(dict)
     local units = {}
     for _, dict in ipairs(dict["units"]) do
-        table.insert(units, AdTier(dict["id"], dict["startdate"], dict["enddate"], dict["url"], dict["reward"], dict["title"], dict["config"]))
+        table.insert(units, AdUnit(dict["id"], dict["startdate"], dict["enddate"], dict["url"], dict["reward"], dict["title"], dict["config"]))
     end
     local manifest = AdManifest(dict["created"], dict["ttl"], units)
 end
