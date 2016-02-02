@@ -4,11 +4,10 @@
 --
 require "lang.Signal"
 require "specs.Cocos2d-x"
-require "json"
 require "Logger"
 require "HTTPResponseType"
 
-Log.setLevel(LogLevel.Warning)
+Log.setLevel(LogLevel.Severe)
 
 local HTTP = require("shim.HTTP")
 local LuaFile = require("LuaFile")
@@ -17,6 +16,7 @@ local AdConfig = require("royal.AdConfig")
 local AdManifest = require("royal.AdManifest")
 local Client = require("royal.Client")
 local AdUnit = require("royal.AdUnit")
+local Error = require("Error")
 
 describe("Client", function()
     local subject
@@ -43,14 +43,16 @@ describe("Client", function()
         local wasCalled
         local success
         local manifest
+        local _error
+        local jsonStr
 
         local ad_called
         local plist_called
         local png_called
 
-        local function fetch_config(manifest)
+        local function fetch_config(cached)
             wasCalled = false
-            promise = subject.fetchConfig(manifest)
+            promise = subject.fetchConfig(cached)
             promise.done(function(_manifest)
                 manifest = _manifest
             end)
@@ -62,6 +64,12 @@ describe("Client", function()
             end)
         end
 
+        function new_requests()
+            adRequest = Promise()
+            plistRequest = Promise()
+            pngRequest = Promise()
+        end
+
         before_each(function()
             ad_called = false
             plist_called = false
@@ -70,9 +78,7 @@ describe("Client", function()
             cache = cc.SpriteFrameCache:getInstance()
             stub(cache, "removeSpriteFrames")
 
-            adRequest = Promise()
-            plistRequest = Promise()
-            pngRequest = Promise()
+            new_requests()
 
             function http.get(path, responseType, callback)
                 if path == "http://www.example.com:80/ad/com.example.game/royal.json" then
@@ -89,15 +95,14 @@ describe("Client", function()
                 end
             end
             spy.on(http, "get")
+
+            jsonStr = "{\"created\": 1000, \"units\": [{\"id\": 2, \"startdate\": 4, \"enddate\": 5, \"url\": \"http://www.example.com\", \"reward\": 25, \"title\": \"A title!\", \"config\": null}]}"
         end)
 
         context("when the config is not cached", function()
             local jsonDict
-            local jsonStr
 
             before_each(function()
-                jsonStr = "{'created': 1000, 'units': [{'id': 2, 'startdate': 4, 'enddate': 5, 'url': 'http://www.example.com', 'reward': 25, 'title': 'A title!', 'config': null}]}"
-
                 fetch_config()
             end)
 
@@ -135,7 +140,7 @@ describe("Client", function()
                     adRequest.resolve(200, jsonStr)
                 end)
 
-                it("should have saved the manifest to disk", function()
+                it("should have saved the manifest", function()
                     assert.stub(file.write).was.called_with("/path/royal.json", jsonStr, "wb")
                 end)
 
@@ -187,7 +192,8 @@ describe("Client", function()
 
                     describe("when fetchConfig() is called a subsequent time", function()
                         before_each(function()
-                            subject.fetchConfig()
+                            new_requests()
+                            fetch_config()
                         end)
 
                         it("should have made call to clear the cache", function()
@@ -221,7 +227,8 @@ describe("Client", function()
 
                     describe("when fetch config is called a subsequent time", function()
                         before_each(function()
-                            subject.fetchConfig()
+                            new_requests()
+                            fetch_config()
                         end)
 
                         it("should have cleared the errors", function()
@@ -267,7 +274,7 @@ describe("Client", function()
             before_each(function()
                 mock(file, true)
                 cached = AdManifest(1000, {})
-                fetch_config()
+                fetch_config(cached)
                 adRequest.resolve(200, jsonStr)
             end)
 
@@ -289,7 +296,7 @@ describe("Client", function()
             before_each(function()
                 mock(file, true)
                 cached = AdManifest(999, {})
-                fetch_config()
+                fetch_config(cached)
                 adRequest.resolve(200, jsonStr)
             end)
 

@@ -7,17 +7,7 @@
 local LuaFile = Class()
 
 function LuaFile.new(self)
-    local path
-
-    function self.init(_path)
-        path = _path
-    end
-
-    function self.getPath()
-        return path
-    end
-
-    function self.read(mode)
+    function self.read(path, mode)
         if not mode then
             mode = "r"
         end
@@ -31,7 +21,7 @@ function LuaFile.new(self)
         return blob
     end
 
-    function self.write(contents, mode)
+    function self.write(path, contents, mode)
         if not mode then
             mode = "w"
         end

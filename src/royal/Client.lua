@@ -70,28 +70,34 @@ function Client.new(self)
         local parts = string.split(file, "/")
         local filename = parts[#parts]
         local path = config.getPath(filename)
-        writer.write(path, response, "wb")
+        writer.write(path, contents, "wb")
         return path
     end
 
     local function writeManifest(contents, cachedManifest)
         local dict = json.decode(contents)
         local manifest = AdManifest.fromDictionary(dict)
+        if not manifest then
+            if cachedManifest then -- Fallback to cached manifest if possible.
+                return cachedManifest, false
+            end
+            Log.w("royal.Client:writeManifest() - Manifest is malformed")
+            return nil, false
+        end
         if cachedManifest and cachedManifest.isActive(manifest.getCreated()) then
-            Log.i("royal.Client:callback__ads() - Using cached manifest")
+            Log.d("royal.Client:callback__ads() - Using cached manifest")
             return cachedManifest, false
         end
-        Log.i("royal.Client:callback__ads() - Saving manifest to cache")
+        Log.d("royal.Client:callback__ads() - Saving manifest to cache")
         writeFile(config.getConfigFilename(), contents)
         return manifest, true
     end
 
     local function downloadResources(manifest)
-        local promises = {
+        return Promise.when(
             getRequest(config.getImageVariant() .. "/" .. config.getPlistFilename(), HTTPResponseType.String, writeFile),
             getRequest(config.getImageVariant() .. "/" .. config.getImageFilename(), HTTPResponseType.Blob, writeFile)
-        }
-        return Promise.when(promises)
+        )
     end
 
     --
@@ -107,16 +113,20 @@ function Client.new(self)
         local request = getRequest(config.getConfigFilename(), HTTPResponseType.String)
         request.done(function(status, contents)
             local manifest, download = writeManifest(contents, cachedManifest)
+            if not manifest then
+                promise.reject(Error(1, "Manifest failed to be decoded"))
+                return
+            end
             if download then
-                local promise = downloadResources()
-                promise.done(function()
+                local resources = downloadResources()
+                resources.done(function()
                     -- @todo Should this add the sprite frames immediately?
                     cc.SpriteFrameCache:getInstance():addSpriteFrames(config.getPlistFilepath())
                     plistLoaded = true
                     promise.resolve(manifest)
                 end)
-                promise.fail(function(status, _error)
-                    promise.reject(Error(status, _error))
+                resources.fail(function()
+                    promise.reject(Error(2, "Failed to download resources"))
                 end)
             else
                 promise.resolve(manifest)

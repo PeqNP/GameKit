@@ -44,11 +44,14 @@ function AdManifest.new(self)
 end
 
 function AdManifest.fromDictionary(dict)
+    if not dict or type(dict) ~= "table" then
+        return nil
+    end
     local units = {}
     for _, dict in ipairs(dict["units"]) do
         table.insert(units, AdUnit(dict["id"], dict["startdate"], dict["enddate"], dict["url"], dict["reward"], dict["title"], dict["config"]))
     end
-    local manifest = AdManifest(dict["created"], dict["ttl"], units)
+    return AdManifest(dict["created"], units)
 end
 
 --
