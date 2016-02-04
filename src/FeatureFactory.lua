@@ -84,7 +84,7 @@ function FeatureFactory.new(self)
     --
     -- This method has the side-effect of loading cached config!
     --
-    function self.getRoyalClient(writablePath, serverConfig)
+    function self.getRoyalClient(writablePath, url)
         local AdConfig = require("royal.AdConfig")
         local Client = require("royal.Client")
 
@@ -101,7 +101,7 @@ function FeatureFactory.new(self)
                 config.setCachedManifest(manifest)
             end
         end
-        return Client(http, file, config, serverConfig.getFullPath())
+        return Client(http, file, config, url)
     end
 end
 

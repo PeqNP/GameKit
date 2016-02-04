@@ -39,6 +39,9 @@ class CocosPathBuilder (object):
     def iapluapath(self, platform):
         return self.path("src/IAP-{}.lua".format(platform))
 
+    def royalluapath(self, platform):
+        return self.path("src/Royal-{}.lua".format(platform))
+
     def podfilepath(self):
         return self.iosmacprojpath("Podfile")
 
@@ -102,6 +105,10 @@ class ProjectPathBuilder (object):
     def iappath(self, platform):
         self.check_platform(platform)
         return self.path("platform/{}/iap.json".format(platform))
+
+    def royalpath(self, platform):
+        self.check_platform(platform)
+        return self.path("platform/{}/royal.server.json".format(platform))
 
     def mediationconfigpath(self, platform):
         self.check_platform(platform)

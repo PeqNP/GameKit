@@ -55,6 +55,13 @@ class IAPTicket (object):
     def toLua(self):
         return "Ticket(\"{}\", \"{}\")".format(self.productId, self.sku)
 
+class RoyalAdNetworkConfig (object):
+    def __init__(self, url):
+        self.url = url
+
+    def getURL(self):
+        return self.url
+
 class Network (object):
     def __init__(self, name, appId, signature, ads):
         self.name = name
@@ -114,6 +121,15 @@ def load_iap_config(path):
     for ticket in json_tickets:
         tickets.append(IAPTicket(ticket[0], ticket[1]))
     return tickets
+
+def load_royal_config(path):
+    if not os.path.isfile(path):
+        raise IOError("Royal Ad Network config file does not exist at path {}".format(path))
+    fh = open(path, "r")
+    json_blob = fh.read()
+    fh.close()
+    config = json.loads(json_blob)
+    return RoyalAdNetworkConfig(config["url"])
 
 def lua_for_networks(networks):
     code = []
