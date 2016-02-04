@@ -4,13 +4,6 @@ require "Logger"
 
 local AdConfig = require("royal.AdConfig")
 
-describe("singleton", function()
-    it("should have created a singleton", function()
-        assert.truthy(AdConfig.singleton)
-        assert.truthy(AdConfig.singleton.kindOf(AdConfig))
-    end)
-end)
-
 describe("AdConfig", function()
     local subject
 

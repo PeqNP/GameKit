@@ -6,7 +6,7 @@ local AppManager = require("app.Manager")
 local BridgeAdaptor = require("bridge.BridgeAdaptor")
 local IAP = require("iap.IAP")
 local SocialManager = require("social.Manager")
-local RoyalAdVendor = require("royal.AdVendor")
+local RoyalClient = require("royal.Client")
 
 local FeatureFactory = require("FeatureFactory")
 
@@ -46,9 +46,8 @@ describe("FeatureFactory", function()
     end)
 
     it("should create a royal.Manager", function()
-        local adServer = AdServerConfig("http://www.example.com", 80, "/ad/ios/royal.json")
-        local supportedVersions = {1}
-        local vendor = subject.getRoyalAdVendor("/writable/path/", adServer, supportedVersions)
-        assert.equal(RoyalAdVendor, vendor.getClass())
+        local server = AdServerConfig("http://www.example.com", 80, "/ad/ios/royal.json")
+        local vendor = subject.getRoyalClient("/writable/path/", server)
+        assert.equal(RoyalClient, vendor.getClass())
     end)
 end)

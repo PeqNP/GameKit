@@ -2,17 +2,24 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
+local LuaFile = require("LuaFile")
+local HTTP = require("shim.HTTP")
+
 local FeatureFactory = Class()
 
 function FeatureFactory.new(self)
     local platform
     local contentScaleFactor
+    local file
+    local http
 
     local bridge
 
     function self.init(_platform, _contentScaleFactor)
         platform = _platform
         contentScaleFactor = _contentScaleFactor
+        file = LuaFile()
+        http = HTTP()
     end
 
     local function getBridge()
@@ -77,17 +84,16 @@ function FeatureFactory.new(self)
     --
     -- This method has the side-effect of loading cached config!
     --
-    function self.getRoyalClient(writablePath, adServer, supportedVersions)
+    function self.getRoyalClient(writablePath, serverConfig)
         local AdConfig = require("royal.AdConfig")
         local Client = require("royal.Client")
-        local AdVendor = require("royal.AdVendor")
 
         Log.i("Initializing the Royal Ad Network...")
-        AdConfig.singleton.setBasePath(writablePath)
-        AdConfig.singleton.setImageVariant(getImageVariant())
-        local network = Client(adServer.getHost(), adServer.getPort(), adServer.getPath(), supportedVersions)
-        network.loadFromCache()
-        return network
+        local config = AdConfig(writablePath)
+        config.setImageVariant(getImageVariant())
+        -- @todo Load default config from file and return it. It will be used when
+        -- queried...? or maybe this is done
+        return Client(http, file, config, serverConfig.getFullPath())
     end
 end
 

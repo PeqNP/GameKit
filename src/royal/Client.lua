@@ -20,7 +20,6 @@ function Client.new(self)
     local config
     local url
 
-    local manifest
     local promise
     local requests = {}
     local errors = {}
