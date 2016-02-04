@@ -93,22 +93,16 @@ describe("convert dictionary into AdManifest", function()
 end)
 
 describe("load manifest from file", function()
-    local file
     local manifest
-
-    before_each(function()
-        file = LuaFile("/path/to/royal.json")
-    end)
 
     describe("when the file exists", function()
         local fakeManifest
 
         before_each(function()
             fakeManifest = AdManifest()
-            stub(file, "read", '{"key": 1}') -- NOTE: we're faking fromDictionary so it doesn't matter what we return.
             stub(AdManifest, "fromDictionary", fakeManifest)
 
-            manifest = AdManifest.loadFromFile(file)
+            manifest = AdManifest.fromJson('{"key": 1}')
         end)
 
         it("should have called method to convert JSON into AdManifest", function()
@@ -121,10 +115,9 @@ describe("load manifest from file", function()
         before_each(function()
             -- partial data write.
             local jsonStr = "{'version': 1, 'created': 10000, 'ttl': 86500, 'units': [{'id': 2, 'reward': 25, 'startdate': 4, 'enddate': 5, 'waitsecs': 86400, 'conf"
-            stub(file, "read", jsonStr)
             stub(AdManifest, "fromDictionary")
 
-            manifest = AdManifest.loadFromFile(file)
+            manifest = AdManifest.fromJson(jsonStr)
         end)
 
         it("should have called method to convert JSON into AdManifest", function()
@@ -139,10 +132,9 @@ describe("load manifest from file", function()
 
     describe("when the file contains no data", function()
         before_each(function()
-            stub(file, "read", "")
             stub(AdManifest, "fromDictionary")
 
-            manifest = AdManifest.loadFromFile(file)
+            manifest = AdManifest.fromJson("")
         end)
 
         it("should not have created a manfiest", function()
@@ -152,10 +144,9 @@ describe("load manifest from file", function()
 
     describe("when the file does not exist", function()
         before_each(function()
-            stub(file, "read", nil)
             stub(AdManifest, "fromDictionary")
             
-            manifest = AdManifest.loadFromFile(file)
+            manifest = AdManifest.fromJson(nil)
         end)
 
         it("should not have created a manifest", function()

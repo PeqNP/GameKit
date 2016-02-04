@@ -58,8 +58,7 @@ end
 -- Load config from cache. This step is necessary before downloading to ensure
 -- that assets are not re-downloaded.
 --
-function AdManifest.loadFromFile(file)
-    local jsonStr = file.read()
+function AdManifest.fromJson(jsonStr)
     if not jsonStr or string.len(jsonStr) < 1 then
         Log.d("royal.Client:loadFromFile() - Cached royal.json file does not exist")
         return nil

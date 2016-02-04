@@ -93,6 +93,14 @@ function FeatureFactory.new(self)
         config.setImageVariant(getImageVariant())
         -- @todo Load default config from file and return it. It will be used when
         -- queried...? or maybe this is done
+        local jsonStr = file.read(config.getPlistFilepath())
+        if jsonStr then
+            local manifest = AdManifest.fromJson(jsonStr)
+            if manifest then
+                Log.i("FeatureFactory:getRoyalClient() - Loaded cached manifest from disk")
+                config.setCachedManifest(manifest)
+            end
+        end
         return Client(http, file, config, serverConfig.getFullPath())
     end
 end
