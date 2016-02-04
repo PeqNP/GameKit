@@ -1,4 +1,7 @@
 require "specs.Cocos2d-x"
+require "Logger"
+
+Log.setLevel(LogLevel.Warning)
 
 local AdServerConfig = require("ad.ServerConfig")
 local AdServerManager = require("ad.ServerManager")

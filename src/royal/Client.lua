@@ -19,6 +19,7 @@ function Client.new(self)
     local writer
     local config
     local url
+    local cachedManifest
 
     local promise
     local requests = {}
@@ -32,6 +33,10 @@ function Client.new(self)
         writer = _writer
         config = _config
         url = _url
+    end
+
+    function self.setCachedManifest(manifest)
+        cachedManifest = manifest
     end
 
     local function clean()
@@ -73,7 +78,7 @@ function Client.new(self)
         return path
     end
 
-    local function writeManifest(contents, cachedManifest)
+    local function writeManifest(contents)
         local dict = json.decode(contents)
         local manifest = AdManifest.fromDictionary(dict)
         if not manifest then
@@ -106,12 +111,12 @@ function Client.new(self)
     --
     -- @return Promise
     --
-    function self.fetchConfig(cachedManifest)
+    function self.fetchConfig()
         clean()
         promise = Promise()
         local request = getRequest(config.getConfigFilename(), HTTPResponseType.String)
         request.done(function(status, contents)
-            local manifest, download = writeManifest(contents, cachedManifest)
+            local manifest, download = writeManifest(contents)
             if not manifest then
                 promise.reject(Error(1, "Manifest failed to be decoded"))
                 return

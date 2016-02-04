@@ -50,9 +50,9 @@ describe("Client", function()
         local plist_called
         local png_called
 
-        local function fetch_config(cached)
+        local function fetch_config()
             wasCalled = false
-            promise = subject.fetchConfig(cached)
+            promise = subject.fetchConfig()
             promise.done(function(_manifest)
                 manifest = _manifest
             end)
@@ -274,7 +274,8 @@ describe("Client", function()
             before_each(function()
                 mock(file, true)
                 cached = AdManifest(1000, {})
-                fetch_config(cached)
+                subject.setCachedManifest(cached)
+                fetch_config()
                 adRequest.resolve(200, jsonStr)
             end)
 
@@ -296,7 +297,8 @@ describe("Client", function()
             before_each(function()
                 mock(file, true)
                 cached = AdManifest(999, {})
-                fetch_config(cached)
+                subject.setCachedManifest(cached)
+                fetch_config()
                 adRequest.resolve(200, jsonStr)
             end)
 
