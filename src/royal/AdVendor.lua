@@ -7,6 +7,8 @@
 -- @copyright Upstart Illustration LLC. All rights reserved.
 --
 
+local ClickableAdUnit = require("royal.ClickableAdUnit")
+
 local AdVendor = Class()
 
 -- 
@@ -15,12 +17,14 @@ local AdVendor = Class()
 --                         must return 'true', if the tier config matches. 'false', otherwise.
 --
 function AdVendor.new(self)
+    local adConfig
     local style
     local adUnits
     local fn__configMatches
     local unitPos = 1
 
-    function self.init(_style, _adUnits, _fn)
+    function self.init(_adConfig, _style, _adUnits, _fn)
+        adConfig = _adConfig
         style = _style
         adUnits = _adUnits
         fn__configMatches = _fn
@@ -46,10 +50,10 @@ function AdVendor.new(self)
                     if matches then
                         -- @todo have to create a key for this unit so that the click file
                         -- can be refererend specifically to this AdUnit.
-                        table.insert(ret, adUnit)
+                        table.insert(ret, ClickableAdUnit(adConfig, adUnit, key))
                     end
                 elseif not config then
-                    table.insert(ret, adUnit)
+                    table.insert(ret, ClickableAdUnit(adConfig, adUnit))
                 end
             end
             unitPos = unitPos + 1

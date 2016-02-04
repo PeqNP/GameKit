@@ -62,6 +62,8 @@ function AdUnit.new(self)
         return config
     end
 
+    -- FIXME: These methods probably belong somewhere else.
+
     function self.getBannerName()
         return string.format("banner-%s.png", id)
     end

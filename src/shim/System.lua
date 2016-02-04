@@ -328,6 +328,10 @@ function shim.p3(x, y, z)
     return {x=x, y=y, z=z}
 end
 
+function shim.GetTime()
+    return gettime()
+end
+
 -- --------------------
 -- ----- Events -------
 
@@ -430,7 +434,7 @@ function shim.TransitionFade(t, scene)
     return cc.TransitionFade:create(t, scene)
 end
 
---[[ Conversions. ]]--
+-- ----- Conversions -----
 
 function shim.DegToRad(radians)
     return radians * 0.01745329252 -- PI / 180

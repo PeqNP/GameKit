@@ -13,6 +13,7 @@ local AdManifest = require("royal.AdManifest")
 describe("AdVendor", function()
     local subject
     local stylizer
+    local adConfig
 
     local evolutions
 
@@ -57,8 +58,9 @@ describe("AdVendor", function()
         adUnit2 = AdUnit(200, 85000, 87000, "http://www.example.com/click2", 2000, "Title2")
         adUnit3 = AdUnit(300, 85000, 87000, "http://www.example.com/click3", 3000, "Title3")
 
+        adConfig = AdConfig()
         stylizer = AdStylizer()
-        subject = AdVendor(stylizer, {adUnit1, adUnit2, adUnit3}, fn__shouldShowTier)
+        subject = AdVendor(adConfig, stylizer, {adUnit1, adUnit2, adUnit3}, fn__shouldShowTier)
     end)
 
     pending("isActive")
@@ -66,22 +68,44 @@ describe("AdVendor", function()
     describe("when getting ad units", function()
         local ads
 
-        context("when the evolutions are in ad unit 1", function()
+        context("when the evolution is in ad unit 1", function()
             before_each(function()
-                evolutions = {3, 6, 9}
+                evolutions = {6}
             end)
 
             describe("when all ad units are active", function()
+                local ad
+
                 before_each(function()
                     stub(adUnit1, "isActive", true)
                     stub(adUnit2, "isActive", true)
                     stub(adUnit3, "isActive", true)
 
                     ads = subject.getNextAdUnits(1, fn__callback)
+                    ad = ads[1]
+                end)
+
+                it("should have returned a clickable ad unit", function()
+                    assert.equal(ClickableAdUnit, ad.getClass())
                 end)
 
                 it("should return the second ad unit #f", function()
-                    assert.equals(adUnit1, ads[1])
+                    assert.equals(adUnit1.getId(), ads[1].getId())
+                end)
+
+                context("when the ad is clicked", function()
+                    before_each(function()
+                        stub(shim, "GetTime", 86700)
+                        ad.click()
+                    end)
+
+                    it("should have saved the current time to a file", function()
+                        assert.stub(file.write).was.called_with("id1-key6-click.json", "86700")
+                    end)
+
+                    it("should have opened the URL", function()
+                        assert.stub(shim.OpenURL).was.called_with("http://www.example.com/click1")
+                    end)
                 end)
             end)
 
@@ -95,7 +119,7 @@ describe("AdVendor", function()
                 end)
 
                 it("should return the second ad unit", function()
-                    assert.equals(adUnit2, ads[1])
+                    assert.equals(adUnit2.getId(), ads[1].getId())
                 end)
             end)
 
@@ -129,7 +153,7 @@ describe("AdVendor", function()
                 end)
 
                 it("should return the second ad unit", function()
-                    assert.equals(adUnit2, ads[1])
+                    assert.equals(adUnit2.getId(), ads[1].getId())
                 end)
             end)
         end)
@@ -152,9 +176,9 @@ describe("AdVendor", function()
         end)
 
         it("should have returned the correct ads", function()
-            assert.equals(adUnit1, ads[1])
-            assert.equals(adUnit2, ads[2])
-            assert.equals(adUnit3, ads[3])
+            assert.equals(adUnit1.getId(), ads[1].getId())
+            assert.equals(adUnit2.getId(), ads[2].getId())
+            assert.equals(adUnit3.getId(), ads[3].getId())
         end)
     end)
 
@@ -176,7 +200,7 @@ describe("AdVendor", function()
         end)
 
         it("should have returned the first ad", function()
-            assert.equals(adUnit1, ads[1])
+            assert.equals(adUnit1.getId(), ads[1].getId())
         end)
 
         describe("call 2", function()
@@ -189,7 +213,7 @@ describe("AdVendor", function()
             end)
 
             it("should have returned the second ad", function()
-                assert.equals(adUnit2, ads[1])
+                assert.equals(adUnit2.getId(), ads[1].getId())
             end)
 
             describe("call 3", function()
@@ -202,7 +226,7 @@ describe("AdVendor", function()
                 end)
 
                 it("should have returned the third ad", function()
-                    assert.equals(adUnit3, ads[1])
+                    assert.equals(adUnit3.getId(), ads[1].getId())
                 end)
 
                 describe("when querying for two additional ad units", function()
@@ -215,8 +239,8 @@ describe("AdVendor", function()
                     end)
 
                     it("should have returned the first two ads", function()
-                        assert.equals(adUnit1, ads[1])
-                        assert.equals(adUnit2, ads[2])
+                        assert.equals(adUnit1.getId(), ads[1].getId())
+                        assert.equals(adUnit2.getId(), ads[2].getId())
                     end)
 
                     describe("call 4", function()
@@ -229,8 +253,8 @@ describe("AdVendor", function()
                         end)
 
                         it("should have returned the last and first ad (round-robin)", function()
-                            assert.equals(adUnit3, ads[1])
-                            assert.equals(adUnit1, ads[2])
+                            assert.equals(adUnit3.getId(), ads[1].getId())
+                            assert.equals(adUnit1.getId(), ads[2].getId())
                         end)
 
                         describe("when the position is reset", function()
@@ -240,7 +264,7 @@ describe("AdVendor", function()
                             end)
 
                             it("should have returned the first button", function()
-                                assert.equals(adUnit1, ads[1])
+                                assert.equals(adUnit1.getId(), ads[1].getId())
                             end)
                         end)
                     end)

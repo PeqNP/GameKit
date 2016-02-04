@@ -89,7 +89,7 @@ function FeatureFactory.new(self)
         local Client = require("royal.Client")
 
         Log.i("Initializing the Royal Ad Network...")
-        local config = AdConfig(writablePath)
+        local config = AdConfig(file, writablePath)
         config.setImageVariant(getImageVariant())
         -- @todo Load default config from file and return it. It will be used when
         -- queried...? or maybe this is done
@@ -101,7 +101,7 @@ function FeatureFactory.new(self)
                 config.setCachedManifest(manifest)
             end
         end
-        return Client(http, file, config, url)
+        return Client(http, config, url)
     end
 end
 

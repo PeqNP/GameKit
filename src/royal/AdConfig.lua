@@ -7,12 +7,14 @@
 local AdConfig = Class()
 
 function AdConfig.new(self)
+    local file
     local basepath
     local appId
     local appToken
     local imageVariant = "sd"
 
-    function self.init(_basepath)
+    function self.init(_file, _basepath)
+        file = _file
         basepath = _basepath
     end
 
@@ -55,6 +57,10 @@ function AdConfig.new(self)
 
     function self.getConfigFilepath()
         return self.getPath(self.getConfigFilename())
+    end
+
+    function self.write(filename, contents, mode)
+        file.write(self.getPath(filename), contents, mode)
     end
 end
 

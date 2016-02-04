@@ -16,7 +16,6 @@ local Client = Class()
 
 function Client.new(self)
     local http
-    local writer
     local config
     local url
     local cachedManifest
@@ -28,9 +27,8 @@ function Client.new(self)
 
     local plistLoaded = false
 
-    function self.init(_http, _writer, _config, _url)
+    function self.init(_http, _config, _url)
         http = _http
-        writer = _writer
         config = _config
         url = _url
     end
@@ -73,9 +71,7 @@ function Client.new(self)
         -- Get only the last part of the file (remove 'sd', 'hd', etc.)
         local parts = string.split(file, "/")
         local filename = parts[#parts]
-        local path = config.getPath(filename)
-        writer.write(path, contents, "wb")
-        return path
+        config.write(filename, contents, "wb")
     end
 
     local function writeManifest(contents)
