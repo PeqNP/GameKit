@@ -21,17 +21,15 @@ local Error = require("Error")
 describe("Client", function()
     local subject
     local http
-    local file
     local config
     local url
 
     before_each(function()
         http = HTTP()
-        file = LuaFile()
-        config = AdConfig("/path/")
+        config = AdConfig(LuaFile(), "/path/")
         url = "http://www.example.com:80/ad/com.example.game/"
 
-        subject = Client(http, file, config, url)
+        subject = Client(http, config, url)
     end)
 
     describe("fetch config", function()
@@ -136,12 +134,12 @@ describe("Client", function()
 
             context("when the request succeeds", function()
                 before_each(function()
-                    stub(file, "write")
+                    stub(config, "write")
                     adRequest.resolve(200, jsonStr)
                 end)
 
                 it("should have saved the manifest", function()
-                    assert.stub(file.write).was.called_with("/path/royal.json", jsonStr, "wb")
+                    assert.stub(config.write).was.called_with("royal.json", jsonStr, "wb")
                 end)
 
                 it("should have made request for plist", function()
@@ -179,11 +177,11 @@ describe("Client", function()
                     end)
 
                     it("should have written plist to disk", function()
-                        assert.stub(file.write).was.called_with("/path/royal.plist", "PLIST-DATA", "wb")
+                        assert.stub(config.write).was.called_with("royal.plist", "PLIST-DATA", "wb")
                     end)
 
                     it("should have written png to disk", function()
-                        assert.stub(file.write).was.called_with("/path/royal.png", "PNG-DATA", "wb")
+                        assert.stub(config.write).was.called_with("royal.png", "PNG-DATA", "wb")
                     end)
 
                     it("should have made call to cache the plist", function()
@@ -245,7 +243,7 @@ describe("Client", function()
 
             context("when the request fails", function()
                 before_each(function()
-                    stub(file, "write")
+                    stub(config, "write")
                     adRequest.reject(500, "Internal server error")
                 end)
 
@@ -263,7 +261,7 @@ describe("Client", function()
                 end)
 
                 it("should NOT have written any files to disk", function()
-                    assert.stub(file.write).was.not_called()
+                    assert.stub(config.write).was.not_called()
                 end)
             end)
         end)
@@ -272,7 +270,7 @@ describe("Client", function()
             local cached
 
             before_each(function()
-                mock(file, true)
+                stub(config, "write")
                 cached = AdManifest(1000, {})
                 subject.setCachedManifest(cached)
                 fetch_config()
@@ -295,7 +293,7 @@ describe("Client", function()
             local cached
 
             before_each(function()
-                mock(file, true)
+                stub(config, "write")
                 cached = AdManifest(999, {})
                 subject.setCachedManifest(cached)
                 fetch_config()

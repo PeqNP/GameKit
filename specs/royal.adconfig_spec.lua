@@ -2,13 +2,16 @@ require "lang.Signal"
 require "specs.Cocos2d-x"
 require "Logger"
 
+local LuaFile = require("LuaFile")
 local AdConfig = require("royal.AdConfig")
 
 describe("AdConfig", function()
     local subject
+    local file
 
     before_each(function()
-        subject = AdConfig("/path/")
+        file = LuaFile()
+        subject = AdConfig(file, "/path/")
     end)
 
     it("should return the base path", function()
@@ -40,4 +43,6 @@ describe("AdConfig", function()
             assert.equal("hd", subject.getImageVariant())
         end)
     end)
+
+    pending("write")
 end)
