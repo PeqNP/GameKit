@@ -13,7 +13,7 @@ function Game.new(self)
     local adManager
     local appManager
     local iap
-    local royalAdVendor
+    local royalClient
     local socialManager
     local scheduleId
 
@@ -43,40 +43,29 @@ function Game.new(self)
 
     -- ----- Royal Ad network -----
 
+    local adVendor
+    function getRoyalAdVendor()
+        return adVendor
+    end
+
     local function initRoyalAdNetwork()
-        local AdConfig = require("royal.AdConfig")
-        local Client = require("royal.Client")
-        local AdVendor require("royal.AdVendor")
+        local promise = royalClient.fetchConfig()
+        promise.done(function(manifest)
+            local AdStylizer = require("royal.AdStylizer")
+            local AdVendor = require("royal.AdVendor")
+            Log.i("Game:initRoyalAdNetwork() - Downloaded manifest", tostring(success))
 
-        Log.i("Initializing the Royal Ad Network...")
-        AdConfig.singleton.setBasePath(writablePath)
-        AdConfig.singleton.setImageVariant(getImageVariant())
-        local network = Client(getEnvironmentUrl(), 80, "/ad/com.upstartillustration.blobfish."..getPlatform().."/", {1})
-        network.loadFromCache()
-        local promise = network.downloadAds()
-        promise.done(function(success)
-            Log.i("Downloaded manifest (%s)", tostring(success))
-
-            if not success then
-                -- @todo This should be configurable.
-                -- @todo This should stop after a certain number of times. It should increase the amount of time
-                -- before the next retry.
-                -- @fixme It's just too risky to include this in.
-                --Log.i("Failed to download ads... restarting in 120.0s")
-                --level.layer:runAction(shim.Sequence(shim.Delay(120.0), shim.Call(initRoyalAdNetwork)))
-                return
+            local function display_ad_callback(ad_config)
+                -- @todo Check the ad config to determine if the ad should be shown.
+                -- @todo Return a key that represents the value being compared.
+                return true, config.state.evolution
             end
 
-            Log.i("Successfully downloaded manifest!")
-
-            local function matcher()
-                return true
-            end
-
-            royalAdVendor = AdVendor(network.getManifest(), matcher)
+            adVendor = AdVendor(royalClient.getAdConfig(), AdStylizer(), manifest.getAdUnits(), display_ad_callback)
         end)
         promise.fail(function()
-            Log.e("Failed to download manifest!")
+            Log.e("Game:initRoyalAdNetwork() - Failed to download manifest!")
+            -- @todo Attempt to try again every N seconds for N times.
         end)
     end
 
@@ -228,12 +217,13 @@ function Game.new(self)
         self.start()
     end
 
-    function self.init(_writablePath, _appManager, _adServer, _iap, _socialManager)
+    function self.init(_writablePath, _appManager, _adServer, _iap, _socialManager, _royalClient)
         writablePath = _writablePath
         appManager = _appManager
         adServer = _adServer
         iap = _iap
         socialManager = _socialManager
+        royalClient = _royalClient
 
         -- local saveFile = writablePath .. "game.save"
 
