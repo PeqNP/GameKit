@@ -14,7 +14,7 @@ function shim.IsPaused()
 end
 
 function shim.Pause()
-    if not shim.isPaused() then
+    if not shim.IsPaused() then
         director:pause()
         director:stopAnimation()
         music.pause()
@@ -22,7 +22,7 @@ function shim.Pause()
 end
 
 function shim.Resume()
-    if shim.isPaused() then
+    if shim.IsPaused() then
         director:startAnimation()
         music.resume()
         director:resume()

@@ -64,7 +64,7 @@ function AdConfig.new(self)
     end
 
     function self.read(filename, mode)
-        file.read(filename, mode)
+        return file.read(self.getPath(filename), mode)
     end
 end
 

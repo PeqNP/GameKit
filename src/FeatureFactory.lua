@@ -90,7 +90,7 @@ function FeatureFactory.new(self)
         config.setImageVariant(getImageVariant())
         -- @todo Load default config from file and return it. It will be used when
         -- queried...? or maybe this is done
-        local jsonStr = config.read(config.getPlistFilename())
+        local jsonStr = config.read(config.getConfigFilename())
         if jsonStr then
             local manifest = AdManifest.fromJson(jsonStr)
             if manifest then
