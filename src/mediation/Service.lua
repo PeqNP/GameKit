@@ -5,6 +5,8 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
+require("HTTPResponseType")
+
 local Error = require("Error")
 local Promise = require("Promise")
 local Config = require("mediation.Config")
@@ -12,44 +14,27 @@ local Config = require("mediation.Config")
 local Service = Class()
 
 function Service.new(self)
-    self.delegate = false -- Assign if you wish to get callbacks in regards to progress, etc.
+    local http
+    local url
 
-    function self.init(host, port, path)
-        self.host = host
-        self.port = port
-        self.path = path
+    function self.init(_http, _url)
+        http = _http
+        url = _url
     end
 
-    --[[ Download ad mediation config.
-
-      @return Promise
-    --]]
     function self.fetchConfig()
-        local fullpath
-        if self.port then
-            fullpath = string.format("%s:%s%s", self.host, self.port, self.path)
-        else
-            fullpath = self.host .. self.path
-        end
-        Log.i("mediation.Service:fetchConfig() - Downloading mediation from (%s)", fullpath)
+        Log.i("mediation.Service:fetchConfig() - Downloading mediation from (%s)", url)
 
-        errors = {}
-        local promise = Promise()
-        local request = cc.XMLHttpRequest:new()
-        local function callback__complete()
-            -- @todo Process data; write to disk, etc.
-            if request.status < 200 or request.status > 299 then
-                promise.reject(Error(-1, "Failed to retrieve MediationAdConfig(s) from server."))
-            else
-                local config = Config.fromJson(request.response)
-                promise.resolve(config)
-            end
-        end
-        request.responseType = cc.XMLHTTPREQUEST_RESPONSE_STRING
-        request:registerScriptHandler(callback__complete)
-        request:open("GET", fullpath, true)
-        request:send()
-        return promise
+        local defer = Promise()
+        local promise = http.get(url, HTTPResponseType.String)
+        promise.done(function(status, contents)
+            local config = Config.fromJson(contents)
+            defer.resolve(config)
+        end)
+        promise.fail(function(status, text)
+            defer.reject(Error(-1, "Failed to retrieve MediationAdConfig(s) from server."))
+        end)
+        return defer
     end
 end
 
