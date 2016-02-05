@@ -5,6 +5,8 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
+local shim = require("shim.System")
+
 local AdUnit = Class()
 
 function AdUnit.new(self)
@@ -27,7 +29,7 @@ function AdUnit.new(self)
     end
 
     function self.isActive()
-        local ctime = socket.gettime()
+        local ctime = shim.GetTime()
         if ctime < startDate or ctime > endDate then
             return false
         end

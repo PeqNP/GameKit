@@ -4,6 +4,7 @@ require "Logger"
 
 Log.setLevel(LogLevel.Warning)
 
+local shim = require("shim.System")
 local AdStylizer = require("royal.AdStylizer")
 local AdConfig = require("royal.AdConfig")
 local AdVendor = require("royal.AdVendor")
@@ -33,6 +34,11 @@ describe("AdVendor", function()
         print("adUnit2", adUnit2)
         print("adUnit3", adUnit3)
         print("Actual:", adUnit)
+    end
+
+    local function make_ads_active()
+        stub(shim, "GetTime", 86450)
+        stub(adConfig, "read", nil) -- Ensures ClickableAdUnit.isActive returns 'true'
     end
     
     before_each(function()
@@ -81,17 +87,47 @@ describe("AdVendor", function()
                     stub(adUnit1, "isActive", true)
                     stub(adUnit2, "isActive", true)
                     stub(adUnit3, "isActive", true)
-
-                    ads = subject.getNextAdUnits(1, fn__callback)
-                    ad = ads[1]
                 end)
 
-                it("should have returned a clickable ad unit", function()
-                    assert.equal(ClickableAdUnit, ad.getClass())
+                context("when the ad has not yet been clicked", function()
+                    before_each(function()
+                        make_ads_active()
+
+                        ads = subject.getNextAdUnits(1, fn__callback)
+                        ad = ads[1]
+                    end)
+                    
+                    it("should return the first ad unit", function()
+                        assert.equal(adUnit1.getId(), ad.getId())
+                    end)
+
+                    it("should have returned a clickable ad unit", function()
+                        assert.equal(ClickableAdUnit, ad.getClass())
+                    end)
+
+                    it("should return the second ad unit", function()
+                        assert.equals(adUnit1.getId(), ad.getId())
+                    end)
                 end)
 
-                it("should return the second ad unit #f", function()
-                    assert.equals(adUnit1.getId(), ads[1].getId())
+                context("when the ad has been clicked", function()
+                    before_each(function()
+                        stub(shim, "GetTime", 86450)
+
+                        function adConfig.read(path)
+                            if path == "id100-key6-click.json" then
+                                return "1000000001"
+                            end
+                            return nil
+                        end
+
+                        ads = subject.getNextAdUnits(1, fn__callback)
+                        ad = ads[1]
+                    end)
+                    
+                    it("should return the second ad unit", function()
+                        assert.equal(adUnit2.getId(), ad.getId())
+                    end)
                 end)
             end)
 
@@ -100,6 +136,7 @@ describe("AdVendor", function()
                     stub(adUnit1, "isActive", false)
                     stub(adUnit2, "isActive", true)
                     stub(adUnit3, "isActive", true)
+                    make_ads_active()
 
                     ads = subject.getNextAdUnits(1, fn__callback)
                 end)
@@ -114,6 +151,7 @@ describe("AdVendor", function()
                     stub(adUnit1, "isActive", false)
                     stub(adUnit2, "isActive", false)
                     stub(adUnit3, "isActive", false)
+                    make_ads_active()
 
                     ads = subject.getNextAdUnits(1, fn__callback)
                 end)
@@ -134,6 +172,7 @@ describe("AdVendor", function()
                     stub(adUnit1, "isActive", true)
                     stub(adUnit2, "isActive", true)
                     stub(adUnit3, "isActive", true)
+                    make_ads_active()
 
                     ads = subject.getNextAdUnits(1, fn__callback)
                 end)
@@ -154,6 +193,8 @@ describe("AdVendor", function()
             stub(adUnit1, "isActive", true)
             stub(adUnit2, "isActive", true)
             stub(adUnit3, "isActive", true)
+            make_ads_active()
+
             ads = subject.getNextAdUnits(4)
         end)
 
@@ -177,6 +218,7 @@ describe("AdVendor", function()
             stub(adUnit1, "isActive", true)
             stub(adUnit2, "isActive", true)
             stub(adUnit3, "isActive", true)
+            make_ads_active()
 
             ads = subject.getNextAdUnits(1)
         end)
@@ -269,6 +311,7 @@ describe("AdVendor", function()
                 stub(adUnit1, "isActive", true)
                 stub(adUnit2, "isActive", true)
                 stub(adUnit3, "isActive", true)
+                make_ads_active()
 
                 buttons = subject.getNextAdUnitButtons(1, fn__callback)
             end)
@@ -303,6 +346,7 @@ describe("AdVendor", function()
                 stub(adUnit1, "isActive", true)
                 stub(adUnit2, "isActive", true)
                 stub(adUnit3, "isActive", true)
+                make_ads_active()
 
                 buttons = subject.getNextAdUnitButtons(1, fn__callback)
             end)

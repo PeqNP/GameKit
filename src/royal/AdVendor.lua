@@ -34,6 +34,13 @@ function AdVendor.new(self)
         unitPos = 1
     end
 
+    local function addClickableAdUnit(subject, adUnit, key)
+        local click = ClickableAdUnit(adConfig, adUnit, key)
+        if click.isActive() then
+            table.insert(subject, click)
+        end
+    end
+
     function self.getNextAdUnits(amount)
         if not adUnits or #adUnits == 0 then -- #adUnits condition is untested
             return nil
@@ -48,12 +55,10 @@ function AdVendor.new(self)
                 if config and fn__configMatches then
                     local matches, key = fn__configMatches(config)
                     if matches then
-                        -- @todo have to create a key for this unit so that the click file
-                        -- can be refererend specifically to this AdUnit.
-                        table.insert(ret, ClickableAdUnit(adConfig, adUnit, key))
+                        addClickableAdUnit(ret, adUnit, key)
                     end
                 elseif not config then
-                    table.insert(ret, ClickableAdUnit(adConfig, adUnit))
+                    addClickableAdUnit(ret, adUnit)
                 end
             end
             unitPos = unitPos + 1

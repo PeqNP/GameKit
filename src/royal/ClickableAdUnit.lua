@@ -23,6 +23,19 @@ function ClickableAdUnit.new(self, init)
         return string.format("id%s-click.json", self.getId())
     end
 
+    local super = {}
+    super.isActive = self.isActive
+    function self.isActive()
+        if not super.isActive() then
+            return false
+        end
+        local contents = config.read(self.getPath())
+        if contents then
+            return false
+        end
+        return true
+    end
+
     function self.click()
         local ts = shim.GetTime()
 
