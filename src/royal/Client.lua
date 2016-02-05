@@ -33,6 +33,10 @@ function Client.new(self)
         url = _url
     end
 
+    function self.getAdConfig()
+        return config
+    end
+
     function self.setCachedManifest(manifest)
         cachedManifest = manifest
     end

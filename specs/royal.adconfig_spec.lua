@@ -45,4 +45,6 @@ describe("AdConfig", function()
     end)
 
     pending("write")
+
+    pending("read")
 end)

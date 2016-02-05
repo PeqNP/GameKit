@@ -62,6 +62,10 @@ function AdConfig.new(self)
     function self.write(filename, contents, mode)
         file.write(self.getPath(filename), contents, mode)
     end
+
+    function self.read(filename, mode)
+        file.read(filename, mode)
+    end
 end
 
 return AdConfig

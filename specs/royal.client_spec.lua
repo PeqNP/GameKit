@@ -32,6 +32,8 @@ describe("Client", function()
         subject = Client(http, config, url)
     end)
 
+    pending("getAdConfig")
+
     describe("fetch config", function()
         local cache 
         local promise
