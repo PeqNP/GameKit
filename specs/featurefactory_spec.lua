@@ -19,13 +19,15 @@ local FeatureFactory = require("FeatureFactory")
 
 describe("FeatureFactory", function()
     local subject
+    local http
 
     before_each(function()
         function BridgeAdaptor.getAdaptor()
             return mock(BridgeAdaptor(), true)
         end
 
-        subject = FeatureFactory("ios")
+        http = HTTP()
+        subject = FeatureFactory(http, "ios")
     end)
 
     it("should create an app.Manager", function()
@@ -42,8 +44,7 @@ describe("FeatureFactory", function()
     it("should create an ad.ServerManager", function()
         local adConfig = {}
         local networks = {}
-        local adServer = AdServerConfig("http://www.example.com", 80, "/ad/ios/mediation.json")
-        local server = subject.getAdManager(adConfig, networks, adServer)
+        local server = subject.getAdManager(adConfig, networks, "http://www.example.com:80/ad/ios/mediation.json")
         assert.equal(AdServerManager, server.getClass())
     end)
     
@@ -57,14 +58,13 @@ describe("FeatureFactory", function()
         local manifest
 
         before_each(function()
-            local http = HTTP()
             local config = AdConfig(LuaFile(), "/writable/path")
             manifest = AdManifest()
 
             stub(config, "read", "{\"key\": 1}")
             stub(AdManifest, "fromJson", manifest)
 
-            client = subject.getRoyalClient(http, config, "http://www.example.com:80/ad/ios/")
+            client = subject.getRoyalClient(config, "http://www.example.com:80/ad/ios/")
         end)
 
         it("should create a royal.Manager", function()

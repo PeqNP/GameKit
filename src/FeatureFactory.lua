@@ -5,12 +5,14 @@
 local FeatureFactory = Class()
 
 function FeatureFactory.new(self)
+    local http
     local platform
     local contentScaleFactor
 
     local bridge
 
-    function self.init(_platform, _contentScaleFactor)
+    function self.init(_http, _platform, _contentScaleFactor)
+        http = _http
         platform = _platform
         contentScaleFactor = _contentScaleFactor
     end
@@ -45,14 +47,14 @@ function FeatureFactory.new(self)
         return IAP(iapManager, tickets)
     end
 
-    function self.getAdManager(adConfig, networks, adServer)
+    function self.getAdManager(adConfig, networks, url)
         local adModule = require("bridge.modules.ad")
         adModule.init(getBridge())
 
         local service
-        if adServer then
+        if url then
             local MediationService = require("mediation.Service")
-            service = MediationService(adServer.getHost(), adServer.getPort(), adServer.getPath())
+            service = MediationService(http, url)
         end
 
         local AdServerManager = require("ad.ServerManager")
@@ -77,7 +79,7 @@ function FeatureFactory.new(self)
     --
     -- This method has the side-effect of loading cached config!
     --
-    function self.getRoyalClient(http, config, url)
+    function self.getRoyalClient(config, url)
         local AdConfig = require("royal.AdConfig")
         local AdManifest = require("royal.AdManifest")
         local Client = require("royal.Client")
