@@ -37,6 +37,10 @@ function Client.new(self)
         cachedManifest = manifest
     end
 
+    function self.getCachedManifest()
+        return cachedManifest
+    end
+
     local function clean()
         callbacks = {}
         errors = {}

@@ -10,6 +10,10 @@ local BridgeAdaptor = require("bridge.BridgeAdaptor")
 local IAP = require("iap.IAP")
 local SocialManager = require("social.Manager")
 local RoyalClient = require("royal.Client")
+local LuaFile = require("LuaFile")
+local HTTP = require("shim.HTTP")
+local AdConfig = require("royal.AdConfig")
+local AdManifest = require("royal.AdManifest")
 
 local FeatureFactory = require("FeatureFactory")
 
@@ -48,8 +52,27 @@ describe("FeatureFactory", function()
         assert.equal(SocialManager, social.getClass())
     end)
 
-    it("should create a royal.Manager", function()
-        local vendor = subject.getRoyalClient("/writable/path/", "http://www.example.com:80/ad/ios/")
-        assert.equal(RoyalClient, vendor.getClass())
+    context("creating a royal.Client", function()
+        local client
+        local manifest
+
+        before_each(function()
+            local http = HTTP()
+            local config = AdConfig(LuaFile(), "/writable/path")
+            manifest = AdManifest()
+
+            stub(config, "read", "{\"key\": 1}")
+            stub(AdManifest, "fromJson", manifest)
+
+            client = subject.getRoyalClient(http, config, "http://www.example.com:80/ad/ios/")
+        end)
+
+        it("should create a royal.Manager", function()
+            assert.equal(RoyalClient, client.getClass())
+        end)
+
+        it("should have set the cached manfiest", function()
+            assert.equal(manifest, client.getCachedManifest())
+        end)
     end)
 end)
