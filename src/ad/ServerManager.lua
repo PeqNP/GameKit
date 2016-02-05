@@ -5,6 +5,7 @@
 local Error = require("Error")
 local Promise = require("Promise")
 local AdManager = require("ad.Manager")
+local MediationAdFactory = require("mediation.AdFactory")
 
 local ServerManager = Class()
 
@@ -45,15 +46,10 @@ function ServerManager.new(self)
             return deferred
         end
         deferred = Promise()
-        local promise = service.downloadConfig()
-        promise.done(function(success, config)
-            if not success then
-                deferred.reject(Error(501, "Failed to retrieve MediationAdConfig(s) from server."))
-                deferred = nil
-                return
-            end
+        local promise = service.fetchConfig()
+        promise.done(function(config)
             local configs = config.getAds()
-            Log.i("ServerManager:fetchConfig() - Downloaded mediation network config w/ success (%s) # configs (%d)", success, #configs)
+            Log.i("ServerManager:fetchConfig() - Downloaded mediation network config w/ # configs (%d)", #configs)
             if #configs > 0 then
                 for _, c in ipairs(configs) do
                     Log.i("ServerManager:fetchConfig() - Network (%d) impression reward (%s) click reward (%s)", c.getAdNetwork(), c.getRewardForImpression() or "", c.getRewardForClick() or "")
@@ -68,6 +64,11 @@ function ServerManager.new(self)
             else
                 deferred.reject(Error(503, "Server has no configs."))
             end
+            deferred = nil
+        end)
+        promise.fail(function(_error)
+            Log.i("ServerManager:fetchConfig() - Failed to retrieve MediationAdConfig(s) from server.")
+            deferred.reject(_error)
             deferred = nil
         end)
         return deferred

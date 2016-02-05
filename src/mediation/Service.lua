@@ -5,6 +5,7 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
+local Error = require("Error")
 local Promise = require("Promise")
 local Config = require("mediation.Config")
 
@@ -23,14 +24,14 @@ function Service.new(self)
 
       @return Promise
     --]]
-    function self.downloadConfig()
+    function self.fetchConfig()
         local fullpath
         if self.port then
             fullpath = string.format("%s:%s%s", self.host, self.port, self.path)
         else
             fullpath = self.host .. self.path
         end
-        Log.i("mediation.Service:downloadConfig() - Downloading mediation from (%s)", fullpath)
+        Log.i("mediation.Service:fetchConfig() - Downloading mediation from (%s)", fullpath)
 
         errors = {}
         local promise = Promise()
@@ -38,10 +39,10 @@ function Service.new(self)
         local function callback__complete()
             -- @todo Process data; write to disk, etc.
             if request.status < 200 or request.status > 299 then
-                promise.resolve(false, nil)
+                promise.reject(Error(-1, "Failed to retrieve MediationAdConfig(s) from server."))
             else
                 local config = Config.fromJson(request.response)
-                promise.resolve(true, config)
+                promise.resolve(config)
             end
         end
         request.responseType = cc.XMLHTTPREQUEST_RESPONSE_STRING

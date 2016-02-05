@@ -37,14 +37,15 @@ describe("MediationService", function()
         assert.equals(path, subject.path)
     end)
 
-    describe("downloadConfig", function()
+    describe("fetchConfig", function()
         local promise
         local request
         local wasCalled
-        local success
+        local _error
         local payload
 
         before_each(function()
+            payload = nil
             request = cc.XMLHttpRequest()
             stub(request, "open")
             stub(request, "send")
@@ -54,11 +55,13 @@ describe("MediationService", function()
             end
 
             wasCalled = false
-            promise = subject.downloadConfig()
-            promise.done(function(s, p)
+            promise = subject.fetchConfig()
+            promise.done(function(p)
                 wasCalled = true
-                success = s
                 payload = p
+            end)
+            promise.fail(function(__error)
+                _error = __error
             end)
         end)
 
@@ -102,10 +105,6 @@ describe("MediationService", function()
                     request.fn()
                 end)
 
-                it("should have succeeded", function()
-                    assert.truthy(success)
-                end)
-
                 it("should have returned one ad config", function()
                     assert.truthy(payload.kindOf(MediationConfig))
                     assert.equals(1, payload.getVersion())
@@ -122,11 +121,9 @@ describe("MediationService", function()
                 end)
 
                 it("should have failed", function()
-                    assert.falsy(success)
-                end)
-
-                it("should have returned nil payload", function()
-                    assert.falsy(payload)
+                    assert.truthy(_error)
+                    assert.equal(-1, _error.getCode())
+                    assert.equal("Failed to retrieve MediationAdConfig(s) from server.", _error.getMessage())
                 end)
             end)
         end)
