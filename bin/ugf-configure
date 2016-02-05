@@ -132,7 +132,7 @@ def configure_supported_networks_header(networks, cocos):
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/ios/SupportedNetworks.h", cocos.iosmacprojpath("GameKit/GameTools/AdKit/SupportedNetworks.h"))
 
-def create_lua_mediation(platform, mediation, networks, server, cocos):
+def create_lua_mediation(platform, mediation, networks, mediationUrl, cocos):
     lua_networks = lua_for_networks(networks)
     lua_require = []
     for network in networks:
@@ -145,17 +145,16 @@ def create_lua_mediation(platform, mediation, networks, server, cocos):
 
 require "ad.Constants"
 local AdConfig = require("ad.Config")
-local AdServerConfig = require("ad.ServerConfig")
 local Ad = require("ad.Ad")
 {}
 
-local adServer = {}
+local url = "{}"
 local adConfig = {}
 local networks = {{
     {}
 }}
-return {{adConfig, networks, adServer}}
-    """.format(VERSION, datetime.now(), "\n".join(lua_require), server.toLua(), mediation.toLua(), ",\n    ".join(lua_networks))
+return {{adConfig, networks, url}}
+    """.format(VERSION, datetime.now(), "\n".join(lua_require), mediation.toLua(), ",\n    ".join(lua_networks), mediationUrl)
     fh = open(cocos.mediationluapath(platform), "w")
     fh.write(lua)
     fh.close()
@@ -298,7 +297,7 @@ if __name__ == "__main__":
     cocos = CocosPathBuilder(config, project.cocos)
     adkit = iOS_GameKitPathBuilder(config)
     stage = StagePathBuilder(cocos.basepath())
-    mediation, networks, server = load_mediation("ios", source)
+    mediation, networks, mediationUrl = load_mediation("ios", source)
     iap = load_iap("ios", source)
     royal = load_royal("ios", source)
 
@@ -309,7 +308,7 @@ if __name__ == "__main__":
         if "dependencies" in options:
             configure_ios_pods(networks, project, cocos, stage)
         if "lua" in options:
-            create_lua_mediation("ios", mediation, networks, server, cocos)
+            create_lua_mediation("ios", mediation, networks, mediationUrl, cocos)
             #copy_mediation_config("ios", source, cocos)
         if "adkit" in options:
             copy_adkit_sources(networks, cocos, adkit)

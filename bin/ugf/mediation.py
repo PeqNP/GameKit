@@ -105,10 +105,7 @@ def load_mediation_config(path):
         for ad in network["ads"]:
             ads.append(Ad(ad["type"], ad["zoneId"], ad.get("location", None)))
         networks.append(Network(network["network"], network.get("appId"), network.get("signature"), ads))
-    server = config.get("server", None)
-    if server:
-        server = AdServerConfig(server["host"], server["port"], server["path"])
-    return AdConfig(config["config"]["devices"], config["config"]["automatic"], config["config"]["orientation"]), networks, server
+    return AdConfig(config["config"]["devices"], config["config"]["automatic"], config["config"]["orientation"]), networks, config.get("url", None)
 
 def load_iap_config(path):
     if not os.path.isfile(path):

@@ -100,7 +100,7 @@ class ProjectPathBuilder (object):
     
     def mediationpath(self, platform):
         self.check_platform(platform)
-        return self.path("platform/{}/mediation.json".format(platform))
+        return self.path("platform/{}/mediation.server.json".format(platform))
 
     def iappath(self, platform):
         self.check_platform(platform)
