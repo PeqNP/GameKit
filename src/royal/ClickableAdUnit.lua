@@ -6,7 +6,7 @@ local shim = require("shim.System")
 
 local ClickableAdUnit = Class("royal.AdUnit")
 
-function ClickableAdUnit(self, init)
+function ClickableAdUnit.new(self, init)
     local config
     local key
 
@@ -17,13 +17,16 @@ function ClickableAdUnit(self, init)
     end
 
     function self.getPath()
-        return string.format("id%s-key%s-click.json", self.getId(), key)
+        if key then
+            return string.format("id%s-key%s-click.json", self.getId(), key)
+        end
+        return string.format("id%s-click.json", self.getId())
     end
 
     function self.click()
         local ts = shim.GetTime()
 
-        Log.i("AdUnit ID (%s) config (%s) clicked on (%s)", self.getId(), path, ts)
+        Log.i("Clicked AdUnit ID (%s) config key (%s) ts (%s)", self.getId(), key, ts)
 
         config.write(self.getPath(), tostring(ts))
 

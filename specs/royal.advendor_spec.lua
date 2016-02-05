@@ -2,13 +2,15 @@ require "lang.Signal"
 require "specs.Cocos2d-x"
 require "Logger"
 
-Log.setLevel(LogLevel.Info)
+Log.setLevel(LogLevel.Warning)
 
+local shim = require("shim.System")
 local AdStylizer = require("royal.AdStylizer")
 local AdConfig = require("royal.AdConfig")
 local AdVendor = require("royal.AdVendor")
 local AdUnit = require("royal.AdUnit")
 local AdManifest = require("royal.AdManifest")
+local ClickableAdUnit = require("royal.ClickableAdUnit")
 
 describe("AdVendor", function()
     local subject
@@ -47,7 +49,7 @@ describe("AdVendor", function()
             end
             for _, v in ipairs(evolutions) do
                 if table.contains(config.evolutions, v) then
-                    return true, config.evolution
+                    return true, v 
                 end
             end
             return false
@@ -93,14 +95,17 @@ describe("AdVendor", function()
                     assert.equals(adUnit1.getId(), ads[1].getId())
                 end)
 
-                context("when the ad is clicked", function()
+                -- TODO: Move into ClickableAdUnit test
+                context("when the first ad is clicked", function()
                     before_each(function()
                         stub(shim, "GetTime", 86700)
+                        stub(shim, "OpenURL")
+                        stub(adConfig, "write")
                         ad.click()
                     end)
 
                     it("should have saved the current time to a file", function()
-                        assert.stub(file.write).was.called_with("id1-key6-click.json", "86700")
+                        assert.stub(adConfig.write).was.called_with("id100-key6-click.json", "86700")
                     end)
 
                     it("should have opened the URL", function()
@@ -120,6 +125,24 @@ describe("AdVendor", function()
 
                 it("should return the second ad unit", function()
                     assert.equals(adUnit2.getId(), ads[1].getId())
+                end)
+
+                -- TODO: Move into ClickableAdUnit test
+                context("when the ad is clicked", function()
+                    before_each(function()
+                        stub(shim, "GetTime", 86700)
+                        stub(shim, "OpenURL")
+                        stub(adConfig, "write")
+                        ads[1].click()
+                    end)
+
+                    it("should have saved the current time to a file", function()
+                        assert.stub(adConfig.write).was.called_with_debug("id200-click.json", "86700")
+                    end)
+
+                    it("should have opened the URL", function()
+                        assert.stub(shim.OpenURL).was.called_with("http://www.example.com/click2")
+                    end)
                 end)
             end)
 
@@ -305,7 +328,7 @@ describe("AdVendor", function()
                 end)
 
                 it("should have returned the first ad unit", function()
-                    assert.equals(adUnit1, adUnit)
+                    assert.equals(adUnit1.getId(), adUnit.getId())
                 end)
             end)
         end)
@@ -339,7 +362,7 @@ describe("AdVendor", function()
                 end)
 
                 it("should have returned the second ad unit", function()
-                    assert.equals(adUnit2, adUnit)
+                    assert.equals(adUnit2.getId(), adUnit.getId())
                 end)
             end)
         end)
