@@ -17,14 +17,14 @@ function shim.Pause()
     if not shim.IsPaused() then
         director:pause()
         director:stopAnimation()
-        music.pause()
+        music.Pause()
     end
 end
 
 function shim.Resume()
     if shim.IsPaused() then
         director:startAnimation()
-        music.resume()
+        music.Resume()
         director:resume()
     end
 end
