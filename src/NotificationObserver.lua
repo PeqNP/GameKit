@@ -1,5 +1,5 @@
 --
--- @copyright 2015 Upstart Illustration LLC. All rights reserved.
+-- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
 local NotificationObserver = Class()

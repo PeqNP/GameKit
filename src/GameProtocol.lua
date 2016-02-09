@@ -1,5 +1,6 @@
 --
--- Required methods necessary to implement for a GameTools game.
+-- Required protocol for games made with GameKit. Specifically, this protocol must always
+-- be implemented on the main 'Game' module.
 --
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --

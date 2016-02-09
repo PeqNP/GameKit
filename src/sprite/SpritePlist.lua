@@ -54,7 +54,7 @@ function SpritePlist.new(self)
         cc.SpriteFrameCache:getInstance():addSpriteFrames(plistName)
     end
 
-    --[[ Load frames asynchronously. ]]--
+    -- Load frames asynchronously.
     function self.loadFrames()
         local promise = Promise()
         if #frames == 0 then
@@ -82,7 +82,7 @@ function SpritePlist.new(self)
         return promise
     end
 
-    --[[ Returns frames for this sprite sheet. ]]--
+    -- Returns frames for this sprite sheet.
     function self.getFrames()
         if #frames == 0 then
             return {}

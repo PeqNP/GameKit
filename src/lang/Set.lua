@@ -1,55 +1,62 @@
---[[ Provides primitive Set database.
-
-  @copyright 2014 Upstart Illustration LLC. All rights reserved.
---]]
+--
+-- Provides primitive Set database.
+--
+-- FIXME: This class is untested.
+--
+-- @copyright (c) 2014 Upstart Illustration LLC. All rights reserved.
+--
 
 Set = Class()
 
-function Set.new(t)
-    local self = {}
-    self.mt = {}
+function Set.tostring(self)
+    local s = "{"
+    local sep = ""
+    for e in pairs(self.getValues()) do
+        s = s .. sep .. e
+        sep = ", "
+    end
+    return s .. "}"
+end
 
-    --[[ Untested ]]--
+Set.mt = {}
+Set.mt.__tostring = Set.tostring
+
+function Set.new(self)
+    local values = {}
+
+    function self.init(vals)
+        for _, v in ipairs(vals) do values[v] = true end
+    end
+
+    function self.getValues()
+        return values
+    end
+
     function self.union(b)
-        local res = Set({})
-        for k in pairs(self.mt) do res[k] = true end
-        for k in pairs(b.mt) do res[k] = true end
+        local res = Set()
+        for k in pairs(values) do res[k] = true end
+        for k in pairs(b.getValues()) do res[k] = true end
         return res
     end
 
-    --[[ Untested ]]--
     function self.intersection(b)
-        local res = Set({})
-        for k in pairs(self.mt) do
-            res[k] = b.mt[k]
+        local res = Set()
+        local bValues = b.getValues()
+        for k in pairs(values) do
+            res[k] = bValues[k]
         end
         return res
     end
 
-    --[[
-        Determine if value exists in set.
-
-        @param mixed Value to check existance for
-        @return boolean true if existing. false otherwise
-    --]]
-    function self.contains(val)
-        return self.mt[val] ~= nil
+    --
+    -- Determine if value exists in set.
+    --
+    -- @param mixed Value to check existance for
+    -- @return boolean true if existing. false otherwise
+    --
+    function self.contains(key)
+        return values[key] ~= nil
     end
 
-    function self.tostring()
-        local s = "{"
-        local sep = ""
-        for e in pairs(self.mt) do
-            s = s .. sep .. e
-            sep = ", "
-        end
-        return s .. "}"
-    end
-
-    function self.print()
-        print(self.tostring())
-    end
-
-    for _, l in ipairs(t) do self.mt[l] = true end
-    return self
+    setmetatable(self, Set.mt)
 end

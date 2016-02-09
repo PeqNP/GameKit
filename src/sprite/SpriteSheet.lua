@@ -48,7 +48,7 @@ function SpriteSheet.new(self)
         return textureName .. frame.number
     end
 
-    --[[ Load sprite sheet frames asynchronously. ]]--
+    -- Load sprite sheet frames asynchronously.
     function self.loadFrames(callback)
         if #frames == 0 then
             callback({})
@@ -74,7 +74,7 @@ function SpriteSheet.new(self)
         return promise
     end
 
-    --[[ Load and return sprite sheet frames. ]]--
+    -- Load and return sprite sheet frames.
     function self.getFrames()
         local texture = cc.Director:getInstance():getTextureCache():getTextureForKey(textureName)
         -- Synchronously load texture.

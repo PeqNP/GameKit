@@ -72,11 +72,13 @@ function clearbit(x, p)
   return hasbit(x, p) and x - p or x
 end
 
---[[ Convenience function returns time in sub-second precision. ]]--
+-- Convenience function returns time in sub-second precision.
 gettime = socket.gettime
 
---[[ Create shallow copy of table.
-  http://lua-users.org/wiki/CopyTable : Shallow Copy ]]--
+-- 
+-- Create shallow copy of table.
+-- http://lua-users.org/wiki/CopyTable : Shallow Copy
+-- 
 function shallowcopy(orig)
     local orig_type = type(orig)
     local copy
@@ -91,7 +93,7 @@ function shallowcopy(orig)
     return copy
 end
 
---[[ Split a string using pattern. ]]--
+-- Split a string using pattern.
 function string.split(str, pat)
     local t = {}  -- NOTE: use {n = 0} in Lua-5.0
     local fpat = "(.-)" .. pat
@@ -111,13 +113,13 @@ function string.split(str, pat)
     return t
 end
 
---[[ Determine if a value is contained within a table.
-  
-@param Table containing values to search (haystack)
-@param Value (needle) to find in table
-@return true when value is in table. false, otherwise.
-
---]]
+--
+-- Determine if a value is contained within a table.
+-- 
+-- @param Table containing values to search (haystack)
+-- @param Value (needle) to find in table
+-- @return true when value is in table. false, otherwise.
+--
 function table.contains(tbl, val)
     for _, v in ipairs(tbl) do
         if val == v then
@@ -125,6 +127,14 @@ function table.contains(tbl, val)
         end
     end
     return false
+end
+
+function table.get(table, key, default)
+    local val = table[key]
+    if val == nil then
+        return default
+    end
+    return val
 end
 
 function table.extend(table1, table2)

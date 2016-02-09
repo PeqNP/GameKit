@@ -1,8 +1,8 @@
 --
 -- Provides notification center which allows actors to broadcast messages
---  to observers.
+-- to observers.
 --
--- @copyright 2014 Upstart Illustration LLC. All rights reserved.
+-- @copyright (c) 2014 Upstart Illustration LLC. All rights reserved.
 --
 
 require "Logger"
@@ -19,9 +19,8 @@ function NotificationCenter.new(self)
         return observers
     end
     
-    --[[ Add observer for given event. ]]--
+    -- Add an observer for an event ID.
     function self.addObserver(observer, callback, eventId)
-        --print("--->addObserver", tostring(observer), callback, eventId)
         if not observers[eventId] then
             observers[eventId] = {}
         end
@@ -31,9 +30,9 @@ function NotificationCenter.new(self)
             end
         end
         table.insert(observers[eventId], NotificationObserver(observer, callback))
-        --print("-> # observers: "..#observers[eventId])
     end
 
+    -- Remove observer associated to event ID.
     function self.removeObserverForEvent(observer, eventId)
         -- There are no observers for this event.
         if not observers[eventId] then
@@ -44,21 +43,19 @@ function NotificationCenter.new(self)
         for id, obs in ipairs(tObs) do
             if obs.observer == observer then
                 table.remove(observers[eventId], id)
-                --print("-> # left: "..#observers[eventId])
                 return
             end
         end
     end
 
-    --[[ Remove observer from all observing events. ]]--
+    -- Remove observer from all observing events.
     function self.removeObserver(observer)
-        --print("-->removeObserver:", tostring(observer))
         for eventId, _ in pairs(observers) do
             self.removeObserverForEvent(observer, eventId)
         end
     end
 
-    --[[ Post event to all observers observing eventId. ]]--
+    -- Post event to all observers observing event ID.
     function self.postNotification(eventId, obj)
         -- Cleanup
         if observers[eventId] and #observers[eventId] < 1 then
@@ -70,7 +67,6 @@ function NotificationCenter.new(self)
         end
         -- Inform all observers of event.
         for _, obs in ipairs(observers[eventId]) do
-            --print("calling:", tostring(obs), eventId)
             obs.callback(obj)
         end
     end

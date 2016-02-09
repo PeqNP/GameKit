@@ -56,7 +56,7 @@ function Logger.new(self)
         Logger.pipe(string.format("S: " .. message, ...))
     end
 
-    --[[ Specific for Cocos2d-x ]]--
+    -- ----- Convenience -----
 
     function self.position(tag, x, y)
         self.d("%s: x(%s) y(%s)", tag, x, y)

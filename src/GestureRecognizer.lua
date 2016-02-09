@@ -1,16 +1,16 @@
---[[
-  Gesture recognition.
-
-  @todo Unregister touches from layer when Exit called. OR
-        unregister previously listening to layer from Start. (Call Exit)
-
-  @copyright 2015 Upstart Illustration LLC. All rights reserved.
-
---]]
-
-require "Logger"
+--
+-- Provides gesture recognition
+--
+-- @todo Unregister touches from layer when Exit called. OR
+-- unregister previously listening to layer from Start. (Call Exit)
+-- @note This library was originally developed by someone else and has been modified
+-- to work within the GameKit lib. I can't find their information to provide attribution.
+--
+--  @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
+--
 
 require "Constants"
+require "Logger"
 
 local LongPressGesture = require("gesture.LongPressGesture")
 local TapGesture = require("gesture.TapGesture")
@@ -90,14 +90,14 @@ V.gestureSigns = {
     "Square",
 }
 
---[[ Find distance between two points. ]]--
+-- Find distance between two points.
 local function Distance(u, v)
     local x = u.x - v.x
     local y = u.y - v.y
     return math.sqrt((x*x) + (y*y))
 end
 
---[[ Find minimum moves using levenshtein. ]]--
+-- Find minimum moves using levenshtein.
 local function Levenshtein(s, t)
     local d, sn, tn = {}, #s, #t
     local byte, min = string.byte, math.min
@@ -112,7 +112,7 @@ local function Levenshtein(s, t)
     return d[#d]
 end
 
---[[ Degrees to sector table. ]]--
+-- Degrees to sector table.
 local function DegreesToSector(x1,y1,x2,y2)
     local a1 = x2 - x1
     local b1 = y2 - y1
@@ -131,7 +131,6 @@ local function DegreesToSector(x1,y1,x2,y2)
       5: -197, -241
       6: -242, 63
       7: 23, 62
-
     ]]--
 
     if degreesBack < 22 and degreesBack > -23 then
@@ -329,7 +328,7 @@ local function OnTouchEnded(touch, event)
     V.anglesMap = {}
 end
 
---[[ Start recording touches on a given layer. ]]--
+-- Start recording touches on a given layer.
 local function start(layer, tapCallback, swipeCallback, longPressCallback)
     -- @fixme Stop listening to any previous layer.
     local eventDispatcher = layer:getEventDispatcher()

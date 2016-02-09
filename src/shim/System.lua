@@ -1,9 +1,9 @@
---[[
-  Convenience wrappers for many Cocos2d-x methods.
-
-  @copyright 2014 Upstart Illustration LLC. All rights reserved.
-
---]]
+--
+-- Wrapper for system and common API related features of the underlying
+-- gaming framework.
+--
+-- @copyright (c) 2014 Upstart Illustration LLC. All rights reserved.
+--
 
 require "Logger"
 
@@ -26,8 +26,7 @@ function shim.GenerateShader(shader, vertex, frag)
     cc.GLProgramCache:getInstance():addGLProgram(prg, shader)
 end
 
---[[ Returns random point, within visible area, where a sprite can be
-     placed. ]]--
+-- Returns random point, within visible area, where a sprite can be placed.
 function shim.GetRandomPoint(sprite)
     -- @fixme Ensure that the sprite is always in view. This code does not
     -- do that.
@@ -39,14 +38,14 @@ function shim.GetRandomPoint(sprite)
     return cc.p(x, y)
 end
 
---[[ Returns a point which represents the position of a location.
-
-  For instance, if provided Location.TopLeft this will produce a point
-  that is near the top left of the screen.
-
-  This is generally used for rolling credits at the ending of a game.
-
---]]
+--
+-- Returns a point which represents the position of a location.
+--
+-- For instance, if provided Location.TopLeft this will produce a point
+-- that is near the top left of the screen.
+--
+-- This is generally used for rolling credits at the ending of a game.
+--
 function shim.GetPointForLocation(location, sprite, padding)
     local size = shim.GetVisibleSize()
     local x, y
@@ -134,21 +133,19 @@ function shim.GetPointForHeading(heading)
     return cc.p(x, y)
 end
 
---[[ Return the next position and angle given the target and current position
-     of an actor. ]]--
+-- Return the next position and angle given the target and current position of an actor.
 function shim.GetNextPosition(pos, target, distance)
     local angle = math.atan2(target.y - pos.y, target.x - pos.x)
     local pos = cc.p(pos.x + (distance * math.cos(angle)), pos.y + (distance * math.sin(angle)))
     return pos
 end
 
---[[
-  Get distance between two points.
-
-  @param cc.p loca current point
-  @param cc.p locb destination point
-
---]]
+--
+-- Get distance between two points.
+--
+-- @param cc.p loca current point
+-- @param cc.p locb destination point
+--
 function shim.GetDistance(loca, locb)
     -- current position is considered point A. dest, point B
     local aDist = loca.x - locb.x
@@ -264,15 +261,15 @@ end
 
 -- ----- Scheduler -----
 
---[[ Schedules a function callback to be called every tick.
-
-  @param fn - function to call
-  @param number priority - interal to call method in seconds. If 0, will be called every frame.
-  @param boolean paused - If yes, will not run until it is resumed.
-
-  @return number - ID of script registration
-
---]]
+--
+-- Schedules a function callback to be called every tick.
+--
+-- @param fn - function to call
+-- @param number priority - interal to call method in seconds. If 0, will be called every frame.
+-- @param boolean paused - If yes, will not run until it is resumed.
+--
+-- @return number - ID of script registration
+--
 function shim.ScheduleFunc(fn, priority, paused)
     return director:getScheduler():scheduleScriptFunc(fn, priority, paused)
 end

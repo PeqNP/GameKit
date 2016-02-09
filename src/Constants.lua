@@ -1,11 +1,10 @@
---[[
-  Global constants.
+--
+-- Global constants.
+--
+-- @copyright (c) 2014 Upstart Illustration LLC. All rights reserved.
+--
 
-  @copyright 2014 Upstart Illustration LLC. All rights reserved.
-
---]]
-
---[[ UI / HUD ]]--
+-- ----- UI / HUD -----
 
 Touch = enum(1
   , 'Began'

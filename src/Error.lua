@@ -1,5 +1,6 @@
 --
 -- @copyright 2015 Upstart Illustration LLC. All rights reserved.
+--
 
 ErrorCode = enum(1
   , 'ValueError'
