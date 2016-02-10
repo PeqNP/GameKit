@@ -16,7 +16,9 @@ import sys
 from ugf.config import configpath, checkconfig, Config, ProjectConfig
 from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder, iOS_GameKitPathBuilder
 from ugf.interpolator import Interpolator
-from ugf.mediation import load_mediation_config, load_iap_config, load_royal_config, pods_for_networks, lua_for_networks
+from ugf.mediation import load_mediation_config
+from ugf.iap import load_iap_config
+from ugf.royal import load_royal_config
 
 VERSION = "ugf-configure v1.0.0"
 
@@ -87,9 +89,8 @@ def configure_sdk_dependencies(project, cocos, stage):
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/ios/GKConfig.h", cocos.iosmacprojpath("GameKit/GameTools/GKConfig.h"))
 
-def configure_ios_pods(networks, project, cocos, stage):
-    # Add mediation networks to Podfile
-    pods = pods_for_networks(networks)
+# Adds mediation network dependencies to Pods file.
+def configure_ios_pods(pods, project, cocos, stage):
     keys = {
         "##UGF-EXECUTABLE##": project.executable
       , "##UGF-MEDIATION-DEPENDENCIES##": "    " + "\n    ".join(pods)
@@ -132,10 +133,9 @@ def configure_supported_networks_header(networks, cocos):
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/ios/SupportedNetworks.h", cocos.iosmacprojpath("GameKit/GameTools/AdKit/SupportedNetworks.h"))
 
-def create_lua_mediation(platform, mediation, networks, mediationUrl, cocos):
-    lua_networks = lua_for_networks(networks)
+def create_lua_mediation(mediation, cocos):
     lua_require = []
-    for network in networks:
+    for network in mediation.getNetworks():
         lua_require.append("local {}Network = require(\"ad.network.{}Network\")".format(network.name, network.name))
     lua = """--
 -- Mediation network configuration file.
@@ -154,15 +154,15 @@ local networks = {{
     {}
 }}
 return {{adConfig, networks, url}}
-    """.format(VERSION, datetime.now(), "\n".join(lua_require), mediation.toLua(), ",\n    ".join(lua_networks), mediationUrl)
-    fh = open(cocos.mediationluapath(platform), "w")
+    """.format(VERSION, datetime.now(), "\n".join(lua_require), mediation.configToLua(), mediation.networksToLua(",\n    "), mediation.getUrl())
+    fh = open(cocos.mediationluapath(mediation.getPlatform()), "w")
     fh.write(lua)
     fh.close()
 
 def load_mediation(platform, source):
     path = source.mediationpath(platform)
     try:
-        return load_mediation_config(path)
+        return load_mediation_config(platform, path)
     except Exception, exc:
         print(exc)
         return None, None, None
@@ -297,22 +297,22 @@ if __name__ == "__main__":
     cocos = CocosPathBuilder(config, project.cocos)
     adkit = iOS_GameKitPathBuilder(config)
     stage = StagePathBuilder(cocos.basepath())
-    mediation, networks, mediationUrl = load_mediation("ios", source)
+    ios_mediation = load_mediation("ios", source)
     iap = load_iap("ios", source)
     royal = load_royal("ios", source)
 
     if not os.path.exists(stage.basepath()):
         os.makedirs(stage.basepath())
 
-    if mediation and networks:
+    if ios_mediation and ios_mediation.hasNetworks():
         if "dependencies" in options:
-            configure_ios_pods(networks, project, cocos, stage)
+            configure_ios_pods(ios_mediation.getPods(), project, cocos, stage)
         if "lua" in options:
-            create_lua_mediation("ios", mediation, networks, mediationUrl, cocos)
+            create_lua_mediation(ios_mediation, cocos)
             #copy_mediation_config("ios", source, cocos)
         if "adkit" in options:
-            copy_adkit_sources(networks, cocos, adkit)
-            configure_supported_networks_header(networks, cocos)
+            copy_adkit_sources(ios_mediation.getNetworks(), cocos, adkit)
+            configure_supported_networks_header(ios_mediation.getNetworks(), cocos)
             configure_sdk_dependencies(project, cocos, stage)
     else:
         print("No mediation networks configured for project. Skipping...")

@@ -27,40 +27,42 @@ def quote(val):
         return "nil"
     return '"' + val + '"'
 
-class AdServerConfig (object):
-    def __init__(self, host, port, path):
-        self.host = host
-        self.port = port
-        self.path = path
-
-    def toLua(self):
-        if self.host:
-            return "AdServerConfig(\"{}\", {}, \"{}\")".format(self.host, self.port, self.path)
-        return "nil"
-
 class AdConfig (object):
-    def __init__(self, deviceIds, automatic, orientation):
+    def __init__(self, platform, url, networks, deviceIds, automatic, orientation):
+        self.platform = platform
+        self.url = url
+        self.networks = networks
         self.deviceIds = deviceIds
         self.automatic = automatic
         self.orientation = orientation
 
-    def toLua(self):
+    def getPlatform(self):
+        return self.platform
+
+    def getUrl(self):
+        return self.url
+
+    def getNetworks(self):
+        return self.networks
+
+    def hasNetworks(self):
+        return not (len(self.networks) == 0)
+
+    def configToLua(self):
         return "AdConfig({{\"{}\"}}, {}, {})".format("\", \"".join(self.deviceIds), self.automatic and "true" or "false", self.orientation)
 
-class IAPTicket (object):
-    def __init__(self, productId, sku):
-        self.productId = productId
-        self.sku = sku
+    def networksToLua(self, separator):
+        code = []
+        for network in self.networks:
+            code.append(network.toLua())
+        return separator.join(code)
 
-    def toLua(self):
-        return "Ticket(\"{}\", \"{}\")".format(self.productId, self.sku)
-
-class RoyalAdNetworkConfig (object):
-    def __init__(self, url):
-        self.url = url
-
-    def getURL(self):
-        return self.url
+    def getPods(self):
+        pods = []
+        for network in self.networks:
+            if network.name in POD_NETWORKS.keys():
+                pods.append(POD_NETWORKS[network.name])
+        return pods
 
 class Network (object):
     def __init__(self, name, appId, signature, ads):
@@ -85,14 +87,7 @@ class Ad (object):
     def toLua(self):
         return "Ad({}, {}{})".format(LUA_AD_TYPES[self.type], quote(self.zoneId), self.location and ", "+str(self.location) or "")
 
-def pods_for_networks(networks):
-    pods = []
-    for network in networks:
-        if network.name in POD_NETWORKS.keys():
-            pods.append(POD_NETWORKS[network.name])
-    return pods
-
-def load_mediation_config(path):
+def load_mediation_config(platform, path):
     if not os.path.isfile(path):
         raise IOError("Mediation config file does not exist at path {}".format(path))
     fh = open(path, "r")
@@ -105,31 +100,4 @@ def load_mediation_config(path):
         for ad in network["ads"]:
             ads.append(Ad(ad["type"], ad["zoneId"], ad.get("location", None)))
         networks.append(Network(network["network"], network.get("appId"), network.get("signature"), ads))
-    return AdConfig(config["config"]["devices"], config["config"]["automatic"], config["config"]["orientation"]), networks, config.get("url", None)
-
-def load_iap_config(path):
-    if not os.path.isfile(path):
-        raise IOError("IAP config file does not exist at path {}".format(path))
-    fh = open(path, "r")
-    json_blob = fh.read()
-    fh.close()
-    tickets = []
-    json_tickets = json.loads(json_blob)
-    for ticket in json_tickets:
-        tickets.append(IAPTicket(ticket[0], ticket[1]))
-    return tickets
-
-def load_royal_config(path):
-    if not os.path.isfile(path):
-        raise IOError("Royal Ad Network config file does not exist at path {}".format(path))
-    fh = open(path, "r")
-    json_blob = fh.read()
-    fh.close()
-    config = json.loads(json_blob)
-    return RoyalAdNetworkConfig(config["url"])
-
-def lua_for_networks(networks):
-    code = []
-    for network in networks:
-        code.append(network.toLua())
-    return code
+    return AdConfig(platform, config.get("url", None), networks, config["config"]["devices"], config["config"]["automatic"], config["config"]["orientation"])
