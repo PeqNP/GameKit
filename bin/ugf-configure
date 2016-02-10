@@ -298,6 +298,7 @@ if __name__ == "__main__":
     ios_iap = load_iap("ios", source)
     android_iap = load_iap("android", source)
     ios_royal = load_royal("ios", source)
+    android_royal = load_royal("android", source)
 
     if not os.path.exists(stage.basepath()):
         os.makedirs(stage.basepath())
@@ -342,6 +343,13 @@ if __name__ == "__main__":
             create_lua_royal(ios_royal, cocos)
     else:
         print("No Royal Ad Network configured for iOS project. Skipping...")
+
+    # ----- Android Royal Ad Network -----
+    if android_royal:
+        if "lua" in options:
+            create_lua_royal(android_royal, cocos)
+    else:
+        print("No Royal Ad Network configured for Android project. Skipping...")
 
     if "project" in options:
         configure_ios_targets(project, source, cocos, stage)
