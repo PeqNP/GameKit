@@ -61,7 +61,7 @@ function BridgeAdaptor.getAdaptor(platform)
         paramFn = iosparams
     elseif platform == "android" then
         adaptor = require("cocos.cocos2d.luaj")
-        controller = "org/cocos2dx/lua/AppActivity"
+        controller = "com.upstartillustration.gamekit.Controller"
         paramFn = androidparams
     else
         Log.s("Unable to configure BridgeAdaptor for platform '%s'", platform and platform or "None")
