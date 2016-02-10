@@ -167,10 +167,7 @@ def load_mediation(platform, source):
         print(exc)
         return None, None, None
 
-def create_lua_iap(platform, iap, cocos):
-    lua_tickets = []
-    for ticket in iap:
-        lua_tickets.append(ticket.toLua())
+def create_lua_iap(iap, cocos):
     lua = """--
 -- IAP configuration file.
 --
@@ -184,15 +181,15 @@ local iap = {{
 }}
 
 return iap
-    """.format(VERSION, datetime.now(), ",\n    ".join(lua_tickets))
-    fh = open(cocos.iapluapath(platform), "w")
+    """.format(VERSION, datetime.now(), iap.ticketsToLua(",\n    "))
+    fh = open(cocos.iapluapath(iap.getPlatform()), "w")
     fh.write(lua)
     fh.close()
 
 def load_iap(platform, source):
     path = source.iappath(platform)
     try:
-        return load_iap_config(path)
+        return load_iap_config(platform, path)
     except Exception, exc:
         return None
 
@@ -299,7 +296,7 @@ if __name__ == "__main__":
     stage = StagePathBuilder(cocos.basepath())
     ios_mediation = load_mediation("ios", source)
     android_mediation = load_mediation("android", source)
-    iap = load_iap("ios", source)
+    ios_iap = load_iap("ios", source)
     royal = load_royal("ios", source)
 
     if not os.path.exists(stage.basepath()):
@@ -326,9 +323,9 @@ if __name__ == "__main__":
         print("No mediation networks configured for Android project. Skipping...")
 
     # ----- iOS IAP -----
-    if iap:
+    if ios_iap:
         if "lua" in options:
-            create_lua_iap("ios", iap, cocos)
+            create_lua_iap(ios_iap, cocos)
     else:
         print("No IAP configured for iOS project. Skipping...")
 
