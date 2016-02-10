@@ -2,6 +2,9 @@
 # @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 #
 
+import json
+import os
+
 class RoyalAdNetworkConfig (object):
     def __init__(self, url):
         self.url = url

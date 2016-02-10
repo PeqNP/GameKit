@@ -154,7 +154,7 @@ local networks = {{
     {}
 }}
 return {{adConfig, networks, url}}
-    """.format(VERSION, datetime.now(), "\n".join(lua_require), mediation.configToLua(), mediation.networksToLua(",\n    "), mediation.getUrl())
+    """.format(VERSION, datetime.now(), "\n".join(lua_require), mediation.getUrl(), mediation.configToLua(), mediation.networksToLua(",\n    "))
     fh = open(cocos.mediationluapath(mediation.getPlatform()), "w")
     fh.write(lua)
     fh.close()
@@ -305,31 +305,39 @@ if __name__ == "__main__":
     if not os.path.exists(stage.basepath()):
         os.makedirs(stage.basepath())
 
-    # ---- iOS Medaition -----
+    # ---- iOS Mediation -----
     if ios_mediation and ios_mediation.hasNetworks():
         if "dependencies" in options:
             configure_ios_pods(ios_mediation.getPods(), project, cocos, stage)
         if "lua" in options:
             create_lua_mediation(ios_mediation, cocos)
-            #copy_mediation_config("ios", source, cocos)
         if "adkit" in options:
             copy_adkit_sources(ios_mediation.getNetworks(), cocos, adkit)
             configure_supported_networks_header(ios_mediation.getNetworks(), cocos)
             configure_sdk_dependencies(project, cocos, stage)
     else:
-        print("No mediation networks configured for project. Skipping...")
+        print("No mediation networks configured for iOS project. Skipping...")
 
+    # ----- Android Mediation -----
+    if android_mediation and android_mediation.hasNetworks():
+        if "lua" in options:
+            create_lua_mediation(android_mediation, cocos)
+    else:
+        print("No mediation networks configured for Android project. Skipping...")
+
+    # ----- iOS IAP -----
     if iap:
         if "lua" in options:
             create_lua_iap("ios", iap, cocos)
     else:
-        print("No IAP configured for project. Skipping...")
+        print("No IAP configured for iOS project. Skipping...")
 
+    # ----- iOS Royal Ad Network -----
     if royal:
         if "lua" in options:
             create_lua_royal("ios", royal, cocos)
     else:
-        print("No Royal Ad Network configured for project. Skipping...")
+        print("No Royal Ad Network configured for iOS project. Skipping...")
 
     if "project" in options:
         configure_ios_targets(project, source, cocos, stage)

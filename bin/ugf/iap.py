@@ -2,6 +2,9 @@
 # @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 #
 
+import json
+import os
+
 class IAPTicket (object):
     def __init__(self, productId, sku):
         self.productId = productId
