@@ -297,6 +297,7 @@ if __name__ == "__main__":
     ios_mediation = load_mediation("ios", source)
     android_mediation = load_mediation("android", source)
     ios_iap = load_iap("ios", source)
+    android_iap = load_iap("android", source)
     royal = load_royal("ios", source)
 
     if not os.path.exists(stage.basepath()):
@@ -328,6 +329,13 @@ if __name__ == "__main__":
             create_lua_iap(ios_iap, cocos)
     else:
         print("No IAP configured for iOS project. Skipping...")
+
+    # ----- Android IAP -----
+    if android_iap:
+        if "lua" in options:
+            create_lua_iap(android_iap, cocos)
+    else:
+        print("No IAP configured for Android project. Skipping...")
 
     # ----- iOS Royal Ad Network -----
     if royal:
