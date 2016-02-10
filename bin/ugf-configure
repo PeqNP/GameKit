@@ -298,12 +298,14 @@ if __name__ == "__main__":
     adkit = iOS_GameKitPathBuilder(config)
     stage = StagePathBuilder(cocos.basepath())
     ios_mediation = load_mediation("ios", source)
+    android_mediation = load_mediation("android", source)
     iap = load_iap("ios", source)
     royal = load_royal("ios", source)
 
     if not os.path.exists(stage.basepath()):
         os.makedirs(stage.basepath())
 
+    # ---- iOS Medaition -----
     if ios_mediation and ios_mediation.hasNetworks():
         if "dependencies" in options:
             configure_ios_pods(ios_mediation.getPods(), project, cocos, stage)
