@@ -193,7 +193,7 @@ def load_iap(platform, source):
     except Exception, exc:
         return None
 
-def create_lua_royal(platform, royal, cocos):
+def create_lua_royal(royal, cocos):
     lua = """--
 -- Royal Ad Network configuration file.
 --
@@ -203,17 +203,16 @@ def create_lua_royal(platform, royal, cocos):
 local url = "{}"
 
 return url
-    """.format(VERSION, datetime.now(), royal.getURL())
-    fh = open(cocos.royalluapath(platform), "w")
+    """.format(VERSION, datetime.now(), royal.getUrl())
+    fh = open(cocos.royalluapath(royal.getPlatform()), "w")
     fh.write(lua)
     fh.close()
 
 def load_royal(platform, source):
     path = source.royalpath(platform)
     try:
-        return load_royal_config(path)
+        return load_royal_config(platform, path)
     except Exception, exc:
-        #print(exc)
         return None
 
 #
@@ -298,7 +297,7 @@ if __name__ == "__main__":
     android_mediation = load_mediation("android", source)
     ios_iap = load_iap("ios", source)
     android_iap = load_iap("android", source)
-    royal = load_royal("ios", source)
+    ios_royal = load_royal("ios", source)
 
     if not os.path.exists(stage.basepath()):
         os.makedirs(stage.basepath())
@@ -338,9 +337,9 @@ if __name__ == "__main__":
         print("No IAP configured for Android project. Skipping...")
 
     # ----- iOS Royal Ad Network -----
-    if royal:
+    if ios_royal:
         if "lua" in options:
-            create_lua_royal("ios", royal, cocos)
+            create_lua_royal(ios_royal, cocos)
     else:
         print("No Royal Ad Network configured for iOS project. Skipping...")
 
