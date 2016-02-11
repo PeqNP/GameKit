@@ -13,6 +13,7 @@ function IAP.new(self)
     local store
     local transactions
     local qDeferred
+    local inFlight
 
     function self.init(_manager, _tickets)
         manager = _manager
