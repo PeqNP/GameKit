@@ -1,6 +1,7 @@
 require "lang.Signal"
 require "specs.Cocos2d-x"
 
+local shim = require("shim.System")
 local AdUnit = require("royal.AdUnit")
 
 describe("AdUnit", function()
@@ -29,7 +30,7 @@ describe("AdUnit", function()
 
     describe("when the ad just started", function()
         before_each(function()
-            stub(socket, "gettime", 86400)
+            stub(shim, "GetTime", 86400)
         end)
 
         it("should be active", function()
@@ -39,7 +40,7 @@ describe("AdUnit", function()
 
     describe("when the ad is running", function()
         before_each(function()
-            stub(socket, "gettime", 86450)
+            stub(shim, "GetTime", 86450)
         end)
 
         it("should be active", function()
@@ -49,7 +50,7 @@ describe("AdUnit", function()
 
     describe("when the ad is about to end", function()
         before_each(function()
-            stub(socket, "gettime", 86500)
+            stub(shim, "GetTime", 86500)
         end)
 
         it("should be active", function()
@@ -59,7 +60,7 @@ describe("AdUnit", function()
 
     describe("when the ad unit hasn't started", function()
         before_each(function()
-            stub(socket, "gettime", 86399)
+            stub(shim, "GetTime", 86399)
         end)
 
         it("should not be active", function()
@@ -69,7 +70,7 @@ describe("AdUnit", function()
 
     describe("when the ad unit has expired", function()
         before_each(function()
-            stub(socket, "gettime", 86501)
+            stub(shim, "GetTime", 86501)
         end)
 
         it("should not be active", function()

@@ -18,17 +18,17 @@ function iap.init(b)
 end
 
 function iap.query(request)
-    local response, call = bridge.sendAsync("iap__query", request)
+    local response, call = bridge.sendAsync("iap__query", request, "table")
     return BridgeResponse(response.success, response.id, response.error), call
 end
 
 function iap.purchase(request)
-    local response, call = bridge.sendAsync("iap__purchase", request)
+    local response, call = bridge.sendAsync("iap__purchase", request, "table")
     return BridgeResponse(response.success, response.id, response.error), call
 end
 
 function iap.restore()
-    local response, call = bridge.sendAsync("iap__restore")
+    local response, call = bridge.sendAsync("iap__restore", nil, "table")
     return BridgeResponse(response.success, response.id, response.error), call
 end
 

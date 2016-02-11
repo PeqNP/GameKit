@@ -1,4 +1,5 @@
 require "lang.Signal"
+require "specs.Cocos2d-x"
 require "Logger"
 
 Log.setLevel(LogLevel.Warning)

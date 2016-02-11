@@ -44,7 +44,7 @@ describe("modules.iap", function()
             end)
 
             it("should have made call to the bridge", function()
-                assert.stub(bridge.sendAsync).was.called_with("iap__purchase", request)
+                assert.stub(bridge.sendAsync).was.called_with("iap__purchase", request, "table")
             end)
 
             it("should have created the correct response", function()
@@ -60,7 +60,7 @@ describe("modules.iap", function()
             end)
 
             it("should have made call to the bridge", function()
-                assert.stub(bridge.sendAsync).was.called_with("iap__purchase", request)
+                assert.stub(bridge.sendAsync).was.called_with("iap__purchase", request, "table")
             end)
 
             it("should have created the correct response", function()
@@ -81,7 +81,7 @@ describe("modules.iap", function()
             end)
 
             it("should have made call to the bridge", function()
-                assert.stub(bridge.sendAsync).was.called_with("iap__restore")
+                assert.stub(bridge.sendAsync).was.called_with("iap__restore", nil, "table")
             end)
 
             it("should have created the correct response", function()
@@ -97,7 +97,7 @@ describe("modules.iap", function()
             end)
 
             it("should have made call to the bridge", function()
-                assert.stub(bridge.sendAsync).was.called_with("iap__restore")
+                assert.stub(bridge.sendAsync).was.called_with("iap__restore", nil, "table")
             end)
 
             it("should have created the correct response", function()
