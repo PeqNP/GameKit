@@ -17,6 +17,7 @@ function IAP.new(self)
     function self.init(_manager, _tickets)
         manager = _manager
         tickets = _tickets
+        inFlight = false
     end
 
     function self.isAvailable()
@@ -24,7 +25,7 @@ function IAP.new(self)
     end
 
     function self.query()
-        if qDeferred then
+        if inFlight then
             Log.i("IAP:query() - piggy backing on previous request")
             return qDeferred
         end
@@ -33,15 +34,16 @@ function IAP.new(self)
             qDeferred.resolve(store)
             return qDeferred
         end
+        inFlight = true
         local promise = manager.fetchProducts(tickets)
         promise.done(function(_store, _invalid)
             store = _store
             qDeferred.resolve(store)
-            qDeferred = nil
+            inFlight = false
         end)
         promise.fail(function(_error)
             qDeferred.reject(_error)
-            qDeferred = nil
+            inFlight = false
         end)
         return qDeferred
     end
