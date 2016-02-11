@@ -2,26 +2,19 @@ require "lang.Signal"
 require "Logger"
 require "json"
 
-Log.setLevel(LogLevel.Warning)
+Log.setLevel(LogLevel.Error)
 
-local BridgeAdaptor = require("bridge.BridgeAdaptor")
+local BridgeAdaptor = require("bridge.adaptor.AppleAdaptor")
 
 adaptor = {}
-adaptor.callStaticMethod = function()
-end
+adaptor.callStaticMethod = function() end
 
 describe("BridgeAdaptor", function()
     local subject
     local args
-    local called
 
     before_each(function()
-        called = false
-        local function paramFn(a)
-            called = true
-            return a
-        end
-        subject = BridgeAdaptor(adaptor, "Controller", paramFn)
+        subject = BridgeAdaptor(adaptor, "Controller")
     end)
 
     context("when the call succeeds", function()
@@ -29,20 +22,34 @@ describe("BridgeAdaptor", function()
 
         before_each(function()
             args = {}
-            stub(adaptor, "callStaticMethod", true, nil)
+            stub(adaptor, "callStaticMethod", true, "string value")
             response = subject.send("method", args, "table") -- FIXME: There is no return type set.
         end)
 
-        it("should return true", function()
-            assert.truthy(response)
+        it("should have made the call to the native layer", function()
+            assert.stub(adaptor.callStaticMethod).was.called_with("Controller", "method", args)
+        end)
+
+        it("should return the Lua value returned from native land", function()
+            assert.equal("string value", response)
+        end)
+    end)
+
+    context("when the call fails", function()
+        local response
+
+        before_each(function()
+            args = {}
+            stub(adaptor, "callStaticMethod", -1, nil)
+            response = subject.send("method", args, "table") -- FIXME: There is no return type set.
         end)
 
         it("should have made the call to the native layer", function()
-            assert.stub(adaptor.callStaticMethod).was.called_with("Controller", "method", args, nil)
+            assert.stub(adaptor.callStaticMethod).was.called_with("Controller", "method", args)
         end)
 
-        it("should have called param function", function()
-            assert.truthy(called)
+        it("should return nil", function()
+            assert.falsy(response)
         end)
     end)
 end)

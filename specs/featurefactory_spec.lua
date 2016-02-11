@@ -1,5 +1,6 @@
 require "specs.Cocos2d-x"
 require "Logger"
+require "specs.busted"
 
 Log.setLevel(LogLevel.Warning)
 
@@ -7,6 +8,7 @@ local AdServerConfig = require("ad.ServerConfig")
 local AdServerManager = require("ad.ServerManager")
 local AppManager = require("app.Manager")
 local BridgeAdaptor = require("bridge.BridgeAdaptor")
+local BridgeAdaptorProtocol = require("bridge.BridgeAdaptorProtocol")
 local IAP = require("iap.IAP")
 local SocialManager = require("social.Manager")
 local RoyalClient = require("royal.Client")
@@ -23,7 +25,7 @@ describe("FeatureFactory", function()
 
     before_each(function()
         function BridgeAdaptor.getAdaptor()
-            return mock(BridgeAdaptor(), true)
+            return mock(mock_protocol(BridgeAdaptorProtocol), true)
         end
 
         http = HTTP()

@@ -9,7 +9,7 @@ require "ad.Constants"
 local Bridge = require("bridge.Bridge")
 local BridgeCall = require("bridge.BridgeCall")
 local BridgeResponse = require("bridge.BridgeResponse")
-local BridgeAdaptor = require("bridge.BridgeAdaptor")
+local BridgeAdaptorProtocol = require("bridge.BridgeAdaptorProtocol")
 local BridgeRequestProtocol = require("bridge.BridgeRequestProtocol")
 
 describe("Bridge", function()
@@ -19,8 +19,7 @@ describe("Bridge", function()
     local message
 
     before_each(function()
-        local fn = function() end
-        adaptor = mock(BridgeAdaptor({}, "Controller", fn), true)
+        adaptor = mock(mock_protocol(BridgeAdaptorProtocol), true)
         subject = Bridge(adaptor)
         subject.registerModule("bridge.modules.ad")
 
