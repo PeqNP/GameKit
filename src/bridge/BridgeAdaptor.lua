@@ -18,7 +18,7 @@ function BridgeAdaptor.getAdaptor(platform)
     elseif platform == "android" then
         local AndroidAdaptor = require("bridge.adaptor.AndroidAdaptor")
         local luaj = require("cocos.cocos2d.luaj")
-        adaptor = AndroidAdaptor(luaj, "com.upstartillustration.gamekit.Controller")
+        adaptor = AndroidAdaptor(luaj, "com.upstartillustration.gamekit.Router")
     else
         Log.s("Unable to configure BridgeAdaptor for platform '%s'", platform and platform or "None")
     end
