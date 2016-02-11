@@ -59,7 +59,7 @@ describe("modules.ad", function()
             end)
 
             it("should have sent the config", function()
-                assert.stub(bridge.send).was.called_with("ad__configure", request)
+                assert.stub(bridge.send).was.called_with("ad__configure", request, "table")
             end)
 
             it("should have returned an BridgeResponse", function()
@@ -82,7 +82,7 @@ describe("modules.ad", function()
             end)
 
             it("should have sent the config", function()
-                assert.stub(bridge.send).was.called_with("ad__configure", request)
+                assert.stub(bridge.send).was.called_with("ad__configure", request, "table")
             end)
 
             it("should have returned an BridgeResponse", function()
@@ -106,7 +106,7 @@ describe("modules.ad", function()
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.send).was.called_with("ad__register", request)
+            assert.stub(bridge.send).was.called_with("ad__register", request, "table")
         end)
 
         it("should have returned a registered response", function()
@@ -143,7 +143,7 @@ describe("modules.ad", function()
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.send).was.called_with("ad__register", request)
+            assert.stub(bridge.send).was.called_with("ad__register", request, "table")
         end)
 
         it("should have returned a registered response", function()
@@ -175,7 +175,7 @@ describe("modules.ad", function()
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.sendAsync).was.called_with("ad__cache", request)
+            assert.stub(bridge.sendAsync).was.called_with("ad__cache", request, "table")
         end)
 
         it("should have returned the BridgeCall", function()
@@ -202,7 +202,7 @@ describe("modules.ad", function()
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.sendAsync).was.called_with("ad__cache", request)
+            assert.stub(bridge.sendAsync).was.called_with("ad__cache", request, "table")
         end)
 
         it("should have returned the BridgeCall", function()
@@ -260,7 +260,7 @@ describe("modules.ad", function()
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.sendAsync).was.called_with("ad__show", request)
+            assert.stub(bridge.sendAsync).was.called_with("ad__show", request, "table")
         end)
 
         it("should have returned the BridgeCall", function()
@@ -295,7 +295,7 @@ describe("modules.ad", function()
         end)
 
         it("should have sent correct request", function()
-            assert.stub(bridge.sendAsync).was.called_with("ad__show", request)
+            assert.stub(bridge.sendAsync).was.called_with("ad__show", request, "table")
         end)
 
         it("should have returned the bridge's response", function()
@@ -459,7 +459,7 @@ describe("modules.ad", function()
         end)
 
         it("should have made call to bridge to hide banner ad", function()
-            assert.stub(bridge.send).was.called_with("ad__hideBanner")
+            assert.stub(bridge.send).was.called_with("ad__hideBanner", nil, "table")
         end)
 
         it("should have returned response", function()

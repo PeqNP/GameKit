@@ -19,13 +19,13 @@ end
 -- On iOS, this is the badge number.
 --
 function app.getNotifications()
-    local response = bridge.send("app__getNotifications")
+    local response = bridge.send("app__getNotifications", nil, "table")
     return AppNotificationResponse(response.success, response.notifications, response.error)
 end
 
 -- @param AppSetupNotificationRequest
 function app.setupNotification(request)
-    local response = bridge.send("app__setupNotification", request)
+    local response = bridge.send("app__setupNotification", request, "table")
     return BridgeResponse(response.success, nil, response.error)
 end
 

@@ -28,7 +28,7 @@ end
 -- @param AdConfigureRequest
 --
 function ad.configure(request)
-    local response = bridge.send("ad__configure", request)
+    local response = bridge.send("ad__configure", request, "table")
     return BridgeResponse(response.success, nil, response.error)
 end
 
@@ -44,7 +44,7 @@ function ad.register(request)
     -- {network: "AdColony", appid: "vcz-123456789", ads: [{"type": AdType.Interstitial, "zoneid": "abcd-12345"}]}
     -- @return {success:, (adids: OR error:)}
     -- ads[] {adid:, zoneId}
-    local response = bridge.send("ad__register", request)
+    local response = bridge.send("ad__register", request, "table")
     return AdRegisterNetworkResponse(response.success, response.adids, response.error)
 end
 
@@ -57,7 +57,7 @@ end
 --
 function ad.cache(request)
     -- @return {success:, error:}
-    local response, call = bridge.sendAsync("ad__cache", request)
+    local response, call = bridge.sendAsync("ad__cache", request, "table")
     if type(response) == "table" then -- Occurs when call failed.
         return getBridgeResponse(response), call
     end
@@ -73,12 +73,12 @@ end
 --
 function ad.show(request)
     -- @return {success:, error:}
-    local response, call = bridge.sendAsync("ad__show", request)
+    local response, call = bridge.sendAsync("ad__show", request, "table")
     return getBridgeResponse(response), call
 end
 
 function ad.hideBannerAd()
-    local response = bridge.send("ad__hideBanner")
+    local response = bridge.send("ad__hideBanner", nil, "table")
     return getBridgeResponse(response)
 end
 

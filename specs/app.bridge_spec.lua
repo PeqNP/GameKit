@@ -33,7 +33,7 @@ describe("modules.app", function()
         end)
 
         it("should have made call to bridge", function()
-            assert.stub(bridge.send).was.called_with("app__getNotifications")
+            assert.stub(bridge.send).was.called_with("app__getNotifications", nil, "table")
         end)
 
         it("should return a BridgeResponse", function()
