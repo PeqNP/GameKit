@@ -227,17 +227,8 @@ def copy_mediation_config(platform, source, cocos):
     if os.path.exists(source):
         shutil.copyfile(source, cocos.mediationconfigpath(platform))
 
-# Select and make 'project' the active project.
-def configure_ios_targets(project, source, cocos, stage):
-
-    # Load and save any changes made to the project to the current project
-    # NOTE: I'm not sure this is necessary.
-
-    # Save the target project as the current project
-    # NOTE: I'm not sure this is necessary.
-
-    # Interpolate template files
-    keys = {
+def get_main_keys():
+    return {
         "##UGF-APP-BUNDLE##": project.bundle
       , "##UGF-APP-NAME##": project.name
       , "##UGF-APP-VERSION##": project.version
@@ -250,21 +241,41 @@ def configure_ios_targets(project, source, cocos, stage):
       , "##UGF-SHOW-FPS##": "false"
     }
 
+def configure_cocos_targets(project, source, cocos, stage):
+    keys = get_main_keys()
+    interpolator = Interpolator(project, cocos, stage, keys)
+    interpolator.interpolate("templates/config.json", "config.json", interpolate_configjson)
+    interpolator.interpolate("templates/project/config.lua", "src/config.lua", interpolate_projectconfig)
+
+# Select and make 'project' the active project.
+def configure_ios_targets(project, source, cocos, stage):
+    # Load and save any changes made to the project to the current project
+    # NOTE: I'm not sure this is necessary.
+
+    # Save the target project as the current project
+    # NOTE: I'm not sure this is necessary.
+
+    # Interpolate template files
+    keys = get_main_keys()
+
     # The pbxproj should not be a template, as it changes often. All replacements
     # can be done by replacing GameTools anyways.
     shutil.copyfile(cocos.iosprojectpath(), stage.path("project.pbxproj"))
 
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/ios/Info.plist", cocos.iosmacprojpath("ios/Info.plist"), interpolate_iosplist)
-    interpolator.interpolate("templates/config.json", "config.json", interpolate_configjson)
-    interpolator.interpolate("templates/project/config.lua", "src/config.lua", interpolate_projectconfig)
     interpolator.interpolate("stage/project.pbxproj", cocos.iosmacprojpath("GameTools.xcodeproj/project.pbxproj"), interpolate_iospbxproj)
     interpolator.interpolate("templates/project/ios/GKConfig.m", cocos.iosmacprojpath("GameKit/GameTools/GKConfig.m"))
 
-    # @todo Cleanup stage directory
-
-    # @todo The orientation config may need to be specific to files so that
+    # TODO: Cleanup stage directory
+    # TODO: The orientation config may need to be specific to files so that
     # operations are checked correctly, but also that some options are removed!
+
+def configure_android_targets(project, source, cocos, stage):
+    keys = get_main_keys()
+    interpolator = Interpolator(project, cocos, stage, keys)
+    interpolator.interpolate("templates/project/android/AndroidManifest.xml", cocos.androidprojpath("AndroidManifest.xml"), interpolate_iosplist)
+    interpolator.interpolate("templates/project/android/strings.xml", cocos.androidprojpath("res/values/strings.xml"), interpolate_iosplist)
 
 if __name__ == "__main__":
     import argparse
@@ -352,4 +363,6 @@ if __name__ == "__main__":
         print("No Royal Ad Network configured for Android project. Skipping...")
 
     if "project" in options:
+        configure_cocos_targets(project, source, cocos, stage)
         configure_ios_targets(project, source, cocos, stage)
+        configure_android_targets(project, source, cocos, stage)

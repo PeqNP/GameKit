@@ -27,6 +27,12 @@ class CocosPathBuilder (object):
             return os.path.join(iosmacprojpath, path)
         return iosmacprojpath
 
+    def androidprojpath(self, path=None):
+        androidprojpath = self.path("frameworks/runtime-src/proj.android") 
+        if path:
+            return os.path.join(androidprojpath, path)
+        return androidprojpath
+
     def iosprojectpath(self):
         return self.path("frameworks/runtime-src/proj.ios_mac/GameTools.xcodeproj/project.pbxproj")
 
