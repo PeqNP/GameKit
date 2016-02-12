@@ -94,8 +94,9 @@ class ProjectPathBuilder (object):
     def apptypedir(self):
         return self.config.apptype and len(self.config.apptype) > 0 and self.config.apptype+"/" or ""
 
-    def resourcepath(self):
-        return self.path("platform/ios/res/{}Images.xcassets".format(self.apptypedir()))
+    def resourcepath(self, platform, resource):
+        self.check_platform(platform)
+        return self.path("platform/{}/res/{}{}".format(platform, self.apptypedir(), resource))
 
     def xibpath(self):
         return self.path("platform/ios/src/LaunchScreen.xib")

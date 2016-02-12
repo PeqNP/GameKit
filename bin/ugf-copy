@@ -22,8 +22,15 @@ def copy_gamekit(gamekit, source, cocos):
 
 def copy_ios_assets(source, cocos):
     emptydir(cocos.path("frameworks/runtime-src/proj.ios_mac/GameTools-mobile"))
-    call(["cp", "-r", source.resourcepath(), cocos.path("frameworks/runtime-src/proj.ios_mac/GameTools-mobile/")])
+    call(["cp", "-r", source.resourcepath("ios", "Images.xcassets"), cocos.path("frameworks/runtime-src/proj.ios_mac/GameTools-mobile/")])
     call(["cp", "-r", source.xibpath(), cocos.path("frameworks/runtime-src/proj.ios_mac/ios/")])
+
+def copy_android_assets(source, cocos):
+    drawables = ["drawable", "drawable-hdpi", "drawable-ldpi", "drawable-mdpi", "drawable-xhdpi"]
+    for drawable in drawables:
+        targetdir = cocos.androidprojpath("res/" + drawable)
+        emptydir(targetdir)
+        call(["cp", "-r", source.resourcepath("android", drawable), targetdir])
 
 def copy_resources(source, cocos):
     rmdir(cocos.path("res"))

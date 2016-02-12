@@ -20,11 +20,17 @@ from ugf.mediation import load_mediation_config, pods_for_networks, lua_for_netw
 
 VERSION = "ugf-select v1.0.0"
 
+def run_pre_select(config, source, cocos):
+    script = source.path("ugf/pre-select")
+    if os.path.isfile(script):
+        print("Running pre-select script...")
+        call([script, cocos.basepath(), config.apptype])
+
 def run_post_select(config, source, cocos):
-    post_select = source.path("ugf/post-select")
-    if os.path.isfile(post_select):
-        print("Running post-select script.")
-        call([post_select, cocos.basepath(), config.apptype])
+    script = source.path("ugf/post-select")
+    if os.path.isfile(script):
+        print("Running post-select script...")
+        call([script, cocos.basepath(), config.apptype])
 
 def install_pods(cocos):
     os.chdir(cocos.iosmacprojpath())
@@ -52,6 +58,7 @@ if __name__ == "__main__":
     # Cocos2d-x repository, back into the current project's file structure. This way, if app icons
     # are updated, etc. they are reflected back into the project's directory.
     print("To avoid Xcode crashing make sure to close the GameKit project before running!")
+    run_pre_select(config, source, cocos)
     call(["ugf-clean", "--version", project.cocos])
     call(["ugf-configure"])
     call(["ugf-copy"])
