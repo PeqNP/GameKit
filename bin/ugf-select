@@ -16,7 +16,7 @@ import sys
 from ugf.config import configpath, Config, ProjectConfig
 from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder
 from ugf.interpolator import Interpolator
-from ugf.mediation import load_mediation_config, pods_for_networks, lua_for_networks
+from ugf.mediation import load_mediation_config
 
 VERSION = "ugf-select v1.0.0"
 
