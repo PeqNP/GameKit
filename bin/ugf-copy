@@ -7,6 +7,7 @@
 
 import os
 import sys
+import shutil
 
 from datetime import datetime
 from subprocess  import call
@@ -29,8 +30,9 @@ def copy_android_assets(source, cocos):
     drawables = ["drawable", "drawable-hdpi", "drawable-ldpi", "drawable-mdpi", "drawable-xhdpi"]
     for drawable in drawables:
         targetdir = cocos.androidprojpath("res/" + drawable)
-        emptydir(targetdir)
-        call(["cp", "-r", source.resourcepath("android", drawable), targetdir])
+        shutil.rmtree(targetdir)
+        os.makedirs(targetdir)
+        call(["cp", "-r", source.resourcepath("android", drawable), cocos.androidprojpath("res/")])
 
 def copy_resources(source, cocos):
     rmdir(cocos.path("res"))
@@ -60,7 +62,7 @@ if __name__ == "__main__":
         print("Type: {}".format(config.apptype))
 
     # Validate
-    valid_options = ["all", "platform", "gamekit", "project", "resource"]
+    valid_options = ["all", "assets", "gamekit", "project", "resource"]
     for opt in args.files:
         if opt not in valid_options:
             print("'{}' is not a valid 'files' option".format(opt))
@@ -74,9 +76,10 @@ if __name__ == "__main__":
         copy_resources(source, cocos)
         sys.exit(0)
     
-    if "platform" in args.files:
-        print "Copying project platform files."
+    if "assets" in args.files:
+        print "Copying project asset files."
         copy_ios_assets(source, cocos)
+        copy_android_assets(source, cocos)
     if "gamekit" in args.files:
         print "Copying GameKit files."
         copy_gamekit(gamekit, source, cocos)
