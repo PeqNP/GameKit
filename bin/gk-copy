@@ -62,30 +62,24 @@ if __name__ == "__main__":
         print("Type: {}".format(config.apptype))
 
     # Validate
+    options = []
     valid_options = ["all", "assets", "gamekit", "project", "resource"]
     for opt in args.files:
         if opt not in valid_options:
             print("'{}' is not a valid 'files' option".format(opt))
             sys.exit(1)
+        options.append(opt)
 
-    if "all" in args.files:
-        print "Copying all files."
-        copy_ios_assets(source, cocos)
-        copy_gamekit(gamekit, source, cocos)
-        copy_source(source, cocos)
-        copy_resources(source, cocos)
-        sys.exit(0)
-    
-    if "assets" in args.files:
+    if "assets" in options:
         print "Copying project asset files."
         copy_ios_assets(source, cocos)
         copy_android_assets(source, cocos)
-    if "gamekit" in args.files:
+    if "gamekit" in options:
         print "Copying GameKit files."
         copy_gamekit(gamekit, source, cocos)
-    if "project" in args.files:
+    if "project" in options:
         print "Copying project source files."
         copy_source(source, cocos)
-    if "resource" in args.files:
+    if "resource" in options:
         print "Copying project resource files."
         copy_resources(source, cocos)
