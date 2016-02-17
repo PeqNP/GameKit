@@ -100,11 +100,11 @@ def configure_ios_pods(pods, project, cocos, stage):
     interpolator.interpolate("templates/project/ios/Podfile", "frameworks/runtime-src/proj.ios_mac/Podfile")
 
 # Copies GameKit-iOS source files for only the mediation networks that have been selected.
-def copy_adkit_sources(networks, cocos, adkit):
+def copy_native_ios_gamekit(networks, cocos, adkit):
     # Copy entire directory to Frameworks
     adkitsrc = adkit.sourcedir()
     if not os.path.isdir(adkitsrc):
-        raise Exception("GameKit source files are expected to be at '{}'".format(adkitsrc))
+        raise Exception("Native GameKit source files are expected to be at '{}'".format(adkitsrc))
     adkitdest = cocos.iosmacprojpath("GameKit")
     if os.path.isdir(adkitdest):
         shutil.rmtree(adkitdest)
@@ -123,6 +123,9 @@ def copy_adkit_sources(networks, cocos, adkit):
             shutil.rmtree(removepath)
     os.chdir(cocos.iosmacprojpath())
     call(["./add_gamekit_files.rb"])
+
+def copy_native_android_gamekit(networks, cocos, adkit):
+    pass
 
 def configure_supported_networks_header(networks, cocos):
     defines = []
@@ -281,7 +284,7 @@ def configure_android_targets(project, source, cocos, stage):
 if __name__ == "__main__":
     import argparse
 
-    operations = ["dependencies", "lua", "adkit", "project"]
+    operations = ["dependencies", "lua", "gamekit", "project"]
 
     parser = argparse.ArgumentParser(description="Upstart Game Framework - Configures a project into a Cocos2d-x project")
     parser.add_argument('operations', help="Configuration processes to perform on project: {}".format(", ".join(operations)), nargs="*", default=["all"])
@@ -321,8 +324,8 @@ if __name__ == "__main__":
             configure_ios_pods(ios_mediation.getPods(), project, cocos, stage)
         if "lua" in options:
             create_lua_mediation(ios_mediation, cocos)
-        if "adkit" in options:
-            copy_adkit_sources(ios_mediation.getNetworks(), cocos, adkit)
+        if "gamekit" in options:
+            copy_native_ios_gamekit(ios_mediation.getNetworks(), cocos, adkit)
             configure_supported_networks_header(ios_mediation.getNetworks(), cocos)
             configure_sdk_dependencies(project, cocos, stage)
     else:
@@ -332,6 +335,8 @@ if __name__ == "__main__":
     if android_mediation and android_mediation.hasNetworks():
         if "lua" in options:
             create_lua_mediation(android_mediation, cocos)
+        if "gamekit" in options:
+            copy_android_native_gamekit(android_mediation.getNetworks(), cocos, adkit)
     else:
         print("No mediation networks configured for Android project. Skipping...")
 
