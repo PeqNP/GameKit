@@ -306,7 +306,7 @@ if __name__ == "__main__":
     source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
-    adkit = iOS_GameKitPathBuilder(config)
+    gamekit = iOS_GameKitPathBuilder(config)
     stage = StagePathBuilder(cocos.basepath())
     ios_mediation = load_mediation("ios", source)
     android_mediation = load_mediation("android", source)
@@ -325,7 +325,7 @@ if __name__ == "__main__":
         if "lua" in options:
             create_lua_mediation(ios_mediation, cocos)
         if "gamekit" in options:
-            copy_native_ios_gamekit(ios_mediation.getNetworks(), cocos, adkit)
+            copy_native_ios_gamekit(ios_mediation.getNetworks(), cocos, gamekit)
             configure_supported_networks_header(ios_mediation.getNetworks(), cocos)
             configure_sdk_dependencies(project, cocos, stage)
     else:
@@ -336,7 +336,7 @@ if __name__ == "__main__":
         if "lua" in options:
             create_lua_mediation(android_mediation, cocos)
         if "gamekit" in options:
-            copy_android_native_gamekit(android_mediation.getNetworks(), cocos, adkit)
+            copy_native_android_gamekit(android_mediation.getNetworks(), cocos, gamekit)
     else:
         print("No mediation networks configured for Android project. Skipping...")
 
