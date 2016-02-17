@@ -7,6 +7,9 @@ from os.path import expanduser
 import os
 import shutil
 
+def getversion(path, version):
+    return "%s v%s".format(os.path.basename(path), version)
+
 def gethomedir():
     return expanduser("~")
 

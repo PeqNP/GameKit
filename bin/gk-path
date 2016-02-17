@@ -7,9 +7,11 @@
 
 import os
 from datetime import datetime
+
+from ugf import getversion
 from ugf.config import configpath, checkconfig, Config
 
-VERSION = "ugf-path v1.0.0"
+VERSION = getversion(__file__, "1.0.0")
 
 def main():
     pass
@@ -47,7 +49,7 @@ if __name__ == "__main__":
             print("Remote: {}".format(config.remote))
             print
         else:
-            print("Incomplete configuration! Please run ugf-path configure to configure paths.")
+            print("Incomplete configuration! Please run gk-path configure to configure paths.")
     
     if "configure" in options:
         while True:

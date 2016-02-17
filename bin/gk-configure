@@ -13,6 +13,7 @@ import re
 import shutil
 import sys
 
+from ugf import getversion
 from ugf.config import configpath, checkconfig, Config, ProjectConfig
 from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder, iOS_GameKitPathBuilder
 from ugf.interpolator import Interpolator
@@ -20,7 +21,7 @@ from ugf.mediation import load_mediation_config
 from ugf.iap import load_iap_config
 from ugf.royal import load_royal_config
 
-VERSION = "ugf-configure v1.0.0"
+VERSION = getversion(__file__, "1.0.0")
 
 def interpolate_iospbxproj(project, blob):
     # Global

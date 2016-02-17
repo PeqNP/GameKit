@@ -12,7 +12,7 @@ import shutil
 from datetime import datetime
 from subprocess  import call
 
-from ugf import gethomedir, emptydir, rmdir
+from ugf import getversion, gethomedir, emptydir, rmdir
 from ugf.config import configpath, checkconfig, Config, ProjectConfig
 from ugf.pathbuilder import CocosPathBuilder, GameKitPathBuilder, StagePathBuilder, ProjectPathBuilder
 
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
 
-    print("ugf-copy v1.0.0, Time: {}".format(str(datetime.now())))
+    print("%s, Time: {}".format(getversion(__file__, "1.0.0"), str(datetime.now())))
     if config.apptype and len(config.apptype) > 0:
         print("Type: {}".format(config.apptype))
 

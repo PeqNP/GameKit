@@ -12,14 +12,14 @@ def configpath():
     return os.path.join(gethomedir(), ".ugf")
 
 def print_configure():
-    print("Please configure the UGF utility by running the ugf-path CLI tool")
+    print("Please configure the UGF utility by running the gk-path CLI tool")
     sys.exit(1)
 
 def checkconfig(config):
     if not config.hasConfig():
         print_configure()
     if not config.project:
-        print("A project must be selected first using the ugf-select CLI tool")
+        print("A project must be selected first using the gk-select CLI tool")
         sys.exit(1)
 
 class Config (object):

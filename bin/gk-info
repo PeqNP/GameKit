@@ -13,10 +13,11 @@ import re
 import shutil
 import sys
 
+from ugf import getversion
 from ugf.config import configpath, checkconfig, Config, ProjectConfig
 from ugf.pathbuilder import ProjectPathBuilder
 
-VERSION = "ugf-info v1.0.0"
+VERSION = getversion(__file__, "1.0.0")
 
 if __name__ == "__main__":
     import argparse

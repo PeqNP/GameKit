@@ -13,12 +13,13 @@ import re
 import shutil
 import sys
 
+from ugf import getversion
 from ugf.config import configpath, Config, ProjectConfig
 from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder
 from ugf.interpolator import Interpolator
 from ugf.mediation import load_mediation_config
 
-VERSION = "ugf-select v1.0.0"
+VERSION = getversion(__file__, "1.0.0")
 
 def run_pre_select(config, source, cocos):
     script = source.path("ugf/pre-select")
@@ -59,8 +60,8 @@ if __name__ == "__main__":
     # are updated, etc. they are reflected back into the project's directory.
     print("To avoid Xcode crashing make sure to close the GameKit project before running!")
     run_pre_select(config, source, cocos)
-    call(["ugf-clean", "--version", project.cocos])
-    call(["ugf-configure"])
-    call(["ugf-copy"])
+    call(["gk-clean", "--version", project.cocos])
+    call(["gk-configure"])
+    call(["gk-copy"])
     run_post_select(config, source, cocos)
     install_pods(cocos)

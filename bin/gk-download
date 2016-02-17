@@ -12,11 +12,11 @@ import sys
 from datetime import datetime
 from subprocess import call
 
-from ugf import gethomedir
+from ugf import getversion, gethomedir
 from ugf.config import configpath, checkconfig, Config, ProjectConfig
 from ugf.pathbuilder import CocosPathBuilder, ProjectPathBuilder
 
-VERSION = "ugf-download v1.0.0"
+VERSION = getversion(__file__, "1.0.0")
 
 def main(config, cocos):
     # @todo Determine if repository already exists. Prevent it from being downloaded if
@@ -24,7 +24,7 @@ def main(config, cocos):
     cocospath = cocos.basepath()
     if os.path.exists(cocospath):
         print("STOP: Cocos2d-x v({}) already exists at ({})".format(cocos.version, cocospath))
-        print("If you want a clean version of this repository, run ugf-clean")
+        print("If you want a clean version of this repository, run gk-clean")
         print
         sys.exit(0)
     remote = config.remote[-1] == "/" and config.remote or config.remote + "/"
