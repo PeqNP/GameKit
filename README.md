@@ -17,6 +17,7 @@ GameKit provides a set of middleware tools to make games faster.
   - App Manager: Manage application related messages including foreground/background messages and notifications
 - A model for messaging between client (Lua) and server (native code using the respective Obj-C and Android bridge) layers.
 - The Signal Programming Language extension. Signal is an aspect oriented programming language which provides mechanisms to 'tap' into other messages before they are received by the receiver or 'chain' to a receiver, and consume the return value after the message is processed by the receiver. More information will be provided once the API is complete.
+- With the "git like" command line interface, GameKit provides a toolchain to facilitate automated builds.
 
 ## Design
 
@@ -80,17 +81,17 @@ GameKit requires the following projects:
 - GameKit-Android (this is not yet complete)
 
 The features that the native GameKit libraries provide is equivalent to Cocos's SDKBOX. The primary differences between the two projects are:
-- GameKit is fully tested. This makes GameKit a _much_ more stable and changeable platform. Most new 3rd party services, such as Chartboost, etc. take less than 30 minutes to support.
-- More native land related features including application related features such as (notifications, foreground/background messages, etc.)
+- GameKit is fully tested. This makes GameKit a stable and robust platform.
+- More native land related features including application notifications, foreground/background messages, etc.
 - A _consistent_ API for every module. Write integration code only once. In addition to this, many of the APIs provide the option to configure which services should be used at run-time. The ad API, for instance, even allows you to download this configuration from a remote host. This provides you with the ability to change how ads are served. More importantly _which_ mediation services to use at any given time.
+- Exceptionally easy integration. Add configuration to your respective project files (mediation.json, iap.json, etc.) and GameKit will add only the dependent libraries your project needs.
+- GameKit does *NOT* send analytics.
+- GameKit is open source and licensed udner the MIT license.
 
-Except for analytics, GameKit is already feature parity with SDKBOX on the iOS platform. As soon as Android is complete it will be feature parity for both platforms.
+Except for rudimentary Facebook analytic support, GameKit is already feature parity with SDKBOX on the iOS platform. As soon as Android is complete it will be nearly feature parity for both platforms. Analytics and other plugins will be added as needed.
 
 ## FAQ
 
 **Q:** Why are you not using Lua's convention to use the built-in table mechanism to create classes?
 
 A trade-off was made to favor speed over memory usage; which is arguably negligible. Using Lua's built-in table mechanism, to create classes, incurs extra message calls when mapping a method call to a respective instance variable. This library does not incur that hit, as the function is associated directly to the 'class' instance. All this being said, I have dabbled with the idea of creating a converter that could, theoritically, transform the classes into the convention used by the majority of the Lua community. For now, the trade-off is justified, as games need to run as fast as possible.
-
-## TODO
-
