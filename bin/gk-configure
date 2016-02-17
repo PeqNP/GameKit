@@ -2,6 +2,8 @@
 #
 # Selects (configures) a project into a Cocos2d-x project.
 #
+# TODO: Provide option to configure a specific platform's files.
+#
 # @copyright 2015 Upstart Illustration LLC. All rights reserved.
 #
 
@@ -15,7 +17,7 @@ import sys
 
 from ugf import getversion
 from ugf.config import configpath, checkconfig, Config, ProjectConfig
-from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder, iOS_GameKitPathBuilder
+from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder, iOS_GameKitPathBuilder, Android_GameKitPathBuilder
 from ugf.interpolator import Interpolator
 from ugf.mediation import load_mediation_config
 from ugf.iap import load_iap_config
@@ -104,7 +106,7 @@ def copy_native_ios_gamekit(networks, cocos, adkit):
     # Copy entire directory to Frameworks
     adkitsrc = adkit.sourcedir()
     if not os.path.isdir(adkitsrc):
-        raise Exception("Native GameKit source files are expected to be at '{}'".format(adkitsrc))
+        raise Exception("Native iOS GameKit source files are expected to be at '{}'".format(adkitsrc))
     adkitdest = cocos.iosmacprojpath("GameKit")
     if os.path.isdir(adkitdest):
         shutil.rmtree(adkitdest)
@@ -124,8 +126,14 @@ def copy_native_ios_gamekit(networks, cocos, adkit):
     os.chdir(cocos.iosmacprojpath())
     call(["./add_gamekit_files.rb"])
 
-def copy_native_android_gamekit(networks, cocos, adkit):
-    pass
+def copy_native_android_gamekit(networks, cocos, gamekit):
+    gamekitsrc = gamekit.sourcedir()
+    if not os.path.isdir(gamekitsrc):
+        raise Exception("Native Android GameKit source files are expected to be at '{}'".format(gamekitsrc))
+    gamekitdest = cocos.androidprojpath("src/com/upstartillustration")
+    if os.path.isdir(gamekitdest):
+        shutil.rmtree(gamekitdest)
+    shutil.copytree(gamekitsrc, gamekitdest)
 
 def configure_supported_networks_header(networks, cocos):
     defines = []
@@ -306,7 +314,8 @@ if __name__ == "__main__":
     source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
-    gamekit = iOS_GameKitPathBuilder(config)
+    ios_gamekit = iOS_GameKitPathBuilder(config)
+    android_gamekit = Android_GameKitPathBuilder(config)
     stage = StagePathBuilder(cocos.basepath())
     ios_mediation = load_mediation("ios", source)
     android_mediation = load_mediation("android", source)
@@ -325,7 +334,7 @@ if __name__ == "__main__":
         if "lua" in options:
             create_lua_mediation(ios_mediation, cocos)
         if "gamekit" in options:
-            copy_native_ios_gamekit(ios_mediation.getNetworks(), cocos, gamekit)
+            copy_native_ios_gamekit(ios_mediation.getNetworks(), cocos, ios_gamekit)
             configure_supported_networks_header(ios_mediation.getNetworks(), cocos)
             configure_sdk_dependencies(project, cocos, stage)
     else:
@@ -336,7 +345,7 @@ if __name__ == "__main__":
         if "lua" in options:
             create_lua_mediation(android_mediation, cocos)
         if "gamekit" in options:
-            copy_native_android_gamekit(android_mediation.getNetworks(), cocos, gamekit)
+            copy_native_android_gamekit(android_mediation.getNetworks(), cocos, android_gamekit)
     else:
         print("No mediation networks configured for Android project. Skipping...")
 

@@ -135,3 +135,18 @@ class iOS_GameKitPathBuilder (object):
 
     def sourcedir(self):
         return self.path("AdKit")
+
+class Android_GameKitPathBuilder (object):
+    # @param Config
+    # @param str - project name
+    def __init__(self, config):
+        self.config = config
+
+    def basepath(self):
+        return os.path.join(self.config.basepath, "GameKit-Android")
+
+    def path(self, path):
+        return os.path.join(self.basepath(), path)
+
+    def sourcedir(self):
+        return self.path("app/src/main/java/com/upstartillustration")
