@@ -66,12 +66,28 @@ $ ugf-select MyGame
 Note: This operation is similar to checking out a branch in git. Only one game can be selected at a time. That being said, it takes less than 5 seconds to checkout most games (this could longer depending on the number of dependencies your game has to download).
 
 This operation will:
-- Download the version of Cocos2d-x your game requires, if it does not already exist
+- (not complete) Download the version of Cocos2d-x your game requires, if it does not already exist
 - Cleans the Cocos2d-x project, if necessary
-- Download and configure all dependencies. This includes mediation services, analytics libraries, etc.
+- (not complete) Download and configure all dependencies. This includes mediation services, analytics libraries, etc.
 - Copies GameKit and your project's source code into the Cocos2d-x project
 
 At this point you should be able to open the Cocos2d-x_v#.#.#/frameworks/runtime-src/proj.ios_mac/GameKit-Template.xcworkspace (not the .xccodeproj!) and run your app. (Please note that the '#' must be replaced with the version of Cocos2d-x your project supports; i.e. Cocos2d-x_v3.8.1)
+
+### Android Dependencies Installation
+
+Until some of the other config/download steps are complete, it will be necessary to manually download the following Android dependencies and put them in GameKit-dependencies folder in the base project path. The installer will handle the copy/configure steps.
+
+- adcolony-android-sdk-2.3.1 - https://github.com/AdColony/AdColony-Android-SDK
+- facebook-android-sdk-4.9.0 - https://developers.facebook.com/docs/android
+- gson-2.6.2.jar - http://search.maven.org/#artifactdetails%7Ccom.google.code.gson%7Cgson%7C2.6.2%7Cjar (Download the .jar file)
+- android-ndk-r10c-darwin-x86_64.bin - http://dl.google.com/android/ndk/android-ndk-r10c-darwin-x86_64.bin (Required by Cocos2d-x)
+- apache-ant-1.9.6-bin.zip - http://www.trieuvan.com/apache//ant/binaries/apache-ant-1.9.6-bin.zip (Required by Cocos2d-x)
+- JRE?
+
+The following dependencies must be downloaded from the Android Studio > SDK Manager:
+- (Tab) SDK Tools - Google Play Services (AdMob Ads)
+- (Tab) SDK Tools - Google Play Billing Services (IAP)
+
 
 ## Dependencies
 
