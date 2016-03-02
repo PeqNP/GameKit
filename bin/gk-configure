@@ -17,7 +17,7 @@ import sys
 
 from ugf import getversion
 from ugf.config import configpath, checkconfig, Config, ProjectConfig
-from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder, iOS_GameKitPathBuilder, Android_GameKitPathBuilder, DependenciesPathBuilder
+from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder, iOS_GameKitPathBuilder, Android_GameKitPathBuilder, DependenciesPathBuilder, AndroidSDKPathBuilder
 from ugf.interpolator import Interpolator
 from ugf.mediation import load_mediation_config
 from ugf.iap import load_iap_config
@@ -322,6 +322,37 @@ def copy_android_dependencies(dependencies, cocos, networks):
     for dep in deps:
         copy_files(dependencies.path(dep), libpath)
 
+def configure_android_sdk_dependencies(cocos, android):
+    properties = cocos.androidprojpath("project.properties")
+    fh = open(properties, "r")
+    refnum = 0
+    reftag = "android.library.reference."
+    lines = []
+    for line in fh:
+        line = line.strip()
+        lines.append(line)
+        if len(line) == 0:
+            continue
+        if line[0] == "#":
+            continue
+        key, value = line.split("=")
+        key, value = key.strip(), value.strip()
+        # Determine the last ref number. This will determine the ref number we will use
+        # to inject our own dependencies.
+        if reftag in key:
+            num = int(key[len(reftag):])
+            if num > refnum:
+                refnum = num
+    fh.close()
+    # @fixme Add Google Play Services only if needed. Other dependencies require this dependency
+    # as well (AdColony). In other words, the necessary requirements for when this lib should be
+    # added to the project haven't been completely figured out. For now, always add it. This is
+    # almost always we want any ways.
+    if not os.path.isdir(android.googleplaylibpath()):
+        raise Exception("Android Google Play Services lib is not at {}".format(android.googleplaylibpath()))
+    lines.append("{}{}={}".format(reftag, refnum+1, android.googleplaylibpath()))
+    print("\n".join(lines))
+
 if __name__ == "__main__":
     import argparse
 
@@ -351,6 +382,7 @@ if __name__ == "__main__":
     android_gamekit = Android_GameKitPathBuilder(config)
     stage = StagePathBuilder(cocos.basepath())
     dependencies = DependenciesPathBuilder(config)
+    android = AndroidSDKPathBuilder(config)
     ios_mediation = load_mediation("ios", source)
     android_mediation = load_mediation("android", source)
     ios_iap = load_iap("ios", source)
@@ -378,6 +410,7 @@ if __name__ == "__main__":
     if android_mediation and android_mediation.hasNetworks():
         if "dependencies" in options:
             copy_android_dependencies(dependencies, cocos, android_mediation.getNetworks())
+            configure_android_sdk_dependencies(cocos, android)
         if "lua" in options:
             create_lua_mediation(android_mediation, cocos)
         if "gamekit" in options:
