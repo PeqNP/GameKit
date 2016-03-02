@@ -4,6 +4,12 @@
 
 import os
 
+from ugf import gethomedir
+
+def defaultandroidpath():
+    # @todo Mac OS X only for now.
+    return os.path.join(gethomedir(), "Library/Android")
+
 # Builds Cocos2d-x realted paths.
 class CocosPathBuilder (object):
     # @param Config
@@ -160,3 +166,17 @@ class DependenciesPathBuilder (object):
 
     def path(self, path):
         return os.path.join(self.basepath(), path)
+
+class AndroidSDKPathBuilder (object):
+    def __init__(self, config):
+        self.config = config
+
+    def basepath(self):
+        return self.config.androidpath
+
+    def path(self, path):
+        return os.path.join(self.basepath(), path)
+
+    def googleplaylibpath(self):
+        # @todo May be different per platform.
+        return self.path("sdk/extras/google/google_play_services/libproject/google-play-services_lib")

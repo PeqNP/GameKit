@@ -10,6 +10,7 @@ from datetime import datetime
 
 from ugf import getversion
 from ugf.config import configpath, checkconfig, Config
+from ugf.pathbuilder import defaultandroidpath
 
 VERSION = getversion(__file__, "1.0.0")
 
@@ -56,6 +57,17 @@ if __name__ == "__main__":
             print("Where do you want the UGF dependencies to be stored locally?")
             config.basepath = raw_input("Local path: ")
             if os.path.exists(config.basepath):
+                break
+            else:
+                print("The path {} does not exist!".format(config.basepath))
+                print
+        default = defaultandroidpath()
+        while True:
+            print("Where is the Android SDK located?")
+            config.androidpath = raw_input("Android path (Default: {}): ".format(default))
+            if not config.androidpath:
+                config.androidpath = default
+            if os.path.exists(config.androidpath):
                 break
             else:
                 print("The path {} does not exist!".format(config.basepath))

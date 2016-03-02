@@ -42,13 +42,14 @@ class Config (object):
     def configFromJson(json):
         project = "project" in json and json["project"] or None
         apptype = "apptype" in json and json["apptype"] or None
-        return Config(json.get("basepath", None), json.get("remote", None), project, apptype)
+        return Config(json.get("basepath", None), json.get("remote", None), project, apptype, json.get("androidpath", None))
 
-    def __init__(self, basepath, remote, project, apptype):
+    def __init__(self, basepath, remote, project, apptype, androidpath):
         self.basepath = basepath
         self.remote = remote
         self.project = project
         self.apptype = apptype
+        self.androidpath = androidpath
 
     def hasConfig(self):
         return self.basepath and self.remote
