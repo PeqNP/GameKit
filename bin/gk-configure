@@ -17,7 +17,7 @@ import sys
 
 from ugf import getversion
 from ugf.config import configpath, checkconfig, Config, ProjectConfig
-from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder, iOS_GameKitPathBuilder, Android_GameKitPathBuilder
+from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder, iOS_GameKitPathBuilder, Android_GameKitPathBuilder, DependenciesPathBuilder
 from ugf.interpolator import Interpolator
 from ugf.mediation import load_mediation_config
 from ugf.iap import load_iap_config
@@ -80,7 +80,7 @@ def interpolate_configjson(project, blob):
 def interpolate_projectconfig(project, blob):
     return re.sub("##UGF-ORIENTATION##", project.orientation, blob)
 
-def configure_sdk_dependencies(project, cocos, stage):
+def configure_ios_sdk_dependencies(project, cocos, stage):
     defines = []
     if project.facebookid:
         defines.append("#define FACEBOOK_ENABLED")
@@ -283,11 +283,44 @@ def configure_ios_targets(project, source, cocos, stage):
     # TODO: The orientation config may need to be specific to files so that
     # operations are checked correctly, but also that some options are removed!
 
-def configure_android_targets(project, source, cocos, stage):
+# @note This must include mediation, IAP, etc. as all of these libs must be configured at
+# the same time.
+def configure_android_targets(networks, project, source, cocos, stage):
     keys = get_main_keys()
+    # Update AndroidManifest.xml (update AdColony requirements, etc.) ##UGF-APP-CONFIG##
+    # Move respective dependencies (GameKit-dependencies) into 'libs'
+    # Update project.properties to point to shared libs (AdMob, etc.)
+    # @todo update the keys to contain the parts of the app config required by dependencies (AdColony requires its Activity to be configured).
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/android/AndroidManifest.xml", cocos.androidprojpath("AndroidManifest.xml"), interpolate_iosplist)
     interpolator.interpolate("templates/project/android/strings.xml", cocos.androidprojpath("res/values/strings.xml"), interpolate_iosplist)
+
+def copy_files(src, dst):
+    files = os.listdir(src)
+    for filename in files:
+        srcpath = os.path.join(src, filename)
+        dstpath = os.path.join(dst, filename)
+        if os.path.isfile(srcpath):
+            shutil.copy(srcpath, dstpath)
+        elif os.path.isdir(srcpath):
+            if not os.path.isdir(dstpath):
+                os.makedirs(dstpath)
+            copy_files(srcpath, dstpath)
+
+def copy_android_dependencies(dependencies, cocos, networks):
+    libpath = cocos.androidprojpath("libs")
+    shutil.rmtree(libpath)
+    os.makedirs(libpath)
+    # Create dependency list to copy to Android libs.
+    # @fixme this should be part of a config file which points the network to its
+    # folder within the deps directory.
+    deps = []
+    for network in networks:
+        if "adcolony" == network.name.lower():
+            deps.append("adcolony-android-sdk-2.3.1")
+    # Copy Android libs.
+    for dep in deps:
+        copy_files(dependencies.path(dep), libpath)
 
 if __name__ == "__main__":
     import argparse
@@ -317,6 +350,7 @@ if __name__ == "__main__":
     ios_gamekit = iOS_GameKitPathBuilder(config)
     android_gamekit = Android_GameKitPathBuilder(config)
     stage = StagePathBuilder(cocos.basepath())
+    dependencies = DependenciesPathBuilder(config)
     ios_mediation = load_mediation("ios", source)
     android_mediation = load_mediation("android", source)
     ios_iap = load_iap("ios", source)
@@ -336,12 +370,14 @@ if __name__ == "__main__":
         if "gamekit" in options:
             copy_native_ios_gamekit(ios_mediation.getNetworks(), cocos, ios_gamekit)
             configure_supported_networks_header(ios_mediation.getNetworks(), cocos)
-            configure_sdk_dependencies(project, cocos, stage)
+            configure_ios_sdk_dependencies(project, cocos, stage)
     else:
         print("No mediation networks configured for iOS project. Skipping...")
 
     # ----- Android Mediation -----
     if android_mediation and android_mediation.hasNetworks():
+        if "dependencies" in options:
+            copy_android_dependencies(dependencies, cocos, android_mediation.getNetworks())
         if "lua" in options:
             create_lua_mediation(android_mediation, cocos)
         if "gamekit" in options:

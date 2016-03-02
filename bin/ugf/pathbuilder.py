@@ -150,3 +150,13 @@ class Android_GameKitPathBuilder (object):
 
     def sourcedir(self):
         return self.path("app/src/main/java/com/upstartillustration")
+
+class DependenciesPathBuilder (object):
+    def __init__(self, config):
+        self.config = config
+
+    def basepath(self):
+        return os.path.join(self.config.basepath, "GameKit-dependencies")
+
+    def path(self, path):
+        return os.path.join(self.basepath(), path)
