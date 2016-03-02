@@ -57,7 +57,7 @@ if __name__ == "__main__":
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
 
-    print("%s, Time: {}".format(getversion(__file__, "1.0.0"), str(datetime.now())))
+    print("{}, Time: {}".format(getversion(__file__, "1.0.0"), str(datetime.now())))
     if config.apptype and len(config.apptype) > 0:
         print("Type: {}".format(config.apptype))
 
