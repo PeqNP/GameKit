@@ -323,7 +323,11 @@ def copy_android_dependencies(dependencies, cocos, networks):
         copy_files(dependencies.path(dep), libpath)
 
 def configure_android_sdk_dependencies(cocos, android):
-    properties = cocos.androidprojpath("project.properties")
+    properties = cocos.androidprojpath("project.properties", True)
+    # Return the file back to its original state before making modifications.
+    os.chdir(cocos.basepath())
+    call(["git", "checkout", properties])
+    # Inspect properties file and determine where to put GameKit dependencies.
     fh = open(properties, "r")
     refnum = 0
     reftag = "android.library.reference."
@@ -344,6 +348,11 @@ def configure_android_sdk_dependencies(cocos, android):
             if num > refnum:
                 refnum = num
     fh.close()
+    # Add dependencies. These dependencies must have already been downloaded with Android Studio
+    # or placed in the GameKit-dependencies folder. In fact, in the future, regardless of where
+    # it was downloaded, there must be either a soft link to the directory in GameKit-dependencies
+    # or the actual file.
+
     # @fixme Add Google Play Services only if needed. Other dependencies require this dependency
     # as well (AdColony). In other words, the necessary requirements for when this lib should be
     # added to the project haven't been completely figured out. For now, always add it. This is
@@ -351,7 +360,10 @@ def configure_android_sdk_dependencies(cocos, android):
     if not os.path.isdir(android.googleplaylibpath()):
         raise Exception("Android Google Play Services lib is not at {}".format(android.googleplaylibpath()))
     lines.append("{}{}={}".format(reftag, refnum+1, android.googleplaylibpath()))
-    print("\n".join(lines))
+    # Write dependencies to properties file.
+    fh = open(properties, "w")
+    fh.write("\n".join(lines))
+    fh.close()
 
 if __name__ == "__main__":
     import argparse
