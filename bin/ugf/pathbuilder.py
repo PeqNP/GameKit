@@ -209,7 +209,7 @@ class AndroidSDKPathBuilder (object):
                 break
             partnum = partnum + 1
         numwhacks = len(relativeparts) - partnum
-        relativepath = "{}{}".format(numwhacks*"../", os.path.join(*libparts[partnum+1:])) # include whack part
+        relativepath = "{}{}".format(numwhacks*"../", os.path.join(*libparts[partnum:])) # include whack part
         #libpath   : /Users/eric/Library/sdk/extras/google/google_play_services/libproject/google-play-services_lib
         #relativeto: /Users/eric/git/Cocos2dx_3.8.1/frameworks/runtime-src/proj.android/
         #=../../../../../Library/sdk/extras/google/google_play_services/libproject/google-play-services_lib
