@@ -25,6 +25,21 @@ def splitpath(path):
             allparts.insert(0, parts[1])
     return allparts
 
+def getrelativepath(libpath, fullpath, relativepath):
+    libparts = splitpath(fullpath)
+    relativeparts = splitpath(relativepath)
+    partnum = 0
+    for i, part in enumerate(relativeparts):
+        if part != libparts[i]:
+            break
+        partnum = partnum + 1
+    numwhacks = len(relativeparts) - partnum
+    return "{}{}".format(numwhacks*"../", os.path.join(*libparts[partnum:])) # include whack part
+    # Example:
+    #libpath   : /Users/eric/Library/sdk/extras/google/google_play_services/libproject/google-play-services_lib
+    #relativeto: /Users/eric/git/Cocos2dx_3.8.1/frameworks/runtime-src/proj.android/
+    #=../../../../../Library/sdk/extras/google/google_play_services/libproject/google-play-services_lib
+
 # Builds Cocos2d-x realted paths.
 class CocosPathBuilder (object):
     # @param Config
@@ -185,6 +200,12 @@ class DependenciesPathBuilder (object):
     def path(self, path):
         return os.path.join(self.basepath(), path)
 
+    def facebooklibpath(self, relativepath=None):
+        libpath = "facebook-android-sdk-4.9.0/facebook"
+        if not relativepath:
+            return self.path(libpath)
+        return getrelativepath(libpath, self.path(libpath), relativepath)
+
 class AndroidSDKPathBuilder (object):
     def __init__(self, config):
         self.config = config
@@ -200,17 +221,5 @@ class AndroidSDKPathBuilder (object):
         libpath = "sdk/extras/google/google_play_services/libproject/google-play-services_lib"
         if not relativepath:
             return self.path(libpath)
-        fullpath = self.path(libpath)
-        libparts = splitpath(fullpath)
-        relativeparts = splitpath(relativepath)
-        partnum = 0
-        for i, part in enumerate(relativeparts):
-            if part != libparts[i]:
-                break
-            partnum = partnum + 1
-        numwhacks = len(relativeparts) - partnum
-        relativepath = "{}{}".format(numwhacks*"../", os.path.join(*libparts[partnum:])) # include whack part
-        #libpath   : /Users/eric/Library/sdk/extras/google/google_play_services/libproject/google-play-services_lib
-        #relativeto: /Users/eric/git/Cocos2dx_3.8.1/frameworks/runtime-src/proj.android/
-        #=../../../../../Library/sdk/extras/google/google_play_services/libproject/google-play-services_lib
-        return relativepath
+        return getrelativepath(libpath, self.path(libpath), relativepath)
+

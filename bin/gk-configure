@@ -376,6 +376,9 @@ def configure_android_sdk_dependencies(cocos, android):
     if not os.path.isdir(android.googleplaylibpath()):
         raise Exception("Android Google Play Services lib is not at {}".format(android.googleplaylibpath()))
     lines.append("{}{}={}".format(reftag, refnum+1, android.googleplaylibpath(cocos.androidprojpath())))
+    if not os.path.isdir(dependencies.facebooklibpath()):
+        raise Exception("Android Facebook lib is not at {}".format(dependencies.facebooklibpath()))
+    lines.append("{}{}={}".format(reftag, refnum+2, dependencies.facebooklibpath(cocos.androidprojpath())))
     # Write dependencies to properties file.
     fh = open(properties, "w")
     fh.write("\n".join(lines))
