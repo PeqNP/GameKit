@@ -134,6 +134,7 @@ def copy_native_android_gamekit(networks, cocos, gamekit):
     if os.path.isdir(gamekitdest):
         shutil.rmtree(gamekitdest)
     shutil.copytree(gamekitsrc, gamekitdest)
+    shutil.rmtree(cocos.androidprojpath("src/com/upstartillustration/test"))
 
 def configure_supported_networks_header(networks, cocos):
     defines = []
