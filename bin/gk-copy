@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 #
-# Copies files from game project to Cocos2d-x project.
+# Copies source and resource (asset) files.
+#
+# The operations include:
+# - Copying GameKit source files
+# - Copying project files (source and assets)
 #
 # @copyright 2015 Upstart Illustration LLC. All rights reserved.
 #
@@ -30,7 +34,8 @@ def copy_android_assets(source, cocos):
     drawables = ["drawable", "drawable-hdpi", "drawable-ldpi", "drawable-mdpi", "drawable-xhdpi"]
     for drawable in drawables:
         targetdir = cocos.androidprojpath("res/" + drawable)
-        shutil.rmtree(targetdir)
+        if os.path.isdir(targetdir):
+            shutil.rmtree(targetdir)
         os.makedirs(targetdir)
         call(["cp", "-r", source.resourcepath("android", drawable), cocos.androidprojpath("res/")])
 
@@ -69,6 +74,9 @@ if __name__ == "__main__":
             print("'{}' is not a valid 'files' option".format(opt))
             sys.exit(1)
         options.append(opt)
+
+    if "all" in options:
+        options = valid_options[1:]
 
     if "assets" in options:
         print "Copying project asset files."

@@ -201,7 +201,7 @@ class DependenciesPathBuilder (object):
         return os.path.join(self.basepath(), path)
 
     def facebooklibpath(self, relativepath=None):
-        libpath = "facebook-android-sdk-4.9.0/facebook"
+        libpath = "facebook-android-sdk-3.23.1/facebook"
         if not relativepath:
             return self.path(libpath)
         return getrelativepath(libpath, self.path(libpath), relativepath)

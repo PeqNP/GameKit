@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 #
-# Selects (configures) a project into a Cocos2d-x project.
+# Configures target platform project configuration.
+#
+# The types of operations that are included are:
+# - Project file configuration. iOS is the .xcworkspace, Android is AndroidManifest.xml, etc.
+# - External library config. iOS is Pods, Android is project.properties. This also includes
+#   copying the third party dependencies, when necessary, to specific platform location.
+# - Creating respective Lua config files (mediation, IAP, etc.) for each of the platforms.
 #
 # TODO: Provide option to configure a specific platform's files.
 #

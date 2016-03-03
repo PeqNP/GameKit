@@ -1,8 +1,16 @@
 #!/usr/bin/env python
 #
-# Provides ability to download all UGF dependencies including projects, GameKit, cocos2d-x versions, etc.
-# @note Currently only Cocos2d-x is supported. If a project, it will be checked locally (to determine
-# if it exists) and then attempt to download from the configured remote.
+# Downloads GameKit dependencies for all platforms.
+#
+# Dependencies include:
+# - GameKit
+# - GameKit-Android
+# - GameKit-iOS
+# - GameKit-Dependencies (Android libs for AdColony, Facebook, etc.)
+# - JRE
+# - Apache Ant
+# - GameKit Cocos2d-x repository.
+# - etc.
 #
 # @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 #
