@@ -287,15 +287,25 @@ def configure_ios_targets(project, source, cocos, stage):
 # the same time.
 def configure_android_targets(networks, project, source, cocos, stage):
     keys = get_main_keys()
-    # Update AndroidManifest.xml (update AdColony requirements, etc.) ##UGF-APP-CONFIG##
-    # Move respective dependencies (GameKit-dependencies) into 'libs'
-    # Update project.properties to point to shared libs (AdMob, etc.)
-    # @todo update the keys to contain the parts of the app config required by dependencies (AdColony requires its Activity to be configured).
+    interpolator.interpolate("templates/project/android/strings.xml", cocos.androidprojpath("res/values/strings.xml"))
+
+    # Add app configuration to AndroidManifest.xml
+    appconfig = []
+    for network in networks:
+        if network.name.lower() == "adcolony":
+            appconfig.append(interpolator.interpolate("templates/project/android/application/adcolony"))
+    # @todo If Facebook, add.
+    appconfig.append(interpolator.interpolate("templates/project/android/application/facebook"))
+    keys["##UGF-APP-CONFIG##"] = "\n\n".join(appconfig)
     interpolator = Interpolator(project, cocos, stage, keys)
-    interpolator.interpolate("templates/project/android/AndroidManifest.xml", cocos.androidprojpath("AndroidManifest.xml"), interpolate_iosplist)
-    interpolator.interpolate("templates/project/android/strings.xml", cocos.androidprojpath("res/values/strings.xml"), interpolate_iosplist)
+    interpolator.interpolate("templates/project/android/AndroidManifest.xml", cocos.androidprojpath("AndroidManifest.xml"))
 
 def copy_files(src, dst):
+    # Single file
+    if not os.path.isdir(src):
+        shutil.copy(src, os.path.join(dst, os.path.basename(src)))
+        return
+    # Directory
     files = os.listdir(src)
     for filename in files:
         srcpath = os.path.join(src, filename)
@@ -318,6 +328,8 @@ def copy_android_dependencies(dependencies, cocos, networks):
     for network in networks:
         if "adcolony" == network.name.lower():
             deps.append("adcolony-android-sdk-2.3.1")
+    # Always copy
+    deps.append("gson-2.6.2.jar")
     # Copy Android libs.
     for dep in deps:
         copy_files(dependencies.path(dep), libpath)
@@ -461,4 +473,4 @@ if __name__ == "__main__":
     if "project" in options:
         configure_cocos_targets(project, source, cocos, stage)
         configure_ios_targets(project, source, cocos, stage)
-        configure_android_targets(project, source, cocos, stage)
+        configure_android_targets(android_medation.getNetworks(), project, source, cocos, stage)

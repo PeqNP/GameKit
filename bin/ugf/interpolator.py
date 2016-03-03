@@ -20,7 +20,7 @@ class Interpolator (object):
     # @param template - template file that will be interpolated
     # @param target - target path where template will be copied to after interpolation
     # @param func - Function that provides additional interpolation rules
-    def interpolate(self, template, target, interpolator=None):
+    def interpolate(self, template, target=None, interpolator=None):
         # Read
         fh = open(self.cocos.path(template), "r")
         blob = fh.read()
@@ -34,6 +34,8 @@ class Interpolator (object):
         fh = open(stagepath, "w")
         fh.write(blob)
         fh.close()
+        if not target:
+            return blob
         # Copy to target location.
         shutil.copyfile(stagepath, self.cocos.path(target))
 
