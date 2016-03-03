@@ -287,6 +287,7 @@ def configure_ios_targets(project, source, cocos, stage):
 # the same time.
 def configure_android_targets(networks, project, source, cocos, stage):
     keys = get_main_keys()
+    interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/android/strings.xml", cocos.androidprojpath("res/values/strings.xml"))
 
     # Add app configuration to AndroidManifest.xml
@@ -297,6 +298,7 @@ def configure_android_targets(networks, project, source, cocos, stage):
     # @todo If Facebook, add.
     appconfig.append(interpolator.interpolate("templates/project/android/application/facebook"))
     keys["##UGF-APP-CONFIG##"] = "\n\n".join(appconfig)
+
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/android/AndroidManifest.xml", cocos.androidprojpath("AndroidManifest.xml"))
 
@@ -473,4 +475,4 @@ if __name__ == "__main__":
     if "project" in options:
         configure_cocos_targets(project, source, cocos, stage)
         configure_ios_targets(project, source, cocos, stage)
-        configure_android_targets(android_medation.getNetworks(), project, source, cocos, stage)
+        configure_android_targets(android_mediation.getNetworks(), project, source, cocos, stage)
