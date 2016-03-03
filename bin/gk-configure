@@ -321,7 +321,8 @@ def copy_files(src, dst):
 
 def copy_android_dependencies(dependencies, cocos, networks):
     libpath = cocos.androidprojpath("libs")
-    shutil.rmtree(libpath)
+    if os.path.isdir(libpath):
+        shutil.rmtree(libpath)
     os.makedirs(libpath)
     # Create dependency list to copy to Android libs.
     # @fixme this should be part of a config file which points the network to its
@@ -373,7 +374,7 @@ def configure_android_sdk_dependencies(cocos, android):
     # almost always we want any ways.
     if not os.path.isdir(android.googleplaylibpath()):
         raise Exception("Android Google Play Services lib is not at {}".format(android.googleplaylibpath()))
-    lines.append("{}{}={}".format(reftag, refnum+1, android.googleplaylibpath()))
+    lines.append("{}{}={}".format(reftag, refnum+1, android.googleplaylibpath(cocos.androidprojpath())))
     # Write dependencies to properties file.
     fh = open(properties, "w")
     fh.write("\n".join(lines))

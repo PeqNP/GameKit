@@ -10,6 +10,21 @@ def defaultandroidpath():
     # @todo Mac OS X only for now.
     return os.path.join(gethomedir(), "Library/Android")
 
+def splitpath(path):
+    allparts = []
+    while True:
+        parts = os.path.split(path)
+        if parts[0] == path:  # sentinel for absolute paths
+            allparts.insert(0, parts[0])
+            break
+        elif parts[1] == path: # sentinel for relative paths
+            allparts.insert(0, parts[1])
+            break
+        else:
+            path = parts[0]
+            allparts.insert(0, parts[1])
+    return allparts
+
 # Builds Cocos2d-x realted paths.
 class CocosPathBuilder (object):
     # @param Config
@@ -180,6 +195,22 @@ class AndroidSDKPathBuilder (object):
     def path(self, path):
         return os.path.join(self.basepath(), path)
 
-    def googleplaylibpath(self):
-        # @todo May be different per platform.
-        return self.path("sdk/extras/google/google_play_services/libproject/google-play-services_lib")
+    def googleplaylibpath(self, relativepath=None):
+        # @todo This path may be platform specific.
+        libpath = "sdk/extras/google/google_play_services/libproject/google-play-services_lib"
+        if not relativepath:
+            return self.path(libpath)
+        fullpath = self.path(libpath)
+        libparts = splitpath(fullpath)
+        relativeparts = splitpath(relativepath)
+        partnum = 0
+        for i, part in enumerate(relativeparts):
+            if part != libparts[i]:
+                break
+            partnum = partnum + 1
+        numwhacks = len(relativeparts) - partnum
+        relativepath = "{}{}".format(numwhacks*"../", os.path.join(*libparts[partnum+1:])) # include whack part
+        #libpath   : /Users/eric/Library/sdk/extras/google/google_play_services/libproject/google-play-services_lib
+        #relativeto: /Users/eric/git/Cocos2dx_3.8.1/frameworks/runtime-src/proj.android/
+        #=../../../../../Library/sdk/extras/google/google_play_services/libproject/google-play-services_lib
+        return relativepath
