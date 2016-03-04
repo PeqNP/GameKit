@@ -77,6 +77,14 @@ class ProjectConfig (object):
         self.__dict__.update(entries)
         self.checkvals()
 
+    def getBundle(self, platform):
+        if type(self.bundle) is dict:
+            bundle = self.bundle.get(platform)
+            if not bundle:
+                raise Exception("Platform {} does not have a configured bundle ID".format(platform))
+            return bundle
+        return self.bundle
+
     def checkvals(self):
         for val in self.requiredvals():
             if val not in self.__dict__ or len(str(self.__dict__[val])) < 1:

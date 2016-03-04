@@ -34,7 +34,7 @@ VERSION = getversion(__file__, "1.0.0")
 def interpolate_iospbxproj(project, blob):
     # Global
     blob = re.sub("productName = GameTools;", "productName = {};".format(project.executable), blob)
-    blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = {};".format(project.bundle), blob)
+    blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = {};".format(project.getBundle("ios")), blob)
     # Mobile
     blob = re.sub("GameTools-mobile.app", "{}-mobile.app".format(project.executable), blob)
     blob = re.sub("\/\* GameTools-mobile \*\/", "/* {}-mobile */".format(project.executable), blob)
@@ -246,9 +246,9 @@ def copy_mediation_config(platform, source, cocos):
     if os.path.exists(source):
         shutil.copyfile(source, cocos.mediationconfigpath(platform))
 
-def get_main_keys():
+def get_main_keys(platform):
     return {
-        "##UGF-APP-BUNDLE##": project.bundle
+        "##UGF-APP-BUNDLE##": project.getBundle(platform)
       , "##UGF-APP-NAME##": project.name
       , "##UGF-APP-VERSION##": project.version
       , "##UGF-APP-BUILD##": project.build
@@ -261,7 +261,7 @@ def get_main_keys():
     }
 
 def configure_cocos_targets(project, source, cocos, stage):
-    keys = get_main_keys()
+    keys = get_main_keys("ios")
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/config.json", "config.json", interpolate_configjson)
     interpolator.interpolate("templates/project/config.lua", "src/config.lua", interpolate_projectconfig)
@@ -275,7 +275,7 @@ def configure_ios_targets(project, source, cocos, stage):
     # NOTE: I'm not sure this is necessary.
 
     # Interpolate template files
-    keys = get_main_keys()
+    keys = get_main_keys("ios")
 
     # The pbxproj should not be a template, as it changes often. All replacements
     # can be done by replacing GameTools anyways.
@@ -293,7 +293,7 @@ def configure_ios_targets(project, source, cocos, stage):
 # @note This must include mediation, IAP, etc. as all of these libs must be configured at
 # the same time.
 def configure_android_targets(networks, project, source, cocos, stage):
-    keys = get_main_keys()
+    keys = get_main_keys("android")
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/android/strings.xml", cocos.androidprojpath("res/values/strings.xml"))
 
