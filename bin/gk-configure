@@ -397,6 +397,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Upstart Game Framework - Configures a project into a Cocos2d-x project")
     parser.add_argument('operations', help="Configuration processes to perform on project: {}".format(", ".join(operations)), nargs="*", default=["all"])
+    parser.add_argument('--android', help="Only perform operations for Android platform", dest="android", action="store_true")
+    parser.add_argument('--iosmac', help="Only perform operations for iOS/Mac platform", dest="ios", action="store_true")
     args = parser.parse_args()
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
@@ -430,8 +432,18 @@ if __name__ == "__main__":
     if not os.path.exists(stage.basepath()):
         os.makedirs(stage.basepath())
 
+    def config_ios():
+        if not args.android or args.ios:
+            return True
+        return False
+
+    def config_android():
+        if not args.ios or args.android:
+            return True
+        return False
+
     # ---- iOS Mediation -----
-    if ios_mediation and ios_mediation.hasNetworks():
+    if config_ios() and ios_mediation and ios_mediation.hasNetworks():
         if "dependencies" in options:
             configure_ios_pods(ios_mediation.getPods(), project, cocos, stage)
         if "lua" in options:
@@ -444,7 +456,7 @@ if __name__ == "__main__":
         print("No mediation networks configured for iOS project. Skipping...")
 
     # ----- Android Mediation -----
-    if android_mediation and android_mediation.hasNetworks():
+    if config_android() and android and android_mediation and android_mediation.hasNetworks():
         if "dependencies" in options:
             copy_android_dependencies(dependencies, cocos, android_mediation.getNetworks())
             configure_android_sdk_dependencies(cocos, android)
@@ -456,28 +468,28 @@ if __name__ == "__main__":
         print("No mediation networks configured for Android project. Skipping...")
 
     # ----- iOS IAP -----
-    if ios_iap:
+    if config_ios() and ios_iap:
         if "lua" in options:
             create_lua_iap(ios_iap, cocos)
     else:
         print("No IAP configured for iOS project. Skipping...")
 
     # ----- Android IAP -----
-    if android_iap:
+    if config_android() and android_iap:
         if "lua" in options:
             create_lua_iap(android_iap, cocos)
     else:
         print("No IAP configured for Android project. Skipping...")
 
     # ----- iOS Royal Ad Network -----
-    if ios_royal:
+    if config_ios() and ios_royal:
         if "lua" in options:
             create_lua_royal(ios_royal, cocos)
     else:
         print("No Royal Ad Network configured for iOS project. Skipping...")
 
     # ----- Android Royal Ad Network -----
-    if android_royal:
+    if config_android() and android_royal:
         if "lua" in options:
             create_lua_royal(android_royal, cocos)
     else:
@@ -485,5 +497,5 @@ if __name__ == "__main__":
 
     if "project" in options:
         configure_cocos_targets(project, source, cocos, stage)
-        configure_ios_targets(project, source, cocos, stage)
-        configure_android_targets(android_mediation.getNetworks(), project, source, cocos, stage)
+        config_ios() and configure_ios_targets(project, source, cocos, stage)
+        config_android() and configure_android_targets(android_mediation.getNetworks(), project, source, cocos, stage)

@@ -140,6 +140,9 @@ function Manager.new(self)
 
         Log.d("Response request success w/ request ID (%s)", response.getId())
         if not response.isSuccess() then
+            -- @fixme If an ad fails to be shown, then the ad must be invalidated and cached again.
+            --request.setState(AdState.Complete)
+            --private.delayRebuildRequests()
             return nil
         end
 
