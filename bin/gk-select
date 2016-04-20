@@ -40,8 +40,8 @@ def install_pods(cocos):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Upstart Game Framework - Configure a project to build for specific version of Cocos2d-x")
-    parser.add_argument('project', help="The project name to configure")
+    parser = argparse.ArgumentParser(description="Upstart Game Framework - Activate project for a specific version of Cocos2d-x")
+    parser.add_argument('project', help="The project name to activate")
     parser.add_argument('--app-type', help="The type of project (i.e. free, premium) This determines which config and resource files to copy", default=None)
     args = parser.parse_args()
 

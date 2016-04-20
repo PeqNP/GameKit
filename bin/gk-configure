@@ -283,7 +283,7 @@ def configure_ios_targets(project, source, cocos, stage):
 
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/ios/Info.plist", cocos.iosmacprojpath("ios/Info.plist"), interpolate_iosplist)
-    interpolator.interpolate("stage/project.pbxproj", cocos.iosmacprojpath("GameTools.xcodeproj/project.pbxproj"), interpolate_iospbxproj)
+    interpolator.interpolate("stage/project.pbxproj", cocos.iosprojectpath(), interpolate_iospbxproj)
     interpolator.interpolate("templates/project/ios/GKConfig.m", cocos.iosmacprojpath("GameKit/GameTools/GKConfig.m"))
 
     # TODO: Cleanup stage directory
