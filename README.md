@@ -33,6 +33,7 @@ $ gem install cocoapods --version=0.39.0
 $ gem install xcodeproj
 $ brew install xcproj
 ```
+It may be necessary to restart your terminal to ensure that xcproj is in your path! Failing to do this may prevent cocoapods from installing the dependencies, as it can not find the YourGameAppName-mobile target.
 
 Create a directory on your machine where all GameKit supported Git repositories will be saved. This _includes_ any project that uses GameKit.
 ```
