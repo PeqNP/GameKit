@@ -27,6 +27,13 @@ This diagram provides an overview of the design of GameKit.
 
 ## Installation
 
+Install dependencies
+```
+$ gem install cocoapods --version=0.39.0
+$ gem install xcodeproj
+$ brew install xcproj
+```
+
 Create a directory on your machine where all GameKit supported Git repositories will be saved. This _includes_ any project that uses GameKit.
 ```
 $ mkdir ~/git
