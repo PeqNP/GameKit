@@ -36,15 +36,19 @@ def interpolate_iospbxproj(project, blob):
     blob = re.sub("productName = GameTools;", "productName = {};".format(project.executable), blob)
     blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = {};".format(project.getBundle("ios")), blob)
     # Mobile
-    blob = re.sub("GameTools-mobile.app", "{}-mobile.app".format(project.executable), blob)
+    blob = re.sub("GameTools-mobile\.app", "{}-mobile.app".format(project.executable), blob)
     blob = re.sub("\/\* GameTools-mobile \*\/", "/* {}-mobile */".format(project.executable), blob)
     blob = re.sub('"GameTools-mobile"', '"{}-mobile"'.format(project.executable), blob)
+    blob = re.sub('GameTools-mobile', '{}-mobile'.format(project.executable), blob)
     # Desktop
-    blob = re.sub("GameTools-desktop.app", "{}-desktop.app".format(project.executable), blob)
+    blob = re.sub("GameTools-desktop\.app", "{}-desktop.app".format(project.executable), blob)
     blob = re.sub("\/\* GameTools-desktop \*\/", "/* {}-desktop */".format(project.executable), blob)
     blob = re.sub('"GameTools-desktop"', '"{}-desktop"'.format(project.executable), blob)
+    blob = re.sub('GameTools-desktop', '{}-desktop'.format(project.executable), blob)
     # Final global (order matters...)
+    #blob = re.sub("\/\* GameTools \*\/", "/* {} */".format(project.executable), blob)
     blob = re.sub('"GameTools"', '"{}"'.format(project.executable), blob)
+    #blob = re.sub('= GameTools;', '= {};'.format(project.executable), blob)
     return blob
 
 def interpolate_iosplist(project, blob):
