@@ -64,7 +64,7 @@ class CocosPathBuilder (object):
         return iosmacprojpath
 
     def androidprojpath(self, path=None, relative=False):
-        relativepath = "frameworks/runtime-src/proj.android"
+        relativepath = "frameworks/runtime-src/proj.android-studio/app"
         if relative:
             return path and os.path.join(relativepath, path) or relativepath
         androidprojpath = self.path(relativepath)
@@ -200,12 +200,6 @@ class DependenciesPathBuilder (object):
     def path(self, path):
         return os.path.join(self.basepath(), path)
 
-    def facebooklibpath(self, relativepath=None):
-        libpath = "facebook-android-sdk-3.23.1/facebook"
-        if not relativepath:
-            return self.path(libpath)
-        return getrelativepath(libpath, self.path(libpath), relativepath)
-
 class AndroidSDKPathBuilder (object):
     def __init__(self, config):
         self.config = config
@@ -215,11 +209,4 @@ class AndroidSDKPathBuilder (object):
 
     def path(self, path):
         return os.path.join(self.basepath(), path)
-
-    def googleplaylibpath(self, relativepath=None):
-        # @todo This path may be platform specific.
-        libpath = "sdk/extras/google/google_play_services/libproject/google-play-services_lib"
-        if not relativepath:
-            return self.path(libpath)
-        return getrelativepath(libpath, self.path(libpath), relativepath)
 

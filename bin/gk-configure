@@ -303,11 +303,14 @@ def configure_android_targets(networks, project, source, cocos, stage):
 
     # Add app configuration to AndroidManifest.xml
     appconfig = []
+    # @todo If Google Play Services, add
+    appconfig.append(interpolator.interpolate("templates/project/android/application/google-play"))
     for network in networks:
         if network.name.lower() == "adcolony":
             appconfig.append(interpolator.interpolate("templates/project/android/application/adcolony"))
     # @todo If Facebook, add.
     appconfig.append(interpolator.interpolate("templates/project/android/application/facebook"))
+
     keys["##UGF-APP-CONFIG##"] = "\n\n".join(appconfig)
 
     interpolator = Interpolator(project, cocos, stage, keys)
@@ -349,50 +352,8 @@ def copy_android_dependencies(dependencies, cocos, networks):
         copy_files(dependencies.path(dep), libpath)
 
 def configure_android_sdk_dependencies(cocos, android):
-    properties = cocos.androidprojpath("project.properties", True)
-    # Return the file back to its original state before making modifications.
-    os.chdir(cocos.basepath())
-    call(["git", "checkout", properties])
-    # Inspect properties file and determine where to put GameKit dependencies.
-    fh = open(properties, "r")
-    refnum = 0
-    reftag = "android.library.reference."
-    lines = []
-    for line in fh:
-        line = line.strip()
-        lines.append(line)
-        if len(line) == 0:
-            continue
-        if line[0] == "#":
-            continue
-        key, value = line.split("=")
-        key, value = key.strip(), value.strip()
-        # Determine the last ref number. This will determine the ref number we will use
-        # to inject our own dependencies.
-        if reftag in key:
-            num = int(key[len(reftag):])
-            if num > refnum:
-                refnum = num
-    fh.close()
-    # Add dependencies. These dependencies must have already been downloaded with Android Studio
-    # or placed in the GameKit-dependencies folder. In fact, in the future, regardless of where
-    # it was downloaded, there must be either a soft link to the directory in GameKit-dependencies
-    # or the actual file.
-
-    # @fixme Add Google Play Services only if needed. Other dependencies require this dependency
-    # as well (AdColony). In other words, the necessary requirements for when this lib should be
-    # added to the project haven't been completely figured out. For now, always add it. This is
-    # almost always we want any ways.
-    if not os.path.isdir(android.googleplaylibpath()):
-        raise Exception("Android Google Play Services lib is not at {}".format(android.googleplaylibpath()))
-    lines.append("{}{}={}".format(reftag, refnum+1, android.googleplaylibpath(cocos.androidprojpath())))
-    if not os.path.isdir(dependencies.facebooklibpath()):
-        raise Exception("Android Facebook lib is not at {}".format(dependencies.facebooklibpath()))
-    lines.append("{}{}={}".format(reftag, refnum+2, dependencies.facebooklibpath(cocos.androidprojpath())))
-    # Write dependencies to properties file.
-    fh = open(properties, "w")
-    fh.write("\n".join(lines))
-    fh.close()
+    # @todo Update Gradle file
+    pass
 
 if __name__ == "__main__":
     import argparse
