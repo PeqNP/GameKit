@@ -353,6 +353,7 @@ def copy_android_dependencies(dependencies, cocos, networks):
 
 def configure_android_sdk_dependencies(cocos, android):
     # @todo Update Gradle file
+
     pass
 
 if __name__ == "__main__":
