@@ -1,6 +1,6 @@
-from unittest import unittest
+import unittest
 
-from ugf.android.GradleConfigBuilder import GradleConfigBuilder
+from ugf.android.gradle import GradleConfigBuilder
 
 class GradleConfigBuilderTest (unittest.TestCase):
     def setUp(self):
@@ -46,4 +46,4 @@ dependencies {
         self.assertEqual(expected, subject.generate())
 
 if __name__ == "__main__":
-    unittest.run()
+    unittest.main()
