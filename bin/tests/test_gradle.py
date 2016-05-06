@@ -17,6 +17,7 @@ class GradleConfigBuilderTest (unittest.TestCase):
         subject.add("dependencies", "compile('com.twitter.sdk.android:twitter:1.3.2@aar')", "transitive = true;")
         subject.insert(0, "buildscript", "repositories", "maven { url 'https://maven.fabric.io/public' }")
         subject.insert(0, "buildscript", "dependencies", "classpath 'io.fabric.tools:gradle:1.+'")
+        subject.after(["apply plugin: 'com.android.application'"], "apply plugin: 'io.fabric'")
 
         expected = """buildscript {
     repositories {
@@ -28,6 +29,8 @@ class GradleConfigBuilderTest (unittest.TestCase):
 }
 
 apply plugin: 'com.android.application'
+
+apply plugin: 'io.fabric'
 
 allprojects {
     repositories {

@@ -95,6 +95,17 @@ class GradleConfigBuilder (object):
             idx += 1
         self.registry.insert(idx, new_entry)
 
+    def after(self, after_entry, *path):
+        new_entry = list(path)
+        for idx, entry in enumerate(self.registry):
+            if entry == after_entry:
+                next_idx = idx + 1
+                # Already exists.
+                if next_idx < len(self.registry) and self.registry[next_idx] == new_entry:
+                    return
+                self.registry.insert(next_idx, new_entry)
+                return
+
     def get_nodes(self):
         def add_node(nodes, entry):
             for node in nodes:

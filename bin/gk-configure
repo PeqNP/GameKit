@@ -28,6 +28,7 @@ from ugf.interpolator import Interpolator
 from ugf.mediation import load_mediation_config
 from ugf.iap import load_iap_config
 from ugf.royal import load_royal_config
+from ugf.android import GradleConfigBuilder
 
 VERSION = getversion(__file__, "1.0.0")
 
@@ -352,9 +353,30 @@ def copy_android_dependencies(dependencies, cocos, networks):
         copy_files(dependencies.path(dep), libpath)
 
 def configure_android_sdk_dependencies(cocos, android):
-    # @todo Update Gradle file
-
-    pass
+    gradlepath = android.getgradlepath()
+    if not os.path.isfile(gradlepath):
+        raise Exception("App Gradle not found at: {}".format(gradlepath))
+    fh = open(gradlepath, "r")
+    source = fh.read()
+    fh.close()
+    gradle = GradleConfigBuilder(source=source)
+    # @todo If AdColony
+    gradle.add("dependencies", "compile project(':adcolony')")
+    # @todo If AdMob
+    # @todo If Facebook
+    gradle.add("dependencies" "compile 'com.facebook.android:facebook-android-sdk:[4,5)'")
+    # @todo If GooglePlay Services
+    gradle.add("dependencies", "compile 'com.google.android.gms:play-services-ads:8.4.0'")
+    # @todo If Twitter
+    gradle.insert(0, "buildscript", "repositories", "maven { url 'https://maven.fabric.io/public' }")
+    gradle.insert(0, "buildscript", "dependencies", "classpath 'com.android.tools.build:gradle:1.5.0'")
+    gradle.insert(0, "buildscript", "dependencies", "classpath 'io.fabric.tools:gradle:1.+'")
+    gradle.after(["apply plugin: 'com.android.application'"], "apply plugin: 'io.fabric'")
+    gradle.add("repositories", "maven { url 'https://maven.fabric.io/public' }")
+    gradle.add("dependencies", "compile('com.twitter.sdk.android:twitter:1.3.2@aar')", "transitive = true;")
+    # Always copy
+    gradle.add("dependencies", "compile 'com.google.code.gson:gson:2.6.1'")
+    gradle.add("dependencies", "compile 'com.android.support:appcompat-v7:23.1.1'")
 
 if __name__ == "__main__":
     import argparse
