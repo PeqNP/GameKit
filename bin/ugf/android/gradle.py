@@ -31,11 +31,39 @@ class GradleConfigBuilder (object):
         self.tab_space = tab_space
         self.registry = []
         if source:
-            self.loadSource(source)
+            self.load_source(source)
 
-    def loadSource(self, source):
+    #
+    # Load a config from source.
+    #
+    # When loading from source, it expects every command to be on its own line.
+    # Having commands like 'dependencies {\n command; }' are not allowed. But
+    # 'dependencies {\n command \n}' are allowed.
+    #
+    def load_source(self, source):
+        paths = self.load_source_paths(source)
+        for path in paths:
+            self.add(*path)
+
+    def load_source_paths(self, source):
         # Create tuples that will then be added.
-        pass
+        nodes = []
+        paths = []
+        for line in source.split("\n"):
+            if "{" in line and "}" in line:
+                nodes.append(line.strip())
+                paths.append(nodes[:])
+                nodes.pop()
+            elif "{" in line:
+                pos = line.find("}")
+                nodes.append(line[:pos].strip())
+            elif "}" in line:
+                nodes.pop()
+            elif len(line.strip()) and line.strip()[0:2] != "//":
+                nodes.append(line.strip())
+                paths.append(nodes[:])
+                nodes.pop()
+        return paths
 
     def add(self, *path):
         new_entry = list(path)
