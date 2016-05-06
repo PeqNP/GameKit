@@ -355,8 +355,6 @@ def configure_android_gradle(cocos):
     if not os.path.isfile(gradlepath):
         raise Exception("App Gradle not found at: {}".format(gradlepath))
     gradle = GradleConfigBuilder(filepath=gradlepath)
-    # @todo If AdColony
-    gradle.add("dependencies", "compile project(':adcolony')")
     # @todo If AdMob
     # @todo If Facebook
     gradle.add("dependencies" "compile 'com.facebook.android:facebook-android-sdk:[4,5)'")
@@ -366,7 +364,8 @@ def configure_android_gradle(cocos):
     gradle.insert(0, "buildscript", "repositories", "maven { url 'https://maven.fabric.io/public' }")
     gradle.insert(0, "buildscript", "dependencies", "classpath 'com.android.tools.build:gradle:1.5.0'")
     gradle.insert(0, "buildscript", "dependencies", "classpath 'io.fabric.tools:gradle:1.+'")
-    gradle.after(["apply plugin: 'com.android.application'"], "apply plugin: 'io.fabric'")
+    # This includes Crashylitics and a crashyltics.properties file to work.
+    #gradle.after(["apply plugin: 'com.android.application'"], "apply plugin: 'io.fabric'")
     gradle.add("repositories", "maven { url 'https://maven.fabric.io/public' }")
     gradle.add("dependencies", "compile('com.twitter.sdk.android:twitter:1.3.2@aar')", "transitive = true;")
     # Always copy
