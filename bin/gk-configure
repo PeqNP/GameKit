@@ -347,6 +347,8 @@ def copy_android_dependencies(dependencies, cocos, networks):
     for network in networks:
         if "adcolony" == network.name.lower():
             deps.append("adcolony-android-sdk-2.3.1")
+    for dep in deps:
+        copy_files(dependencies.path(dep), libpath)
 
 def configure_android_gradle(cocos):
     gradlepath = cocos.gradlepath()
