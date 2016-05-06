@@ -90,6 +90,9 @@ class CocosPathBuilder (object):
     def podfilepath(self):
         return self.iosmacprojpath("Podfile")
 
+    def gradlepath(self):
+        return self.androidprojpath("build.gradle")
+
 class StagePathBuilder (object):
     def __init__(self, cocospath):
         self.cocospath = cocospath

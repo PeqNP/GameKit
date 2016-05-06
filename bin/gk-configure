@@ -23,7 +23,7 @@ import sys
 
 from ugf import getversion
 from ugf.config import configpath, checkconfig, Config, ProjectConfig
-from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder, iOS_GameKitPathBuilder, Android_GameKitPathBuilder, DependenciesPathBuilder, AndroidSDKPathBuilder
+from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder, iOS_GameKitPathBuilder, Android_GameKitPathBuilder, DependenciesPathBuilder
 from ugf.interpolator import Interpolator
 from ugf.mediation import load_mediation_config
 from ugf.iap import load_iap_config
@@ -346,20 +346,12 @@ def copy_android_dependencies(dependencies, cocos, networks):
     for network in networks:
         if "adcolony" == network.name.lower():
             deps.append("adcolony-android-sdk-2.3.1")
-    # Always copy
-    deps.append("gson-2.6.2.jar")
-    # Copy Android libs.
-    for dep in deps:
-        copy_files(dependencies.path(dep), libpath)
 
-def configure_android_sdk_dependencies(cocos, android):
-    gradlepath = android.getgradlepath()
+def configure_android_gradle(cocos):
+    gradlepath = cocos.gradlepath()
     if not os.path.isfile(gradlepath):
         raise Exception("App Gradle not found at: {}".format(gradlepath))
-    fh = open(gradlepath, "r")
-    source = fh.read()
-    fh.close()
-    gradle = GradleConfigBuilder(source=source)
+    gradle = GradleConfigBuilder(filepath=gradlepath)
     # @todo If AdColony
     gradle.add("dependencies", "compile project(':adcolony')")
     # @todo If AdMob
@@ -377,6 +369,7 @@ def configure_android_sdk_dependencies(cocos, android):
     # Always copy
     gradle.add("dependencies", "compile 'com.google.code.gson:gson:2.6.1'")
     gradle.add("dependencies", "compile 'com.android.support:appcompat-v7:23.1.1'")
+    gradle.save(gradlepath)
 
 if __name__ == "__main__":
     import argparse
@@ -409,7 +402,6 @@ if __name__ == "__main__":
     android_gamekit = Android_GameKitPathBuilder(config)
     stage = StagePathBuilder(cocos.basepath())
     dependencies = DependenciesPathBuilder(config)
-    android = AndroidSDKPathBuilder(config)
     ios_mediation = load_mediation("ios", source)
     android_mediation = load_mediation("android", source)
     ios_iap = load_iap("ios", source)
@@ -447,7 +439,7 @@ if __name__ == "__main__":
     if config_android() and android and android_mediation and android_mediation.hasNetworks():
         if "dependencies" in options:
             copy_android_dependencies(dependencies, cocos, android_mediation.getNetworks())
-            configure_android_sdk_dependencies(cocos, android)
+            configure_android_gradle(cocos)
         if "lua" in options:
             create_lua_mediation(android_mediation, cocos)
         if "gamekit" in options:

@@ -27,11 +27,13 @@ class Node (object):
         return "{}{} {{\n{}\n{}}}".format(spaces, self.name, "\n".join(blocks), spaces)
 
 class GradleConfigBuilder (object):
-    def __init__(self, tab_space=4, source=None):
+    def __init__(self, tab_space=4, source=None, filepath):
         self.tab_space = tab_space
         self.registry = []
         if source:
             self.load_source(source)
+        elif filepath:
+            self.load_file(filepath)
 
     #
     # Load a config from source.
@@ -41,11 +43,17 @@ class GradleConfigBuilder (object):
     # 'dependencies {\n command \n}' are allowed.
     #
     def load_source(self, source):
-        paths = self.load_source_paths(source)
+        paths = self.get_paths(source)
         for path in paths:
             self.add(*path)
 
-    def load_source_paths(self, source):
+    def load_file(self, filepath):
+        fh = open(filepath, "r")
+        source = fh.read()
+        fh.close()
+        self.load_source(source)
+
+    def get_paths(self, source):
         # Create tuples that will then be added.
         nodes = []
         paths = []
@@ -123,3 +131,8 @@ class GradleConfigBuilder (object):
         for node in self.get_nodes():
             blocks.append(node.generate(0))
         return "\n\n".join(blocks)
+
+    def save(self, filepath):
+        fh = open(filepath, "w")
+        fh.write(self.generate())
+        fh.close()
