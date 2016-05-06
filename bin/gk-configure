@@ -28,7 +28,7 @@ from ugf.interpolator import Interpolator
 from ugf.mediation import load_mediation_config
 from ugf.iap import load_iap_config
 from ugf.royal import load_royal_config
-from ugf.android import GradleConfigBuilder
+from ugf.android.gradle import GradleConfigBuilder
 
 VERSION = getversion(__file__, "1.0.0")
 
@@ -314,8 +314,9 @@ def configure_android_targets(networks, project, source, cocos, stage):
 
     keys["##UGF-APP-CONFIG##"] = "\n\n".join(appconfig)
 
+    shutil.copyfile(cocos.androidprojpath("AndroidManifest.xml"), stage.path("AndroidManifest.xml"))
     interpolator = Interpolator(project, cocos, stage, keys)
-    interpolator.interpolate("templates/project/android/AndroidManifest.xml", cocos.androidprojpath("AndroidManifest.xml"))
+    interpolator.interpolate(stage.path("AndroidManifest.xml"), cocos.androidprojpath("AndroidManifest.xml"))
 
 def copy_files(src, dst):
     # Single file
@@ -436,7 +437,7 @@ if __name__ == "__main__":
         print("No mediation networks configured for iOS project. Skipping...")
 
     # ----- Android Mediation -----
-    if config_android() and android and android_mediation and android_mediation.hasNetworks():
+    if config_android() and android_mediation and android_mediation.hasNetworks():
         if "dependencies" in options:
             copy_android_dependencies(dependencies, cocos, android_mediation.getNetworks())
             configure_android_gradle(cocos)

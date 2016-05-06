@@ -27,7 +27,7 @@ class Node (object):
         return "{}{} {{\n{}\n{}}}".format(spaces, self.name, "\n".join(blocks), spaces)
 
 class GradleConfigBuilder (object):
-    def __init__(self, tab_space=4, source=None, filepath):
+    def __init__(self, tab_space=4, source=None, filepath=None):
         self.tab_space = tab_space
         self.registry = []
         if source:
