@@ -12,27 +12,37 @@ brew install xcpretty
 brew install ccache
 brew install wget
 
+# @todo Check if Xcode exists.
+echo
+echo "Please download Xcode 7.1+"
+# @todo Check if Android Studio exists.
+echo
 echo "Please download and install Android Studio 1.5+"
+echo "When 
 
 # Dependencies
 mkdir -p $GAMEKIT_DEPENDENCIES_DIR
 cd $GAMEKIT_DEPENDENCIES_DIR
 if [ ! -f "$GAMEKIT_DEPENDENCIES_DIR/jdk-8u91-macosx-x64.dmg" ]; then
+    echo "Downloading JDK... The JDK must be installed before Android Studio can be used!"
     wget http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-macosx-x64.dmg
 fi
 if [ ! -f "$GAMEKIT_DEPENDENCIES_DIR/android-ndk-r10c-darwin-x86_64.zip" ]; then
+    echo "Downloading Android NDK..."
     wget http://dl.google.com/android/repository/android-ndk-r10c-darwin-x86_64.zip
-    # If this fails, display an error message.
+    # @todo If this fails, display an error message.
     unzip android-ndk-r10c-darwin-x86_64.zip
-    # If the last command succeeded, remove the zip.
+    # @todo If the last command succeeded, remove the zip.
     #rm -rf android-ndk-r10c-darwin-x86_64.zip
 fi
 cd -
 
 # GameKit
+# @todo Make a method that performs all of these operations.
 cd $GAMEKIT_BASE_DIR
 if [ ! -d "$GAMEKIT_BASE_DIR/GameKit" ]; then
     git clone https://github.com/PeqNP/GameKit.git
+    # @todo If command fails, display error and quit.
 fi
 if [ ! -d "$GAMEKIT_BASE_DIR/GameKit-Android" ]; then
     git clone https://github.com/PeqNP/GameKit-Android.git
