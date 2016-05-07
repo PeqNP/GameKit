@@ -6,11 +6,15 @@
 GAMEKIT_BASE_DIR=~/git
 GAMEKIT_DEPENDENCIES_DIR=$GAMEKIT_BASE_DIR/GameKit-Dependencies
 
-# brew
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-brew install xcpretty
-brew install ccache
-brew install wget
+function install_brew
+{
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    brew install xcpretty
+    brew install ccache
+    brew install wget
+}
+
+#install_brew()
 
 # @todo Check if Xcode exists.
 echo
@@ -18,7 +22,6 @@ echo "Please download Xcode 7.1+"
 # @todo Check if Android Studio exists.
 echo
 echo "Please download and install Android Studio 1.5+"
-echo "When 
 
 # Dependencies
 mkdir -p $GAMEKIT_DEPENDENCIES_DIR
@@ -51,3 +54,7 @@ if [ ! -d "$GAMEKIT_BASE_DIR/GameKit-iOS" ]; then
     git clone https://github.com/PeqNP/GameKit-iOS.git
 fi
 cd -
+
+echo "Add the following to ~/.bash_profile"
+echo "export PATH=/usr/local/opt/ccache/libexec:\$PATH"
+echo "export PATH=/Users/eric/git/GameKit/bin:\$PATH"
