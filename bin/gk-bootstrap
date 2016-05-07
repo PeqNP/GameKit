@@ -9,12 +9,12 @@ GAMEKIT_DEPENDENCIES_DIR=$GAMEKIT_BASE_DIR/GameKit-Dependencies
 function install_brew
 {
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    brew install xcpretty
     brew install ccache
     brew install wget
 }
 
 #install_brew()
+sudo gem install xcpretty
 
 # @todo Check if Xcode exists.
 echo
