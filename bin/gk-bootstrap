@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# Simple install script which downloads all necessary dependencies for
+# GameKit development.
+#
+GAMEKIT_BASE_DIR=~/git
+GAMEKIT_DEPENDENCIES_DIR=$GAMEKIT_BASE_DIR/GameKit-Dependencies
+
+# brew
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew install xcpretty
+brew install ccache
+brew install wget
+
+echo "Please download and install Android Studio 1.5+"
+
+# Dependencies
+mkdir -p $GAMEKIT_DEPENDENCIES_DIR
+cd $GAMEKIT_DEPENDENCIES_DIR
+if [ ! -f "$GAMEKIT_DEPENDENCIES_DIR/jdk-8u91-macosx-x64.dmg" ]; then
+    wget http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-macosx-x64.dmg
+fi
+if [ ! -f "$GAMEKIT_DEPENDENCIES_DIR/android-ndk-r10c-darwin-x86_64.zip" ]; then
+    wget http://dl.google.com/android/repository/android-ndk-r10c-darwin-x86_64.zip
+    # If this fails, display an error message.
+    unzip android-ndk-r10c-darwin-x86_64.zip
+    # If the last command succeeded, remove the zip.
+    #rm -rf android-ndk-r10c-darwin-x86_64.zip
+fi
+cd -
+
+# GameKit
+cd $GAMEKIT_BASE_DIR
+if [ ! -d "$GAMEKIT_BASE_DIR/GameKit" ]; then
+    git clone https://github.com/PeqNP/GameKit.git
+fi
+if [ ! -d "$GAMEKIT_BASE_DIR/GameKit-Android" ]; then
+    git clone https://github.com/PeqNP/GameKit-Android.git
+fi
+if [ ! -d "$GAMEKIT_BASE_DIR/GameKit-iOS" ]; then
+    git clone https://github.com/PeqNP/GameKit-iOS.git
+fi
+cd -
