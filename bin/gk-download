@@ -20,6 +20,11 @@ from ugf.pathbuilder import CocosPathBuilder, ProjectPathBuilder
 
 VERSION = getversion(__file__, "1.0.0")
 
+def get_app_type(project_path):
+    # @todo Determine if there are any app types for this game. List all the
+    # app types (free, premiumt, etc.). If there are none, proceed forward.
+    return "free"
+
 def download_project(config, git_url):
     project_name = os.path.basename(git_url).rstrip(".git")
     project_path = config.path(project_name)
@@ -34,6 +39,8 @@ def download_project(config, git_url):
         print("Cloning project ({}) from ({})...".format(project_path, git_url))
         os.chdir(config.basepath)
         call(["git", "clone", git_url])
+    config.project = project_name
+    config.apptype = get_app_type(project_path)
     source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
@@ -66,5 +73,4 @@ if __name__ == "__main__":
     print
 
     config = Config.load(configpath())
-    checkconfig(config)
     download_project(config, args.project_url)

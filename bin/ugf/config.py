@@ -12,7 +12,7 @@ def configpath():
     return os.path.join(gethomedir(), ".ugf")
 
 def print_configure():
-    print("Please configure the UGF utility by running the gk-path CLI tool")
+    print("Please configure GameKit by running the gk-path CLI tool")
     sys.exit(1)
 
 def checkconfig(config):
@@ -44,7 +44,7 @@ class Config (object):
         apptype = "apptype" in json and json["apptype"] or None
         return Config(json.get("basepath", None), json.get("remote", None), project, apptype, json.get("androidpath", None))
 
-    def __init__(self, basepath, remote, project, apptype, androidpath):
+    def __init__(self, basepath=None, remote=None, project=None, apptype=None, androidpath=None):
         self.basepath = basepath
         self.remote = remote
         self.project = project

@@ -9,7 +9,7 @@ import os
 from datetime import datetime
 
 from ugf import getversion
-from ugf.config import configpath, checkconfig, Config
+from ugf.config import configpath, Config
 from ugf.pathbuilder import defaultandroidpath
 
 VERSION = getversion(__file__, "1.0.0")
@@ -41,7 +41,10 @@ if __name__ == "__main__":
     # configure
     # download - must be configured first
     # install - must be downloaded first
-    config = Config.load(configpath())
+    if os.path.exists(configpath()):
+        config = Config.load(configpath())
+    else:
+        config = Config()
 
     if "print" in options:
         if config.hasConfig():
