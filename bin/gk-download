@@ -33,23 +33,24 @@ def download_project(config, git_url):
     print("Cloning project {} from {}...".format(project_path, git_url))
     sys.exit(0)
     call(["git", "clone", git_url])
-    cocos = CocosPathBuilder(config, version)
+    cocos = CocosPathBuilder(config, project.version)
     source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
     download_cocos(config, cocos, project)
 
 def download_cocos(config, cocos, project):
-    print("Downloading project ({}) Cocos2d-x version ({}) from remote ({})".format(project.name, project.cocos, config.remote))
+    print("Downloading Cocos2d-x version ({})...".format(cocos.version))
     # @todo Determine if repository already exists. Prevent it from being downloaded if
     # it aleady is.
     cocospath = cocos.basepath()
     if os.path.exists(cocospath):
         print("STOP: Cocos2d-x v({}) already exists at ({})".format(cocos.version, cocospath))
         print("If you want a clean version of this repository, run gk-clean")
+        print("If the repository is corrupt, delete the folder and run this command again.")
         print
         sys.exit(0)
     remote = config.remote[-1] == "/" and config.remote or config.remote + "/"
-    remotepath = remote+cocos.foldername()
+    remotepath = "{}{}.git".format(remote, cocos.foldername())
     print("Cloning ({}) to ({})".format(remotepath, cocospath))
     os.chdir(config.basepath)
     call(["git", "clone", remotepath])
