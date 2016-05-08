@@ -94,9 +94,9 @@ if [ ! -f "$GAMEKIT_DEPENDENCIES_DIR/$ANDROID_NDK_FILENAME" ]; then
     echo "Downloading Android NDK..."
     wget $ANDROID_NDK_URL
     # @todo If this fails, display an error message.
-    unzip $ANDROID_NDK_FILENAME .
+    unzip $ANDROID_NDK_FILENAME
     # @todo If the last command succeeded, remove the zip.
-    #rm -rf android-ndk-r10c-darwin-x86_64.zip
+    #rm -rf $ANDROID_NDK_FILENAME
 fi
 cd -
 
@@ -115,6 +115,7 @@ if [ ! -d "$GAMEKIT_BASE_DIR/GameKit-iOS" ]; then
 fi
 cd -
 
-echo "Add the following to ~/.bash_profile"
+echo
+echo "Please add the following to ~/.bash_profile"
 echo "export PATH=/usr/local/opt/ccache/libexec:\$PATH"
 echo "export PATH=/Users/eric/git/GameKit/bin:\$PATH"
