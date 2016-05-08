@@ -52,7 +52,6 @@ def download_cocos(config, cocos):
         sys.exit(0)
     remotepath = config.giturl(cocos.foldername())
     print("Cloning ({}) to ({})".format(remotepath, cocospath))
-    sys.exit(0)
     os.chdir(config.basepath)
     call(["git", "clone", remotepath])
 
