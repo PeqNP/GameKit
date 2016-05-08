@@ -24,21 +24,22 @@ def download_project(config, git_url):
     project_name = os.path.basename(git_url).rstrip(".git")
     project_path = config.path(project_name)
     if os.path.exists(project_path):
-        print("The GameKit project {} is already downloaded. Skipping step.".format(project_path))
+        print("The GameKit project ({}) is already downloaded. Skipping step.".format(project_path))
         print("NOTE: If the project is corrupt, etc., delete the project's folder and run this command again.")
         print
-        yn = input("Do you want to continue downloading dependencies? [Y/n]")
+        yn = raw_input("Do you want to continue downloading dependencies? [Y/n] ")
         if yn.lower() == "n":
             sys.exit(0)
-    print("Cloning project {} from {}...".format(project_path, git_url))
-    sys.exit(0)
-    call(["git", "clone", git_url])
-    cocos = CocosPathBuilder(config, project.version)
+    else:
+        print("Cloning project ({}) from ({})...".format(project_path, git_url))
+        os.chdir(config.basepath)
+        call(["git", "clone", git_url])
     source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
-    download_cocos(config, cocos, project)
+    cocos = CocosPathBuilder(config, project.cocos)
+    download_cocos(config, cocos)
 
-def download_cocos(config, cocos, project):
+def download_cocos(config, cocos):
     print("Downloading Cocos2d-x version ({})...".format(cocos.version))
     # @todo Determine if repository already exists. Prevent it from being downloaded if
     # it aleady is.
@@ -49,9 +50,9 @@ def download_cocos(config, cocos, project):
         print("If the repository is corrupt, delete the folder and run this command again.")
         print
         sys.exit(0)
-    remote = config.remote[-1] == "/" and config.remote or config.remote + "/"
-    remotepath = "{}{}.git".format(remote, cocos.foldername())
+    remotepath = config.giturl(cocos.foldername())
     print("Cloning ({}) to ({})".format(remotepath, cocospath))
+    sys.exit(0)
     os.chdir(config.basepath)
     call(["git", "clone", remotepath])
 
@@ -67,4 +68,4 @@ if __name__ == "__main__":
 
     config = Config.load(configpath())
     checkconfig(config)
-    download_project(config, cocos, args.project_url)
+    download_project(config, args.project_url)

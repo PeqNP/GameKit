@@ -59,6 +59,13 @@ class Config (object):
         fh = open(path, "w")
         fh.write(json_blob)
         fh.close()
+    
+    def giturl(self, name):
+        remote = self.remote.rstrip("/")
+        return "{}/{}.git".format(self.remote, name)
+
+    def path(self, path):
+        return os.path.join(self.basepath, path)
 
 # Project configuration structure.
 class ProjectConfig (object):
