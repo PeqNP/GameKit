@@ -10,7 +10,7 @@ XCODE_PATH="/Applications/Xcode.app"
 ANDROID_STUDIO_PATH="/Applications/Android Studio.app"
 JDK_FILENAME=jdk-8u91-macosx-x64.dmg
 JDK_URL=http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-macosx-x64.dmg
-ANDROID_NDK_FILENAME=android-ndk-r11c-darwin-x86_64.zip
+ANDROID_NDK_FILENAME=android-ndk-r10c-darwin-x86_64.zip
 ANDROID_NDK_URL=http://dl.google.com/android/repository/$ANDROID_NDK_FILENAME
 
 function app_exists()
@@ -83,12 +83,10 @@ fi
 
 # Dependencies
 mkdir -p $GAMEKIT_DEPENDENCIES_DIR
-cd $GAMEKIT_DEPENDENCIES_DIR
-if [ ! -f "$GAMEKIT_DEPENDENCIES_DIR/$JDK_FILENAME" ]; then
-    echo "Downloading JDK..."
-    wget $JDK_URL
-    echo "Please note: The JDK must be installed before Android Studio can be used!"
-fi
+# @fixme Currently this requires you to accept a license. I'm not sure how to do
+# this automatically.
+echo "Please download and install the JDK from: $JDK_URL"
+echo "Please note: The JDK must be installed before Android Studio can be used!"
 
 if [ ! -f "$GAMEKIT_DEPENDENCIES_DIR/$ANDROID_NDK_FILENAME" ]; then
     echo "Downloading Android NDK..."
