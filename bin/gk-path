@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     operations = ["configure", "print"]
 
-    parser = argparse.ArgumentParser(description="Upstart Game Framework - Configure local and remote paths")
+    parser = argparse.ArgumentParser(description="GameKit - Configure local and remote paths")
     parser.add_argument('operations', help="Installation processes: {}. Default: configure".format(", ".join(operations)), nargs="*", default=["all"])
     args = parser.parse_args()
 
@@ -53,14 +53,14 @@ if __name__ == "__main__":
             print("Incomplete configuration! Please run gk-path configure to configure paths.")
     
     if "configure" in options:
-        while True:
-            print("Where do you want the UGF dependencies to be stored locally?")
-            config.basepath = raw_input("Local path: ")
-            if os.path.exists(config.basepath):
-                break
-            else:
-                print("The path {} does not exist!".format(config.basepath))
-                print
+        default = os.path.expanduser("~/git/")
+        print("Where do you want the GameKit project files, dependencies, etc. to be stored locally? (Default: {})".format(default))
+        basepath = raw_input("Local path: ")
+        config.basepath = basepath and basepath or default
+        if not os.path.exists(config.basepath):
+            print("The path {} does not exist! Creating...".format(config.basepath))
+            print
+            os.makedirs(config.basepath)
         default = defaultandroidpath()
         while True:
             print("Where is the Android SDK located?")
@@ -72,7 +72,9 @@ if __name__ == "__main__":
             else:
                 print("The path {} does not exist!".format(config.basepath))
                 print
-        print("Which Git repository should dependencies be downloaded from?")
-        config.remote = raw_input("Remote URL to Git repository: ")
+        default = "https://github.com/PeqNP"
+        print("What is the base URL (Git repository) where dependencies should be downloaded from (Default: {})?".format(default))
+        remote = raw_input("Remote URL to Git repository: ")
+        config.remote = remote and remote or default
         config.save(configpath())
         print("Saved config to: {}".format(configpath()))
