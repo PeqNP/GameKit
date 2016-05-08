@@ -25,53 +25,75 @@ def get_app_type(project_path):
     # app types (free, premiumt, etc.). If there are none, proceed forward.
     return "free"
 
-def download_project(config, git_url):
-    project_name = os.path.basename(git_url).rstrip(".git")
+def get_git_url():
+    while True:
+        print("What is the Git URL for your project?")
+        url = raw_input("Git URL: ")
+        if url:
+            return url
+        else:
+            print("Invalid URL.")
+            print
+
+def download_project(config, project_name, git_url=None, suppress_warnings=False):
     project_path = config.path(project_name)
-    if os.path.exists(project_path):
+    if not supress_warnings and os.path.exists(project_path):
         print("The GameKit project ({}) is already downloaded. Skipping step.".format(project_path))
         print("NOTE: If the project is corrupt, etc., delete the project's folder and run this command again.")
         print
         yn = raw_input("Do you want to continue downloading dependencies? [Y/n] ")
         if yn.lower() == "n":
             sys.exit(0)
-    else:
+    elif not os.path.exists(project_path):
+        git_url = git_url and git_url or get_git_url()
         print("Cloning project ({}) from ({})...".format(project_path, git_url))
         os.chdir(config.basepath)
         call(["git", "clone", git_url])
-    config.project = project_name
-    config.apptype = get_app_type(project_path)
-    source = ProjectPathBuilder(config)
-    project = ProjectConfig.load(source.configpath())
-    cocos = CocosPathBuilder(config, project.cocos)
-    download_cocos(config, cocos)
-    # @todo Ask the user if they wish to select this project now.
 
-def download_cocos(config, cocos):
+def download_cocos(config, cocos, suppress_warnings=False):
     print("Downloading Cocos2d-x version ({})...".format(cocos.version))
-    # @todo Determine if repository already exists. Prevent it from being downloaded if
-    # it aleady is.
     cocospath = cocos.basepath()
-    if os.path.exists(cocospath):
+    if not suppress_warnings and os.path.exists(cocospath):
         print("STOP: Cocos2d-x v({}) already exists at ({})".format(cocos.version, cocospath))
         print("If you want a clean version of this repository, run gk-clean")
         print("If the repository is corrupt, delete the folder and run this command again.")
         print
+        sys.exit(0)
+    elif os.path.exists(cocospath):
         sys.exit(0)
     remotepath = config.giturl(cocos.foldername())
     print("Cloning ({}) to ({})".format(remotepath, cocospath))
     os.chdir(config.basepath)
     call(["git", "clone", remotepath])
 
+def main(project_name, app_type, git_url, suppress_warnings, save_config):
+    config = Config.load(configpath())
+    # Download project
+    download_project(config, project_name, git_url=git_url, suppress_warnings=suppress_warnings)
+    # Set config with latest vars. This is necessary to load the project's
+    # respective config w/ app type.
+    config.project = args.project_name
+    config.apptype = app_type and app_type or get_app_type(config.path(project_name))
+    # Download dependencies
+    source = ProjectPathBuilder(config)
+    project = ProjectConfig.load(source.configpath())
+    cocos = CocosPathBuilder(config, project.cocos)
+    download_cocos(config, cocos)
+    if save_config:
+        config.save(configpath())
+
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="GameKit Project Downloader - Download a GameKit project and all dependencies")
-    parser.add_argument("project_url", help="The Git URL for the GameKit project to download.")
+    parser.add_argument("project_name", help="The name of the project")
+    parser.add_argument('--app-type', help="The type of project (i.e. free, premium) This determines which config and resource files to copy", default=None)
+    parser.add_argument('--git-url', help="The Git URL to clone project from", default=None)
+    parser.add_argument('--suppress-warnings', help="The Git URL to clone project from", action="store_true", default=False)
+    parser.add_argument('--save-config', help="Save project configuration after download process is complete." , action="store_true", default=False)
     args = parser.parse_args()
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
     print
 
-    config = Config.load(configpath())
-    download_project(config, args.project_url)
+    main(args.project_name, args.app_type, args.git_url, args.suppress_warnings, args.save_config)
