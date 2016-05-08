@@ -57,7 +57,7 @@ def download_project(config, project_name, git_url=None, suppress_warnings=False
             sys.exit(0)
     elif not os.path.exists(project_path):
         git_url = git_url and git_url or get_git_url()
-        print("Cloning project ({}) from ({})...".format(project_path, git_url))
+        print("Cloning project ({}) from ({})...".format(project_name, git_url))
         os.chdir(config.basepath)
         call(["git", "clone", git_url])
 
