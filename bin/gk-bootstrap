@@ -3,6 +3,9 @@
 # Simple install script which downloads all necessary dependencies for
 # GameKit development.
 #
+# An excellent reference to bash functions:
+# http://www.tldp.org/LDP/abs/html/complexfunct.html
+#
 
 GAMEKIT_BASE_DIR=~/git
 GAMEKIT_DEPENDENCIES_DIR=$GAMEKIT_BASE_DIR/GameKit-Dependencies
@@ -53,17 +56,8 @@ function install_gems()
     sudo gem install cocoapods --version=0.39.0
 }
 
-#while true; do
-#    read -p "Install brew?" yn
-#    case $yn in
-#        [Yy]* ) install_brew(); break;;
-#        [Nn]* ) break;;
-#        * ) "Please answer [Y]es or [n]o.";;
-#    esac
-#done
-
-#install_brew
-#install_gems
+install_brew
+install_gems
 
 app_exists "$XCODE_PATH"
 if [ $? -eq 0 ]; then

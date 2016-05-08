@@ -1,16 +1,10 @@
 #!/usr/bin/env python
 #
-# Downloads GameKit dependencies for all platforms.
+# Downloads a GameKit project and all necessary dependencies.
 #
 # Dependencies include:
-# - GameKit
-# - GameKit-Android
-# - GameKit-iOS
-# - GameKit-Dependencies (Android libs for AdColony, Facebook, etc.)
-# - JRE
-# - Apache Ant
 # - GameKit Cocos2d-x repository.
-# - etc.
+# - GameKit-Dependencies (AdColony, etc.)
 #
 # @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 #
@@ -26,7 +20,25 @@ from ugf.pathbuilder import CocosPathBuilder, ProjectPathBuilder
 
 VERSION = getversion(__file__, "1.0.0")
 
-def main(config, cocos):
+def download_project(config, cocos, git_url):
+    project_name = os.path.basename(git_url).rstrip(".git")
+    project_path = cocos.path(project_name)
+    if os.path.exists(project_path):
+        print("The GameKit project {} is already downloaded. Skipping step.".format(project_path))
+        print("NOTE: If the project is corrupt, etc., delete the project's folder and run this command again.")
+        print
+        yn = input("Do you want to continue downloading dependencies? [Y/n]")
+        if yn.lower() == "n":
+            sys.exit(0)
+    print("Cloning project {} from {}...".format(project_path, git_url))
+    sys.exit(0)
+    call(["git", "clone", git_url])
+    source = ProjectPathBuilder(config)
+    project = ProjectConfig.load(source.configpath())
+    download_cocos(config, cocos, project)
+
+def download_cocos(config, cocos, project):
+    print("Downloading project ({}) Cocos2d-x version ({}) from remote ({})".format(project.name, project.cocos, config.remote))
     # @todo Determine if repository already exists. Prevent it from being downloaded if
     # it aleady is.
     cocospath = cocos.basepath()
@@ -44,26 +56,14 @@ def main(config, cocos):
 if __name__ == "__main__":
     import argparse
 
-    operations = ["configure", "print"]
-
-    parser = argparse.ArgumentParser(description="Upstart Game Framework - Download Cocos2d-x from Git configured repository")
-    parser.add_argument('--version', help="The version of Cocos2d-x to download from remote Git repository")
+    parser = argparse.ArgumentParser(description="GameKit Project Downloader - Download a GameKit project and all dependencies")
+    parser.add_argument("project_url", help="The Git URL for the GameKit project to download.")
     args = parser.parse_args()
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
     print
 
     config = Config.load(configpath())
-    version = None
-    if args.version:
-        version = args.version
-        print("Downloading Cocos2d-x version ({}) from remote ({})".format(args.version, config.remote))
-    else:
-        checkconfig(config)
-        source = ProjectPathBuilder(config)
-        project = ProjectConfig.load(source.configpath())
-        version = project.cocos
-        print("Downloading project ({}) Cocos2d-x version ({}) from remote ({})".format(project.name, project.cocos, config.remote))
-
+    checkconfig(config)
     cocos = CocosPathBuilder(config, version)
-    main(config, cocos)
+    download_project(config, cocos, args.project_url)
