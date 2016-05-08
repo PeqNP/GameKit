@@ -15,7 +15,7 @@ from datetime import datetime
 from subprocess import call
 
 from ugf import getversion, gethomedir
-from ugf.config import configpath, checkconfig, Config, ProjectConfig
+from ugf.config import configpath, checkconfig, get_app_types, Config, ProjectConfig
 from ugf.pathbuilder import CocosPathBuilder, ProjectPathBuilder
 
 VERSION = getversion(__file__, "1.0.0")
@@ -23,7 +23,18 @@ VERSION = getversion(__file__, "1.0.0")
 def get_app_type(project_path):
     # @todo Determine if there are any app types for this game. List all the
     # app types (free, premiumt, etc.). If there are none, proceed forward.
-    return "free"
+    app_types = get_app_types(project_path)
+    if not app_types: return None
+    while True:
+        print("Found {} app types:".format(len(app_types)))
+        for idx, app_type in enumerate(app_types):
+            print(" {}. {}".format(idx+1, app_type))
+        app_type_index = raw_input("Which app type config do you want to load (# 1-{})? ".format(len(app_types)))
+        idx = int(app_type_index) - 1
+        if idx > -1 and idx < len(app_types):
+            return app_types[idx]
+        else:
+            print("Invalid option: {}".format(app_type_index))
 
 def get_git_url():
     while True:
@@ -37,7 +48,7 @@ def get_git_url():
 
 def download_project(config, project_name, git_url=None, suppress_warnings=False):
     project_path = config.path(project_name)
-    if not supress_warnings and os.path.exists(project_path):
+    if not suppress_warnings and os.path.exists(project_path):
         print("The GameKit project ({}) is already downloaded. Skipping step.".format(project_path))
         print("NOTE: If the project is corrupt, etc., delete the project's folder and run this command again.")
         print
@@ -51,7 +62,6 @@ def download_project(config, project_name, git_url=None, suppress_warnings=False
         call(["git", "clone", git_url])
 
 def download_cocos(config, cocos, suppress_warnings=False):
-    print("Downloading Cocos2d-x version ({})...".format(cocos.version))
     cocospath = cocos.basepath()
     if not suppress_warnings and os.path.exists(cocospath):
         print("STOP: Cocos2d-x v({}) already exists at ({})".format(cocos.version, cocospath))
@@ -61,6 +71,7 @@ def download_cocos(config, cocos, suppress_warnings=False):
         sys.exit(0)
     elif os.path.exists(cocospath):
         sys.exit(0)
+    print("Downloading Cocos2d-x version ({})...".format(cocos.version))
     remotepath = config.giturl(cocos.foldername())
     print("Cloning ({}) to ({})".format(remotepath, cocospath))
     os.chdir(config.basepath)
@@ -78,7 +89,7 @@ def main(project_name, app_type, git_url, suppress_warnings, save_config):
     source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
-    download_cocos(config, cocos)
+    download_cocos(config, cocos, suppress_warnings=suppress_warnings)
     if save_config:
         config.save(configpath())
 

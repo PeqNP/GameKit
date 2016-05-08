@@ -67,6 +67,14 @@ class Config (object):
     def path(self, path):
         return os.path.join(self.basepath, path)
 
+def get_app_types(path):
+    app_types = []
+    for f in os.listdir(path):
+        if "config-" in f:
+            app_type = f.split("-")[1].rstrip(".json")
+            app_types.append(app_type)
+    return app_types
+
 # Project configuration structure.
 class ProjectConfig (object):
     @staticmethod
