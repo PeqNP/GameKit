@@ -45,6 +45,7 @@ def download_project(config, git_url):
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
     download_cocos(config, cocos)
+    # @todo Ask the user if they wish to select this project now.
 
 def download_cocos(config, cocos):
     print("Downloading Cocos2d-x version ({})...".format(cocos.version))
