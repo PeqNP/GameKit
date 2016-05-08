@@ -3,39 +3,98 @@
 # Simple install script which downloads all necessary dependencies for
 # GameKit development.
 #
+
 GAMEKIT_BASE_DIR=~/git
 GAMEKIT_DEPENDENCIES_DIR=$GAMEKIT_BASE_DIR/GameKit-Dependencies
+XCODE_PATH="/Applications/Xcode.app"
+ANDROID_STUDIO_PATH="/Applications/Android Studio.app"
+JDK_FILENAME=jdk-8u91-macosx-x64.dmg
+JDK_URL=http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-macosx-x64.dmg
+ANDROID_NDK_FILENAME=android-ndk-r11c-darwin-x86_64.zip
+ANDROID_NDK_URL=http://dl.google.com/android/repository/$ANDROID_NDK_FILENAME
 
-function install_brew
+function app_exists()
 {
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    if [ -f "$1" ]; then
+        return 1
+    fi
+    if [ -d "$1" ]; then
+        return 1
+    fi
+    return 0
+}
+
+function is_installed()
+{
+    installed=(`which $1`)
+    if [ "$installed" == "" ]; then
+        return 0
+    fi
+    return 1
+}
+
+function install_brew()
+{
+    echo "Checking if brew is installed..."
+    is_installed "brew"
+    if [ $? -eq 0 ]; then
+        echo "brew is not installed. Installing now..."
+        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    fi
+    echo "Installing binary dependencies..."
     brew install ccache
     brew install wget
 }
 
-#install_brew()
-sudo gem install xcpretty
-sudo gem install cocoapods --version=0.39.0
+function install_gems()
+{
+    echo "Installing gem dependencies..."
+    sudo gem install xcpretty
+    sudo gem install cocoapods --version=0.39.0
+}
 
-# @todo Check if Xcode exists.
-echo
-echo "Please download Xcode 7.1+"
-# @todo Check if Android Studio exists.
-echo
-echo "Please download and install Android Studio 1.5+"
+#while true; do
+#    read -p "Install brew?" yn
+#    case $yn in
+#        [Yy]* ) install_brew(); break;;
+#        [Nn]* ) break;;
+#        * ) "Please answer [Y]es or [n]o.";;
+#    esac
+#done
+
+#install_brew
+#install_gems
+
+app_exists "$XCODE_PATH"
+if [ $? -eq 0 ]; then
+    echo
+    echo "Could not find Xcode at path: $XCODE_PATH"
+    echo "Please download Xcode 7.1+ before continuing."
+    exit 1
+fi
+
+app_exists "$ANDROID_STUDIO_PATH"
+if [ $? -eq 0 ]; then
+    echo
+    echo "Could not find Android Studio at path: $ANDROID_STUDIO_PATH"
+    echo "Please download Android Studio 1.5+ before continuing."
+    exit 1
+fi
 
 # Dependencies
 mkdir -p $GAMEKIT_DEPENDENCIES_DIR
 cd $GAMEKIT_DEPENDENCIES_DIR
-if [ ! -f "$GAMEKIT_DEPENDENCIES_DIR/jdk-8u91-macosx-x64.dmg" ]; then
-    echo "Downloading JDK... The JDK must be installed before Android Studio can be used!"
-    wget http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-macosx-x64.dmg
+if [ ! -f "$GAMEKIT_DEPENDENCIES_DIR/$JDK_FILENAME" ]; then
+    echo "Downloading JDK..."
+    wget $JDK_URL
+    echo "Please note: The JDK must be installed before Android Studio can be used!"
 fi
-if [ ! -f "$GAMEKIT_DEPENDENCIES_DIR/android-ndk-r10c-darwin-x86_64.zip" ]; then
+
+if [ ! -f "$GAMEKIT_DEPENDENCIES_DIR/$ANDROID_NDK_FILENAME" ]; then
     echo "Downloading Android NDK..."
-    wget http://dl.google.com/android/repository/android-ndk-r10c-darwin-x86_64.zip
+    wget $ANDROID_NDK_URL
     # @todo If this fails, display an error message.
-    unzip android-ndk-r10c-darwin-x86_64.zip
+    unzip $ANDROID_NDK_FILENAME .
     # @todo If the last command succeeded, remove the zip.
     #rm -rf android-ndk-r10c-darwin-x86_64.zip
 fi
