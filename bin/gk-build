@@ -38,7 +38,9 @@ function build_ios()
 }
 
 if [ "$platform" == "android" ]; then
-    set_ccache_config
+    if type -p ccache >/dev/null 2>&1; then
+        set_ccache_config
+    fi
     build_android
 elif [ "$platform" == "ios" ]; then
     build_ios
