@@ -45,12 +45,16 @@ if __name__ == "__main__":
     parser.add_argument('--app-type', help="The type of project (i.e. free, premium) This determines which config and resource files to copy", default=None)
     args = parser.parse_args()
 
-    result = call(["gk-download", args.project, "--app-type", args.app_type and args.app_type or '', "--suppress-warnings", "--save-config"])
+    app_type = args.app_type and args.app_type or ''
+    result = call(["gk-download", args.project, "--app-type", app_type, "--suppress-warnings"])
     if result != 0:
         print("gk-download failed. Cancelling the select operation.")
         sys.exit(result)
 
     config = Config.load(configpath())
+    config.project = args.project
+    config.apptype = app_type
+    config.save()
 
     source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())

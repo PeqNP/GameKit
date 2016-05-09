@@ -77,7 +77,7 @@ def download_cocos(config, cocos, suppress_warnings=False):
     os.chdir(config.basepath)
     call(["git", "clone", remotepath])
 
-def main(project_name, app_type, git_url, suppress_warnings, save_config):
+def main(project_name, app_type, git_url, suppress_warnings):
     config = Config.load(configpath())
     # Download project
     download_project(config, project_name, git_url=git_url, suppress_warnings=suppress_warnings)
@@ -90,8 +90,6 @@ def main(project_name, app_type, git_url, suppress_warnings, save_config):
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
     download_cocos(config, cocos, suppress_warnings=suppress_warnings)
-    if save_config:
-        config.save(configpath())
 
 if __name__ == "__main__":
     import argparse
@@ -101,10 +99,9 @@ if __name__ == "__main__":
     parser.add_argument('--app-type', help="The type of project (i.e. free, premium) This determines which config and resource files to copy", default=None)
     parser.add_argument('--git-url', help="The Git URL to clone project from", default=None)
     parser.add_argument('--suppress-warnings', help="The Git URL to clone project from", action="store_true", default=False)
-    parser.add_argument('--save-config', help="Save project configuration after download process is complete." , action="store_true", default=False)
     args = parser.parse_args()
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
     print
 
-    main(args.project_name, args.app_type, args.git_url, args.suppress_warnings, args.save_config)
+    main(args.project_name, args.app_type, args.git_url, args.suppress_warnings)
