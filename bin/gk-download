@@ -64,8 +64,8 @@ def download_project(config, project_name, git_url=None, suppress_warnings=False
 def download_cocos(config, cocos, suppress_warnings=False):
     cocospath = cocos.basepath()
     if not suppress_warnings and os.path.exists(cocospath):
-        print("STOP: Cocos2d-x v({}) already exists at ({})".format(cocos.version, cocospath))
-        print("If you want a clean version of this repository, run gk-clean")
+        print("Cocos2d-x v({}) already exists at ({})!".format(cocos.version, cocospath))
+        print("If you want a clean version of this repository, run gk-clean.")
         print("If the repository is corrupt, delete the folder and run this command again.")
         print
         sys.exit(0)
