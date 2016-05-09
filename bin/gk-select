@@ -54,7 +54,7 @@ if __name__ == "__main__":
     config = Config.load(configpath())
     config.project = args.project
     config.apptype = app_type
-    config.save()
+    config.save(configpath())
 
     source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
