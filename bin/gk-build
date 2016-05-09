@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+# Simple wrapper script around the 'cocos' script. This script automatically
+# sets up the environment necessary to build for Android and iOS and knows
+# the commands necessary to compile|run an app.
+#
+
+platform=$1
+mode=$2
+
+if [ "$mode" == "" ]; then
+    mode="debug"
+fi
+
+function set_ccache_config()
+{
+    #export USE_CCACHE=1
+    #export NDK_CCACHE=/usr/local/bin/ccache
+    export CC="ccache gcc"
+    export CXX="ccache g++"
+    export CCACHE_MAXSIZE=10G
+    export CCACHE_CPP2=true
+    export CCACHE_HARDLINK=true
+    export CCACHE_SLOPPINESS=file_macro,time_macros,include_file_mtime,include_file_ctime,file_stat_matches
+}
+
+function build_android()
+{
+    echo "Building for android platform in mode: $mode"
+    cocos run -p android --android-studio --ndk-mode=$mode
+}
+
+function build_ios()
+{
+    echo "Building for iOS platform in mode: $mode"
+    echo "Building for iOS is untested!"
+    cocos run -p ios
+}
+
+if [ "$platform" == "android" ]; then
+    set_ccache_config
+    build_android
+elif [ "$platform" == "ios" ]; then
+    build_ios
+elif [ "$platform" == "--help" ]; then
+    echo "GameKit - Build app for a specific platform."
+    echo
+    echo "Usage: gk-build [platform] [mode]"
+    echo "  platform    - The platform to build. Available: android, ios"
+    echo "  mode        - The mode to build for. Available: debug, release (Default: debug)"
+else
+    echo "Invalid platform: $platform"
+    exit 1
+fi
+
+exit 0
