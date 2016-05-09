@@ -379,7 +379,7 @@ if __name__ == "__main__":
 
     operations = ["dependencies", "lua", "gamekit", "project"]
 
-    parser = argparse.ArgumentParser(description="Upstart Game Framework - Configures a project into a Cocos2d-x project")
+    parser = argparse.ArgumentParser(description="GameKit - Configures a project into a Cocos2d-x project")
     parser.add_argument('operations', help="Configuration processes to perform on project: {}".format(", ".join(operations)), nargs="*", default=["all"])
     parser.add_argument('--android', help="Only perform operations for Android platform", dest="android", action="store_true")
     parser.add_argument('--iosmac', help="Only perform operations for iOS/Mac platform", dest="ios", action="store_true")

@@ -22,7 +22,7 @@ VERSION = getversion(__file__, "1.0.0")
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Upstart Game Framework - Display information about the currently selected project")
+    parser = argparse.ArgumentParser(description="GameKit - Display information about the currently selected project")
 
     config = Config.load(configpath())
     checkconfig(config)

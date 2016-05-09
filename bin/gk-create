@@ -44,7 +44,7 @@ def copy_files(gamekit, source):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Upstart Game Framework - Creates a new GameKit project")
+    parser = argparse.ArgumentParser(description="GameKit - Creates a new GameKit project")
     parser.add_argument('project', help="Name of the new GameKit project")
     parser.add_argument('--types', help="Comma delimated list of project types. e.g. free,premium")
     parser.add_argument('--orientation', help="Orientation of game. Options are (portrait, landscape). Default: portrait")

@@ -50,7 +50,7 @@ def copy_source(source, cocos):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Upstart Game Framework - Copy project files to Cocos2d-x project")
+    parser = argparse.ArgumentParser(description="GameKit - Copy project files to Cocos2d-x project")
     parser.add_argument('files', help="Copies all project files", nargs="*", default=["all"])
     args = parser.parse_args()
 

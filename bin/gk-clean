@@ -24,7 +24,7 @@ def main(cocos):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Upstart Game Framework - Clean a Cocos2d-x project")
+    parser = argparse.ArgumentParser(description="GameKit - Clean a Cocos2d-x project")
     parser.add_argument('--version', help="The version of cocos to clean. Version must be in the format of #.#.# (e.g. 1.0.4)")
     args = parser.parse_args()
 
