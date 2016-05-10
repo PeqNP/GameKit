@@ -35,7 +35,7 @@ VERSION = getversion(__file__, "1.0.0")
 def interpolate_iospbxproj(project, blob):
     # Global
     blob = re.sub("productName = GameTools;", "productName = {};".format(project.executable), blob)
-    blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = {};".format(project.getBundle("ios")), blob)
+    blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = {};".format(project.get_bundle("ios")), blob)
     # Mobile
     blob = re.sub("GameTools-mobile\.app", "{}-mobile.app".format(project.executable), blob)
     blob = re.sub("\/\* GameTools-mobile \*\/", "/* {}-mobile */".format(project.executable), blob)
@@ -253,7 +253,7 @@ def copy_mediation_config(platform, source, cocos):
 
 def get_main_keys(platform):
     return {
-        "##UGF-APP-BUNDLE##": project.getBundle(platform)
+        "##UGF-APP-BUNDLE##": project.get_bundle(platform)
       , "##UGF-APP-NAME##": project.name
       , "##UGF-APP-VERSION##": project.version
       , "##UGF-APP-BUILD##": project.build
@@ -352,7 +352,7 @@ def copy_android_dependencies(dependencies, cocos, networks):
     for dep in deps:
         copy_files(dependencies.path(dep), libpath)
 
-def configure_android_gradle(cocos, stage, project):
+def configure_android_gradle(cocos, stage, source, project):
     stagepath = stage.path("build.gradle")
     gradlepath = cocos.gradlepath()
     # Copy the unmodified build.gradle to stage so that on subsequent runs
@@ -365,7 +365,7 @@ def configure_android_gradle(cocos, stage, project):
     gradle = GradleConfigBuilder(filepath=stagepath)
     # @todo If AdMob
     # @todo If Facebook
-    gradle.add("dependencies", "compile 'com.facebook.android:facebook-android-sdk:[4,5)'")
+    gradle.add("dependencies", "compile 'com.facebook.android:facebook-android-sdk:4.+'")
     # @todo If GooglePlay Services
     gradle.add("dependencies", "compile 'com.google.android.gms:play-services-ads:8.4.0'")
     # @todo If Twitter
@@ -380,7 +380,15 @@ def configure_android_gradle(cocos, stage, project):
     # Always copy
     gradle.add("dependencies", "compile 'com.google.code.gson:gson:2.6.1'")
     gradle.add("dependencies", "compile 'com.android.support:appcompat-v7:23.1.1'")
-    gradle.replace("com.upstartillustration.GameTools", project.getBundle("android"))
+    # Update key store
+    if project.store:
+        keystorepath = source.path(project.store.file)
+        gradle.replace("RELEASE_STORE_FILE", "\"{}\"".format(keystorepath))
+        gradle.replace("RELEASE_STORE_PASSWORD", "\"{}\"".format(project.store.password))
+        gradle.replace("RELEASE_KEY_ALIAS", "\"{}\"".format(project.store.keyalias))
+        gradle.replace("RELEASE_KEY_PASSWORD", "\"{}\"".format(project.store.keypassword))
+    # Update bundle
+    gradle.replace("com.upstartillustration.GameTools", project.get_bundle("android"))
     gradle.save(gradlepath)
 
 if __name__ == "__main__":
@@ -451,7 +459,7 @@ if __name__ == "__main__":
     if config_android() and android_mediation and android_mediation.hasNetworks():
         if "dependencies" in options:
             copy_android_dependencies(dependencies, cocos, android_mediation.getNetworks())
-            configure_android_gradle(cocos, stage, project)
+            configure_android_gradle(cocos, stage, source, project)
         if "lua" in options:
             create_lua_mediation(android_mediation, cocos)
         if "gamekit" in options:

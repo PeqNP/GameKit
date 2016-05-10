@@ -75,6 +75,20 @@ class Config (object):
     def path(self, path):
         return os.path.join(self.basepath, path)
 
+class AndroidKeyStoreConfig (object):
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
+        self.checkvals()
+
+    def checkvals(self):
+        for val in self.requiredvals():
+            if val not in self.__dict__ or len(str(self.__dict__[val])) < 1:
+                print("android.store configuration {} must have value for key '{}'".format(self.path, val))
+                sys.exit(1)
+
+    def requiredvals(self):
+        return ["file", "password", "keyalias", "keypassword"]
+
 # Project configuration structure.
 class ProjectConfig (object):
     @staticmethod
@@ -91,8 +105,12 @@ class ProjectConfig (object):
         self.path = path
         self.__dict__.update(entries)
         self.checkvals()
+        if self.android["store"]:
+            self.store = AndroidKeyStoreConfig(**self.android["store"])
+        else:
+            self.store = None
 
-    def getBundle(self, platform):
+    def get_bundle(self, platform):
         if type(self.bundle) is dict:
             bundle = self.bundle.get(platform)
             if not bundle:
@@ -100,10 +118,13 @@ class ProjectConfig (object):
             return bundle
         return self.bundle
 
+    def get_store(self):
+        return self.store
+
     def checkvals(self):
         for val in self.requiredvals():
             if val not in self.__dict__ or len(str(self.__dict__[val])) < 1:
-                print("Project configuration {} must have value '{}'".format(self.path, val))
+                print("Project configuration {} must have value for key '{}'".format(self.path, val))
                 sys.exit(1)
         for val in self.optionalvals():
             if val not in self.__dict__:
@@ -113,4 +134,4 @@ class ProjectConfig (object):
         return ["cocos", "bundle", "name", "executable", "version", "build", "device", "orientation", "design"]
 
     def optionalvals(self):
-        return ["hockeyappid", "facebookid"]
+        return ["hockeyappid", "facebookid", "android"]
