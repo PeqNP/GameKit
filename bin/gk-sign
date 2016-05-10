@@ -35,13 +35,9 @@ def create_keystore(source, storepath, storepassword, keyalias, keypassword):
         print("Creating directory for keystore @ {}".format(storedir))
         os.makedirs(storedir)
     keystore = os.path.basename(storepath)
-    cname = "Eric Chamberlain"
-    orgunit = "Development"
-    org = "Upstart Illustration LLC"
-    locale = "Seattle"
-    state = "Washington"
-    country = "US"
-    result = call(["keytool", "-genkey", "-v", "-keystore", keystore, "-storepass", storepassword, "-alias", keyalias, "-keypass", keypassword, "-dname", "CN={}, OU={}, O={}, L={}, S={}, C={}".format(cname, orgunit, org, locale, state, country)])
+    # To capture domain info, pass the following parameter:
+    # "CN=cName, OU=orgUnit, O=org, L=locality, S=state, C=countryCode"
+    result = call(["keytool", "-genkey", "-v", "-keystore", keystore, "-storepass", storepassword, "-alias", keyalias, "-keypass", keypassword])
     return result == 0
 
 def collect_android_keystore_info(source, project):
