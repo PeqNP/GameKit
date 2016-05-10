@@ -68,6 +68,7 @@ def collect_android_keystore_info(source, project):
 if __name__ == "__main__":
     import argparse
 
+    # TODO: See if it's possible to get the debug hash. Which means that the signing config must be provided. 'debug' or 'release'.
     # TODO:
     options = ["create", "hash"]
 
