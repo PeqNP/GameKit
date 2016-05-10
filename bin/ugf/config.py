@@ -75,9 +75,12 @@ class Config (object):
     def path(self, path):
         return os.path.join(self.basepath, path)
 
-class AndroidKeyStoreConfig (object):
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
+class KeystoreConfig (object):
+    def __init__(self, filepath=None, password=None, keyalias=None, keypassword=None):
+        self.filepath = filepath
+        self.password = password
+        self.keyalias = keyalias
+        self.keypassword = keypassword
         self.checkvals()
 
     def checkvals(self):
@@ -87,7 +90,7 @@ class AndroidKeyStoreConfig (object):
                 sys.exit(1)
 
     def requiredvals(self):
-        return ["file", "password", "keyalias", "keypassword"]
+        return ["filepath", "password", "keyalias", "keypassword"]
 
 # Project configuration structure.
 class ProjectConfig (object):
@@ -106,7 +109,7 @@ class ProjectConfig (object):
         self.__dict__.update(entries)
         self.checkvals()
         if self.android["store"]:
-            self.store = AndroidKeyStoreConfig(**self.android["store"])
+            self.store = KeystoreConfig(**self.android["store"])
         else:
             self.store = None
 
@@ -132,3 +135,12 @@ class ProjectConfig (object):
 
     def optionalvals(self):
         return ["hockeyappid", "facebookid", "android"]
+
+    def save(self):
+        config = self.__dict__.copy()
+        config.pop("store")
+        config.pop("path")
+        config["android"]["store"] = self.store.__dict__
+        fh = open(self.path, "w")
+        fh.write(json.dumps(config, indent=4, separators=(',', ': '), sort_keys=True))
+        fh.close()

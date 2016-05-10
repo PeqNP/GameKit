@@ -13,7 +13,7 @@ from datetime import datetime
 from subprocess import call
 
 from ugf import getversion
-from ugf.config import configpath, checkconfig, Config, ProjectConfig
+from ugf.config import configpath, checkconfig, Config, ProjectConfig, KeystoreConfig
 from ugf.pathbuilder import ProjectPathBuilder
 
 VERSION = getversion(__file__, "1.0.0")
@@ -28,16 +28,21 @@ def ask_question(question, expected, default=None):
         else:
             print("Invalid response. {}".format(expected))
 
-def create_keystore(source, storepath, storepassword, keyalias, keypassword):
-    print("Creating keystore @ {}".format(storepath))
-    storedir = os.path.dirname(storepath)
+def create_keystore(source, keystore):
+    print("Creating keystore @ {}".format(keystore.filepath))
+    storedir = os.path.dirname(keystore.filepath)
     if not os.path.isdir(storedir):
         print("Creating directory for keystore @ {}".format(storedir))
         os.makedirs(storedir)
-    keystore = os.path.basename(storepath)
+    filename = os.path.basename(keystore.filepath)
     # To capture domain info, pass the following parameter:
-    # "CN=cName, OU=orgUnit, O=org, L=locality, S=state, C=countryCode"
-    result = call(["keytool", "-genkey", "-v", "-keystore", keystore, "-storepass", storepassword, "-alias", keyalias, "-keypass", keypassword])
+    # -dname "CN=cName, OU=orgUnit, O=org, L=locality, S=state, C=countryCode"
+    result = call(["keytool", "-genkey", "-v",
+        "-keystore", filename,
+        "-storepass", keystore.password,
+        "-alias", keystore.keyalias,
+        "-keypass", keystore.keypassword
+    ])
     return result == 0
 
 def collect_android_keystore_info(source, project):
@@ -54,7 +59,7 @@ def collect_android_keystore_info(source, project):
     storepassword = ask_question("Store password: ", "Please provide a store password.")
     keyalias = ask_question("Key alias: ", "Please provide an alias for your keystore. This can be anything.")
     keypassword = ask_question("Key password: ", "Please provide a key password.")
-    return storepath, storepassword, keyalias, keypassword
+    return KeystoreConfig(storepath, storepassword, keyalias, keypassword)
 
 if __name__ == "__main__":
     import argparse
@@ -75,6 +80,8 @@ if __name__ == "__main__":
     args.android = True
 
     if args.android:
-        info = collect_android_keystore_info(source, project)
-        create_keystore(source, *info)
-        # TODO: Save config file w/ signing info.
+        keystore = collect_android_keystore_info(source, project)
+        create_keystore(source, keystore)
+        project.store = keystore
+        project.save()
+        # TODO: Move into place!
