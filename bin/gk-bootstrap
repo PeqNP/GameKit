@@ -108,6 +108,32 @@ fi
 cd -
 
 echo
-echo "Please add the following to ~/.bash_profile"
+echo "Please add the following to your ~/.bash_profile"
 echo "export PATH=/usr/local/opt/ccache/libexec:\$PATH"
 echo "export PATH=$HOME/git/GameKit/bin:\$PATH"
+echo
+echo "1) Initialize GameKit"
+echo " ------------------------------"
+echo " After you have added paths to your bash rc you must run the following:"
+echo " $ gk-init"
+echo 
+echo "2) Create a GameKit project"
+echo " ------------------------------"
+echo " 1. You can then create a new project with:"
+echo " $ gk-create MyGameName"
+echo
+echo " 2. Or, if your project is in landscape, make sure to set the orientation:"
+echo " $ gk-create --orientation=landscape"
+echo
+echo " 3. If your project is to have two different app types (For instance, if one is a free version, the other premium):"
+echo "    This will create the equivalent of two games using a single code base."
+echo " $ gk-create MyGameName --app-types=free,premium"
+echo
+echo "3) Select your game"
+echo " ------------------------------"
+echo " After your game is created you need to select it to make it the active project using:"
+echo " $ gk-select MyGameName"
+echo
+echo " OR, if you want to select a specific app type configuration:"
+echo " $ gk-select MyGameName --app-type=free"
+echo

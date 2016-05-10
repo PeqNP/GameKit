@@ -118,9 +118,6 @@ class ProjectConfig (object):
             return bundle
         return self.bundle
 
-    def get_store(self):
-        return self.store
-
     def checkvals(self):
         for val in self.requiredvals():
             if val not in self.__dict__ or len(str(self.__dict__[val])) < 1:
