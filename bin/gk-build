@@ -4,6 +4,10 @@
 # sets up the environment necessary to build for Android and iOS and knows
 # the commands necessary to compile|run an app.
 #
+# TODO: This needs to be turned into a python script as we need to cd into
+# the project's runtime-src directory before compiling. For now, always
+# run this script while in runtime-src.
+#
 
 platform=$1
 mode=$2
@@ -14,8 +18,8 @@ fi
 
 function set_ccache_config()
 {
-    #export USE_CCACHE=1
-    #export NDK_CCACHE=/usr/local/bin/ccache
+    export USE_CCACHE=1
+    export NDK_CCACHE=/usr/local/bin/ccache
     export CC="ccache gcc"
     export CXX="ccache g++"
     export CCACHE_MAXSIZE=10G
