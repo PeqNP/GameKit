@@ -31,7 +31,7 @@ def create_config(source, dest, project, orientation=None):
     interpolator = SimpleInterpolator(keys)
     interpolator.interpolate(source, dest)
 
-def create_configs(source, project, types, orientation):
+def create_configs(source, project, app_types, orientation):
     # @todo Create config for each type w/ correct name config-{type}.json.
     # @todo If types given, remove the config.json file.
     create_config(source.path("config.json"), source.path("config.json"), project, orientation)
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="GameKit - Creates a new GameKit project")
     parser.add_argument('project', help="Name of the new GameKit project")
-    parser.add_argument('--types', help="Comma delimated list of project types. e.g. free,premium")
+    parser.add_argument('--app-types', help="Comma delimated list of app types. e.g. free,premium")
     parser.add_argument('--orientation', help="Orientation of game. Options are (portrait, landscape). Default: portrait")
     args = parser.parse_args()
 
@@ -66,6 +66,6 @@ if __name__ == "__main__":
     print("Creating project ({}) at path ({})".format(args.project, source.basepath()))
 
     copy_files(gamekit, source)
-    create_configs(source, args.project, args.types, args.orientation)
+    create_configs(source, args.project, args.app_types, args.orientation)
     print("Please modify this project's config file, located at ({}), before selecting the project.".format(source.basepath())
     sys.exit(0)
