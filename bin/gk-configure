@@ -314,6 +314,8 @@ def configure_android_targets(networks, project, source, cocos, stage):
 
     keys["##UGF-APP-CONFIG##"] = "\n\n".join(appconfig)
 
+    # Copy to stage first so that subsequent runs will modify the original xml file, injecting
+    # only what is necessary.
     shutil.copyfile(cocos.androidprojpath("AndroidManifest.xml"), stage.path("AndroidManifest.xml"))
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate(stage.path("AndroidManifest.xml"), cocos.androidprojpath("AndroidManifest.xml"))
@@ -350,14 +352,20 @@ def copy_android_dependencies(dependencies, cocos, networks):
     for dep in deps:
         copy_files(dependencies.path(dep), libpath)
 
-def configure_android_gradle(cocos):
+def configure_android_gradle(cocos, stage, project):
+    stagepath = stage.("build.gradle")
     gradlepath = cocos.gradlepath()
-    if not os.path.isfile(gradlepath):
-        raise Exception("App Gradle not found at: {}".format(gradlepath))
-    gradle = GradleConfigBuilder(filepath=gradlepath)
+    # Copy the unmodified build.gradle to stage so that on subsequent runs
+    # it will be modified with only what is necessary.
+    if not os.path.isfile(stagepath):
+        if not os.path.isfile(gradlepath):
+            raise Exception("App Gradle not found at: {}".format(gradlepath))
+        print("Copying build.gradle to stage...")
+        shutil.copy(gradlepath, stagepath)
+    gradle = GradleConfigBuilder(filepath=stagepath)
     # @todo If AdMob
     # @todo If Facebook
-    gradle.add("dependencies" "compile 'com.facebook.android:facebook-android-sdk:[4,5)'")
+    gradle.add("dependencies", "compile 'com.facebook.android:facebook-android-sdk:[4,5)'")
     # @todo If GooglePlay Services
     gradle.add("dependencies", "compile 'com.google.android.gms:play-services-ads:8.4.0'")
     # @todo If Twitter
@@ -372,6 +380,7 @@ def configure_android_gradle(cocos):
     # Always copy
     gradle.add("dependencies", "compile 'com.google.code.gson:gson:2.6.1'")
     gradle.add("dependencies", "compile 'com.android.support:appcompat-v7:23.1.1'")
+    gradle.replace("com.upstartillustrationllc.GameTools", project.getBundle())
     gradle.save(gradlepath)
 
 if __name__ == "__main__":
@@ -442,7 +451,7 @@ if __name__ == "__main__":
     if config_android() and android_mediation and android_mediation.hasNetworks():
         if "dependencies" in options:
             copy_android_dependencies(dependencies, cocos, android_mediation.getNetworks())
-            configure_android_gradle(cocos)
+            configure_android_gradle(cocos, stage, project)
         if "lua" in options:
             create_lua_mediation(android_mediation, cocos)
         if "gamekit" in options:

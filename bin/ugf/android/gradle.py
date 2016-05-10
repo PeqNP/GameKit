@@ -114,6 +114,16 @@ class GradleConfigBuilder (object):
                 self.registry.insert(next_idx, new_entry)
                 return
 
+    def replace(self, subject, replacement):
+        registry = []
+        for entry in self.registry[:]:
+            for idx, item in enumerate(entry[:]):
+                if subject in item:
+                    item = item.replace(subject, replacement)
+                    entry[idx] = item
+            registry.append(entry)
+        self.registry = registry
+
     def get_nodes(self):
         def add_node(nodes, entry):
             for node in nodes:

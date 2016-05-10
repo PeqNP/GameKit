@@ -64,6 +64,12 @@ buildscript {
     }
 }
 
+android {
+    defaultConfig {
+        applicationId "com.upstartillustration.GameTools"
+    }
+}
+
 allprojects {
     repositories {
         jcenter()
@@ -76,6 +82,7 @@ task clean(type: Delete) {
         subject = GradleConfigBuilder(tab_space=4, source=source)
         subject.add("allprojects", "repositories", "mavenCentral()")
         subject.add("allprojects", "repositories", "upstartCentral()")
+        subject.replace("com.upstartillustration.GameTools", "com.company.MyGame")
         
         expected = """buildscript {
     repositories {
@@ -83,6 +90,12 @@ task clean(type: Delete) {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.5.0'
+    }
+}
+
+android {
+    defaultConfig {
+        applicationId "com.company.MyGame"
     }
 }
 
