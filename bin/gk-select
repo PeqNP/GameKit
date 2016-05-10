@@ -6,7 +6,7 @@
 #
 
 from datetime import datetime
-from subprocess  import call
+from subprocess import call
 
 import os
 import re

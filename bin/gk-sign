@@ -1,0 +1,84 @@
+#!/usr/bin/env python
+#
+# Provides ability to create keystore to sign Android apps.
+#
+# - http://developer.android.com/tools/publishing/app-signing.html
+#
+# @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
+#
+
+import os
+import sys
+from datetime import datetime
+from subprocess import call
+
+from ugf import getversion
+from ugf.config import configpath, checkconfig, Config, ProjectConfig
+from ugf.pathbuilder import ProjectPathBuilder
+
+VERSION = getversion(__file__, "1.0.0")
+
+def ask_question(question, expected, default=None):
+    while True:
+        answer = raw_input(question)
+        if not answer and default:
+            return default
+        elif answer:
+            return answer
+        else:
+            print("Invalid response. {}".format(expected))
+
+def create_keystore(source, storepath, storepassword, keyalias, keypassword):
+    print("Creating keystore @ {}".format(storepath))
+    storedir = os.path.dirname(storepath)
+    if not os.path.isdir(storedir):
+        print("Creating directory for keystore @ {}".format(storedir))
+        os.makedirs(storedir)
+    keystore = os.path.basename(storepath)
+    cname = "Eric Chamberlain"
+    orgunit = "Development"
+    org = "Upstart Illustration LLC"
+    locale = "Seattle"
+    state = "Washington"
+    country = "US"
+    result = call(["keytool", "-genkey", "-v", "-keystore", keystore, "-storepass", storepassword, "-alias", keyalias, "-keypass", keypassword, "-dname", "CN={}, OU={}, O={}, L={}, S={}, C={}".format(cname, orgunit, org, locale, state, country)])
+    return result == 0
+
+def collect_android_keystore_info(source, project):
+    default = project.store and project.store.file or "platform/android/app.keystore"
+    print("Please provide the relative path, from project, to your keystore file. (Default: {})".format(default))
+    path = ask_question("Keystore relative path: ", "Please provide a relative path to keystore file.", default=default)
+    storepath = source.path(path)
+    if os.path.exists(storepath):
+        print("A keystore already exists at: {}".format(storepath))
+        yn = raw_input("Do you want to replace it? [Yn] ")
+        if yn.lower() == "n":
+            print("Exiting. Will not over-write existing keystore.")
+            sys.exit(1)
+    storepassword = ask_question("Store password: ", "Please provide a store password.")
+    keyalias = ask_question("Key alias: ", "Please provide an alias for your keystore. This can be anything.")
+    keypassword = ask_question("Key password: ", "Please provide a key password.")
+    return storepath, storepassword, keyalias, keypassword
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="GameKit - Create keystore to sign apps")
+    parser.add_argument('--android', help="Create keystore for signing Android apps", action="store_true")
+    args = parser.parse_args()
+
+    print("{}, Time: {}".format(VERSION, str(datetime.now())))
+    print
+
+    config = Config.load(configpath())
+    checkconfig(config)
+    source = ProjectPathBuilder(config)
+    project = ProjectConfig.load(source.configpath())
+
+    # For now, always sign Android only.
+    args.android = True
+
+    if args.android:
+        info = collect_android_keystore_info(source, project)
+        create_keystore(source, *info)
+        # TODO: Save config file w/ signing info.
