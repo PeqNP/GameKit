@@ -353,7 +353,7 @@ def copy_android_dependencies(dependencies, cocos, networks):
         copy_files(dependencies.path(dep), libpath)
 
 def configure_android_gradle(cocos, stage, project):
-    stagepath = stage.("build.gradle")
+    stagepath = stage.path("build.gradle")
     gradlepath = cocos.gradlepath()
     # Copy the unmodified build.gradle to stage so that on subsequent runs
     # it will be modified with only what is necessary.
@@ -380,7 +380,7 @@ def configure_android_gradle(cocos, stage, project):
     # Always copy
     gradle.add("dependencies", "compile 'com.google.code.gson:gson:2.6.1'")
     gradle.add("dependencies", "compile 'com.android.support:appcompat-v7:23.1.1'")
-    gradle.replace("com.upstartillustrationllc.GameTools", project.getBundle())
+    gradle.replace("com.upstartillustration.GameTools", project.getBundle("android"))
     gradle.save(gradlepath)
 
 if __name__ == "__main__":
