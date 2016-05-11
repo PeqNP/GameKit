@@ -381,12 +381,12 @@ def configure_android_gradle(cocos, stage, source, project):
     gradle.add("dependencies", "compile 'com.google.code.gson:gson:2.6.1'")
     gradle.add("dependencies", "compile 'com.android.support:appcompat-v7:23.1.1'")
     # Update key store
-    if project.store:
-        keystorepath = source.path(project.store.file)
+    if project.keystore:
+        keystorepath = source.path(project.keystore.filepath)
         gradle.replace("RELEASE_STORE_FILE", "\"{}\"".format(keystorepath))
-        gradle.replace("RELEASE_STORE_PASSWORD", "\"{}\"".format(project.store.password))
-        gradle.replace("RELEASE_KEY_ALIAS", "\"{}\"".format(project.store.keyalias))
-        gradle.replace("RELEASE_KEY_PASSWORD", "\"{}\"".format(project.store.keypassword))
+        gradle.replace("RELEASE_STORE_PASSWORD", "\"{}\"".format(project.keystore.password))
+        gradle.replace("RELEASE_KEY_ALIAS", "\"{}\"".format(project.keystore.keyalias))
+        gradle.replace("RELEASE_KEY_PASSWORD", "\"{}\"".format(project.keystore.keypassword))
     # Update bundle
     gradle.replace("com.upstartillustration.GameTools", project.get_bundle("android"))
     gradle.save(gradlepath)
