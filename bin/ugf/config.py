@@ -108,8 +108,8 @@ class ProjectConfig (object):
         self.path = path
         self.__dict__.update(entries)
         self.checkvals()
-        if self.android["store"]:
-            self.keystore = KeystoreConfig(**self.android["store"])
+        if self.android["keystore"]:
+            self.keystore = KeystoreConfig(**self.android["keystore"])
         else:
             self.keystore = None
 
@@ -138,9 +138,9 @@ class ProjectConfig (object):
 
     def save(self):
         config = self.__dict__.copy()
-        config.pop("store")
+        config.pop("keystore")
         config.pop("path")
-        config["android"]["store"] = self.keystore.__dict__
+        config["android"]["keystore"] = self.keystore.__dict__
         fh = open(self.path, "w")
         fh.write(json.dumps(config, indent=4, separators=(',', ': '), sort_keys=True))
         fh.close()
