@@ -86,7 +86,7 @@ class KeystoreConfig (object):
     def checkvals(self):
         for val in self.requiredvals():
             if val not in self.__dict__ or len(str(self.__dict__[val])) < 1:
-                print("android.store configuration {} must have value for key '{}'".format(self.path, val))
+                print("android.keystore configuration {} must have value for key '{}'".format(self.path, val))
                 sys.exit(1)
 
     def requiredvals(self):
@@ -109,9 +109,9 @@ class ProjectConfig (object):
         self.__dict__.update(entries)
         self.checkvals()
         if self.android["store"]:
-            self.store = KeystoreConfig(**self.android["store"])
+            self.keystore = KeystoreConfig(**self.android["store"])
         else:
-            self.store = None
+            self.keystore = None
 
     def get_bundle(self, platform):
         if type(self.bundle) is dict:
@@ -140,7 +140,7 @@ class ProjectConfig (object):
         config = self.__dict__.copy()
         config.pop("store")
         config.pop("path")
-        config["android"]["store"] = self.store.__dict__
+        config["android"]["store"] = self.keystore.__dict__
         fh = open(self.path, "w")
         fh.write(json.dumps(config, indent=4, separators=(',', ': '), sort_keys=True))
         fh.close()
