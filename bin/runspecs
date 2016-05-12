@@ -1,6 +1,13 @@
 #!/bin/bash
+#
 # http://www.tldp.org/LDP/abs/html/comparison-ops.html
 # http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-11.html
+#
+# TODO: source a config script which contains the base directory
+# for GameKit.
+#
+# Copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
+#
 
 filename=$1
 testpath="specs/"
@@ -9,5 +16,5 @@ then
     testpath=$filename
 fi
 
-export LUA_PATH="/usr/local/share/lua/5.2/?.lua;/usr/local/share/lua/5.2/?/init.lua;/usr/local/lib/lua/5.2/?.lua;/usr/local/lib/lua/5.2/?/init.lua;./?.lua;/Users/eric/git/GameTools/?.lua;/Users/eric/git/GameTools/specs/?.lua;/Users/eric/git/GameTools/src/?.lua"
+export LUA_PATH="/usr/local/share/lua/5.2/?.lua;/usr/local/share/lua/5.2/?/init.lua;/usr/local/lib/lua/5.2/?.lua;/usr/local/lib/lua/5.2/?/init.lua;./?.lua;$HOME/git/GameKit/?.lua;$HOME/git/GameKit/specs/?.lua;$HOME/git/GameKit/src/?.lua"
 busted $testpath
