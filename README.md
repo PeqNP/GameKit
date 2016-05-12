@@ -29,90 +29,31 @@ This diagram provides an overview of the design of GameKit.
 
 Install dependencies
 ```
-$ gem install cocoapods --version=0.39.0
-$ gem install xcodeproj
-$ brew install xcproj
-```
-It may be necessary to restart your terminal to ensure that xcproj is in your path! Failing to do this may prevent cocoapods from installing the dependencies, as it can not find the YourGameAppName-mobile target.
-
-Create a directory on your machine where all GameKit supported Git repositories will be saved. This _includes_ any project that uses GameKit.
-```
-$ mkdir ~/git
-$ cd ~/git
+$ gk-init
 ```
 
-Clone the GameKit repository.
-```
-$ git clone https://github.com/PeqNP/GameKit.git
-```
-
-Expose the GameKit script files by appending the GameKit/bin path to the system's PATH at the end of you .bashrc (Linux) or .bash_profile (Mac) file.
-```
-$ vim ~/.bash_profile
-export PATH=/Users/eric/git/GameKit/bin:$PATH
-```
-
-Source the bashrc file to ensure that PATH is updated.
-```
-$ source ~/.bash_profile
-```
-
-Create a game. This command will create a new game called 'MyGame' with the directory structure that GameKit requires.
-```
-$ ugf-create MyGame
-```
-
-At this point you can configure your game's config file. Here you can change which version of Cocos2d-x your game should use, the name, bundle identifier, etc.
-```
-$ vim MyGame/config.json
-```
-
-Select your game to be the currently selected project that GameKit will use.
-```
-$ ugf-select MyGame
-```
-Note: This operation is similar to checking out a branch in git. Only one game can be selected at a time. That being said, it takes less than 5 seconds to checkout most games (this could longer depending on the number of dependencies your game has to download).
-
-This operation will:
-- (not complete) Download the version of Cocos2d-x your game requires, if it does not already exist
-- Cleans the Cocos2d-x project, if necessary
-- (not complete) Download and configure all dependencies. This includes mediation services, analytics libraries, etc.
-- Copies GameKit and your project's source code into the Cocos2d-x project
-
-At this point you should be able to open the Cocos2d-x_v#.#.#/frameworks/runtime-src/proj.ios_mac/GameKit-Template.xcworkspace (not the .xccodeproj!) and run your app. (Please note that the '#' must be replaced with the version of Cocos2d-x your project supports; i.e. Cocos2d-x_v3.8.1)
-
-### Android Dependencies Installation
-
-Until some of the other config/download steps are complete, it will be necessary to manually download the following Android dependencies and put them in GameKit-dependencies folder in the base project path. The installer will handle the copy/configure steps.
-
-- adcolony-android-sdk-2.3.1 - https://github.com/AdColony/AdColony-Android-SDK
-- facebook-android-sdk-4.9.0 - https://developers.facebook.com/docs/android
-- gson-2.6.2.jar - http://search.maven.org/#artifactdetails%7Ccom.google.code.gson%7Cgson%7C2.6.2%7Cjar (Download the .jar file)
-- android-ndk-r10c-darwin-x86_64.bin - http://dl.google.com/android/ndk/android-ndk-r10c-darwin-x86_64.bin (Required by Cocos2d-x)
-- apache-ant-1.9.6-bin.zip - http://www.trieuvan.com/apache//ant/binaries/apache-ant-1.9.6-bin.zip (Required by Cocos2d-x)
-- JRE?
-
-The following dependencies must be downloaded from the Android Studio > SDK Manager:
-- (Tab) SDK Tools - Google Play Services (AdMob Ads)
-- (Tab) SDK Tools - Google Play Billing Services (IAP)
-
+This script will provide you with the rest of the information needed to setup your environment.
 
 ## Dependencies
 
 GameKit requires the following projects:
 - Slightly modified version of Cocos2d-x which integrates GameKit APIs.
 - GameKit-iOS
-- GameKit-Android (this is not yet complete)
+- GameKit-Android
 
 The features that the native GameKit libraries provide is equivalent to Cocos's SDKBOX. The primary differences between the two projects are:
 - GameKit is fully tested. This makes GameKit a stable and robust platform.
-- More native land related features including application notifications, foreground/background messages, etc.
+- More native-land related features including application notifications, foreground/background messages, etc.
 - A _consistent_ API for every module. Write integration code only once. In addition to this, many of the APIs provide the option to configure which services should be used at run-time. The ad API, for instance, even allows you to download this configuration from a remote host. This provides you with the ability to change how ads are served. More importantly _which_ mediation services to use at any given time.
 - Exceptionally easy integration. Add configuration to your respective project files (mediation.json, iap.json, etc.) and GameKit will add only the dependent libraries your project needs.
 - GameKit does *NOT* send analytics.
-- GameKit is open source and licensed udner the MIT license.
+- GameKit is open source and licensed under the MIT license.
 
 Except for rudimentary Facebook analytic support, GameKit is already feature parity with SDKBOX on the iOS platform. As soon as Android is complete it will be nearly feature parity for both platforms. Analytics and other plugins will be added as needed.
+
+## Testing
+
+GameKit uses `busted`, a BDD testing framework, to test its code. The script `bin/runspecs` can be ran in your project's main directory to easily run your tests. It will ensure all necessary include paths are added to the `busted` command before running your specs.
 
 ## FAQ
 
