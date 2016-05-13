@@ -44,14 +44,14 @@ function install_brew()
         echo "brew is not installed. Installing now..."
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     fi
-    echo "Installing binary dependencies..."
+    echo "Installing dependencies from brew..."
     brew install ccache
     brew install wget
 }
 
 function install_gems()
 {
-    echo "Installing gem dependencies..."
+    echo "Installing dependencies from gem..."
     sudo gem install xcpretty
     sudo gem install cocoapods --version=0.39.0
 }
