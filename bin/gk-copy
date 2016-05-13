@@ -50,8 +50,10 @@ def copy_source(source, cocos):
 if __name__ == "__main__":
     import argparse
 
+    valid_options = ["all", "assets", "gamekit", "project", "resource"]
+
     parser = argparse.ArgumentParser(description="GameKit - Copy project files to Cocos2d-x project")
-    parser.add_argument('files', help="Copies all project files", nargs="*", default=["all"])
+    parser.add_argument('files', help="Copy files. Options: ({})".format(", ".join(valid_options)), nargs="*", default=["all"])
     args = parser.parse_args()
 
     config = Config.load(configpath())
@@ -68,7 +70,6 @@ if __name__ == "__main__":
 
     # Validate
     options = []
-    valid_options = ["all", "assets", "gamekit", "project", "resource"]
     for opt in args.files:
         if opt not in valid_options:
             print("'{}' is not a valid 'files' option".format(opt))
