@@ -31,13 +31,16 @@ def copy_ios_assets(source, cocos):
     call(["cp", "-r", source.xibpath(), cocos.path("frameworks/runtime-src/proj.ios_mac/ios/")])
 
 def copy_android_assets(source, cocos):
-    drawables = ["drawable", "drawable-hdpi", "drawable-ldpi", "drawable-mdpi", "drawable-xhdpi"]
+    drawables = ["drawable", "drawable-ldpi", "drawable-mdpi", "drawable-hdpi", "drawable-xhdpi", "mipmap-mdpi", "mipmap-hdpi", "mipmap-xhdpi", "mipmap-xxhdpi"]
     for drawable in drawables:
+        iconpath = source.resourcepath("android", drawable)
         targetdir = cocos.androidprojpath("res/" + drawable)
         if os.path.isdir(targetdir):
             shutil.rmtree(targetdir)
+        # Only copy the icon directory if it exists
+        if not os.path.isdir(iconpath): continue
         os.makedirs(targetdir)
-        call(["cp", "-r", source.resourcepath("android", drawable), cocos.androidprojpath("res/")])
+        call(["cp", "-r", iconpath, cocos.androidprojpath("res/")])
 
 def copy_resources(source, cocos):
     rmdir(cocos.path("res"))
