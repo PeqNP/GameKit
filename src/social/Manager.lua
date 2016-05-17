@@ -16,6 +16,14 @@ function Manager.new(self)
         bridge = _bridge
     end
 
+    function self.configure(service, config)
+        local response = bridge.configure(ConfigureRequest(service, config))
+        if response.isSuccess() then
+            return true
+        end
+        return false, Error(1, string.format("Failed to configure service (%s)", service), response.getError())
+    end
+
     -- @param string - Service to post to. Supported: Twitter, Facebook and Baidu
     function self.post(service, message, image, resource)
         local promise = Promise()
@@ -28,7 +36,7 @@ function Manager.new(self)
             end
         end)
         call.fail(function()
-            promise.reject(Error(500, "Unknown error occurred."))
+            promise.reject(Error(2, "Unknown error occurred."))
         end)
         return promise
     end

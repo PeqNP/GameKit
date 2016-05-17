@@ -14,6 +14,11 @@ function social.init(b)
     bridge = b 
 end
 
+function social.configure(request)
+    local response = bridge.send("social__configure", request, "table")
+    return BridgeResponse(response.success, response.id, response.error)
+end
+
 function social.post(request)
     local response, call = bridge.sendAsync("social__post", request, "table")
     return BridgeResponse(response.success, response.id, response.error), call

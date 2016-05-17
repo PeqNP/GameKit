@@ -72,7 +72,7 @@ describe("iap.Social", function()
             end)
 
             it("should return error", function()
-                assert.equal(500, _error.getCode())
+                assert.equal(2, _error.getCode())
                 assert.equal("Unknown error occurred.", _error.getMessage())
             end)
         end)
