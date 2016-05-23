@@ -4,6 +4,7 @@ require "lang.Signal"
 
 local BridgeCall = require("bridge.BridgeCall")
 local BridgeResponse = require("bridge.BridgeResponse")
+local Error = require("Error")
 local Manager = require("social.Manager")
 local PostRequest = require("social.PostRequest")
 local PostResponse = require("social.PostResponse")
@@ -18,6 +19,40 @@ describe("iap.Social", function()
     before_each(function()
         bridge = require("bridge.modules.social")
         subject = Manager(bridge)
+    end)
+
+    describe("configure service", function()
+        context("when configuring succeeds", function()
+            local response
+
+            before_each(function()
+                stub(bridge, "configure", BridgeResponse(true, 5))
+                response = subject.configure("Twitter", {appkeya="1234", secret="itsasecret"})
+            end)
+
+            it("should be successfull", function()
+                assert.truthy(response)
+            end)
+        end)
+
+        context("when configuring fails", function()
+            local response
+            local _error
+
+            before_each(function()
+                stub(bridge, "configure", BridgeResponse(false, 5, "An error message", info))
+                response, _error = subject.configure("Twitter", {appkeya="1234", secret="itsasecret"})
+            end)
+
+            it("should fail", function()
+                assert.falsy(response)
+            end)
+
+            it("should return error", function()
+                assert.equal(1, _error.getCode())
+                assert.equal("An error message", _error.getMessage())
+            end)
+        end)
     end)
 
     describe("post a message", function()

@@ -4,6 +4,7 @@
 
 local Error = require("Error")
 local Promise = require("Promise")
+local ConfigureRequest = require("social.ConfigureRequest")
 local PostRequest = require("social.PostRequest")
 local PostResponse = require("social.PostResponse")
 
@@ -21,7 +22,7 @@ function Manager.new(self)
         if response.isSuccess() then
             return true
         end
-        return false, Error(1, string.format("Failed to configure service (%s)", service), response.getError())
+        return false, Error(1, response.getError())
     end
 
     -- @param string - Service to post to. Supported: Twitter, Facebook and Baidu
