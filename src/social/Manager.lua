@@ -17,8 +17,8 @@ function Manager.new(self)
         bridge = _bridge
     end
 
-    function self.configure(service, config)
-        local response = bridge.configure(ConfigureRequest(service, config))
+    function self.configure(network)
+        local response = bridge.configure(ConfigureRequest(network.getName(), network.getConfig()))
         if response.isSuccess() then
             return true
         end

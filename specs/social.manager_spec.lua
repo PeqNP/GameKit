@@ -6,6 +6,7 @@ local BridgeCall = require("bridge.BridgeCall")
 local BridgeResponse = require("bridge.BridgeResponse")
 local Error = require("Error")
 local Manager = require("social.Manager")
+local Network = require("social.Network")
 local PostRequest = require("social.PostRequest")
 local PostResponse = require("social.PostResponse")
 
@@ -24,10 +25,25 @@ describe("social.Manager", function()
     describe("configure service", function()
         context("when configuring succeeds", function()
             local response
+            local network
+            local request
 
             before_each(function()
-                stub(bridge, "configure", BridgeResponse(true, 5))
-                response = subject.configure("Twitter", {appkeya="1234", secret="itsasecret"})
+                request = nil
+                function bridge.configure(r)
+                    request = r
+                    return BridgeResponse(true, 5)
+                end
+
+                network = Network("Twitter", {appkeya="1234", secret="itsasecret"})
+                response = subject.configure(network)
+            end)
+
+            it("should have called configure with correct parameters", function()
+                assert.truthy(request)
+                local dict = request.toDict()
+                assert.equal("Twitter", dict.service)
+                assert.equal(network.getConfig(), dict.config)
             end)
 
             it("should be successfull", function()
@@ -41,7 +57,7 @@ describe("social.Manager", function()
 
             before_each(function()
                 stub(bridge, "configure", BridgeResponse(false, 5, "An error message", info))
-                response, _error = subject.configure("Twitter", {appkey="1234", secret="itsasecret"})
+                response, _error = subject.configure(Network("Twitter", {appkey="1234", secret="itsasecret"}))
             end)
 
             it("should fail", function()
