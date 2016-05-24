@@ -5,8 +5,9 @@
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "json"
-require "HTTPResponseType"
+require("json")
+require("HTTPResponseType")
+require("Logger")
 
 local Promise = require("Promise")
 local AdManifest = require("royal.AdManifest")

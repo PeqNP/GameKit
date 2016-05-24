@@ -9,6 +9,7 @@ local AdServerManager = require("ad.ServerManager")
 local AppManager = require("app.Manager")
 local BridgeAdaptor = require("bridge.BridgeAdaptor")
 local BridgeAdaptorProtocol = require("bridge.BridgeAdaptorProtocol")
+local BridgeResponse = require("bridge.BridgeResponse")
 local IAP = require("iap.IAP")
 local SocialManager = require("social.Manager")
 local RoyalClient = require("royal.Client")
@@ -16,6 +17,7 @@ local LuaFile = require("LuaFile")
 local HTTP = require("shim.HTTP")
 local AdConfig = require("royal.AdConfig")
 local AdManifest = require("royal.AdManifest")
+local SocialNetwork = require("social.Network")
 
 local FeatureFactory = require("FeatureFactory")
 
@@ -25,7 +27,11 @@ describe("FeatureFactory", function()
 
     before_each(function()
         function BridgeAdaptor.getAdaptor()
-            return mock(mock_protocol(BridgeAdaptorProtocol), true)
+            local adaptor = mock_protocol(BridgeAdaptorProtocol)
+            function adaptor.send()
+                return BridgeResponse(true)
+            end
+            return adaptor
         end
 
         http = HTTP()
@@ -51,7 +57,8 @@ describe("FeatureFactory", function()
     end)
     
     it("should create a social.Manager", function()
-        local social = subject.getSocialManager()
+        local networks = {SocialNetwork("Twitter", {key="key", secret="secret"})}
+        local social = subject.getSocialManager(networks)
         assert.equal(SocialManager, social.getClass())
     end)
 

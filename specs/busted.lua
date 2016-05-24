@@ -13,8 +13,8 @@ xit = pending_test
 
 function mock_protocol(protocol)
     local mock = {}
-    for key, fn in ipairs(protocol) do
-        mock[key] = fn
+    for _, method in ipairs(protocol.getMethods()) do
+        mock[method.getName()] = function () end
     end
     return mock
 end

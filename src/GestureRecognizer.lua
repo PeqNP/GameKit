@@ -9,8 +9,8 @@
 --  @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
 
-require "Constants"
-require "Logger"
+require("Constants")
+require("Logger")
 
 local LongPressGesture = require("gesture.LongPressGesture")
 local TapGesture = require("gesture.TapGesture")

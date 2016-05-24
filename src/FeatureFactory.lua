@@ -23,8 +23,8 @@ function FeatureFactory.new(self)
         end
         local Bridge = require("bridge.Bridge")
         local BridgeAdaptor = require("bridge.BridgeAdaptor")
-        platform = BridgeAdaptor.getAdaptor(platform)
-        bridge = Bridge(platform)
+        local adaptor = BridgeAdaptor.getAdaptor(platform)
+        bridge = Bridge(adaptor)
         return bridge
     end
 
@@ -61,9 +61,15 @@ function FeatureFactory.new(self)
         return AdServerManager(adModule, adConfig, networks, service)
     end
 
-    function self.getSocialManager()
+    function self.getSocialManager(networks)
+        local sbridge = require("bridge.modules.social")
+        sbridge.init(getBridge())
         local SocialManager = require("social.Manager")
-        return SocialManager(getBridge())
+        local manager = SocialManager(sbridge)
+        for _, network in ipairs(networks) do
+            manager.configure(network)
+        end
+        return manager
     end
 
     local function getImageVariant()

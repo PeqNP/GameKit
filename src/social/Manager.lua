@@ -2,6 +2,8 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
+require("Logger")
+
 local Error = require("Error")
 local Promise = require("Promise")
 local ConfigureRequest = require("social.ConfigureRequest")
@@ -18,6 +20,7 @@ function Manager.new(self)
     end
 
     function self.configure(network)
+        Log.d("SocialManager.configure: Configuring social network (%s)", network.getName())
         local response = bridge.configure(ConfigureRequest(network.getName(), network.getConfig()))
         if response.isSuccess() then
             return true

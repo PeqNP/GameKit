@@ -1,6 +1,9 @@
-require "specs.busted"
-require "specs.Cocos2d-x"
-require "lang.Signal"
+require("specs.busted")
+require("specs.Cocos2d-x")
+require("lang.Signal")
+require("Logger")
+
+Log.setLevel(LogLevel.Warning)
 
 local BridgeCall = require("bridge.BridgeCall")
 local BridgeResponse = require("bridge.BridgeResponse")
@@ -22,7 +25,7 @@ describe("social.Manager", function()
         subject = Manager(bridge)
     end)
 
-    describe("configure service", function()
+    describe("configure network", function()
         context("when configuring succeeds", function()
             local response
             local network
