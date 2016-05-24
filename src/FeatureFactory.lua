@@ -66,8 +66,10 @@ function FeatureFactory.new(self)
         sbridge.init(getBridge())
         local SocialManager = require("social.Manager")
         local manager = SocialManager(sbridge)
-        for _, network in ipairs(networks) do
-            manager.configure(network)
+        if networks then
+            for _, network in ipairs(networks) do
+                manager.configure(network)
+            end
         end
         return manager
     end
