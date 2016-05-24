@@ -197,11 +197,11 @@ def load_mediation(platform, source):
 
 def load_social(platform, source):
     path = source.socialpath(platform)
-    #try:
-    return load_social_config(platform, path)
-    #except Exception, exc:
-    #    print(exc)
-    #    return None
+    try:
+        return load_social_config(platform, path)
+    except Exception, exc:
+        print(exc)
+        return None
 
 def create_lua_social(social, cocos):
     lua = """--

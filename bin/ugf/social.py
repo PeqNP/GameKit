@@ -28,19 +28,16 @@ class Network (object):
 
     def getLuaConfigDict(self):
         kvpairs = []
-        print("config", self.config)
         for k, v in self.config.iteritems():
             kvpairs.append("{}=\"{}\"".format(k, v))
         return ", ".join(kvpairs)
 
     def toLua(self):
-        # Generate 'Network([name], [config])'
         return "Network(\"{}\", {{{}}})".format(self.name, self.getLuaConfigDict())
     
 def load_social_config(platform, path):
     if not os.path.isfile(path):
-        #raise IOError("Social config file does not exist at path {}".format(path))
-        return None
+        raise IOError("Social config file does not exist at path {}".format(path))
     fh = open(path, "r")
     json_blob = fh.read()
     fh.close()
