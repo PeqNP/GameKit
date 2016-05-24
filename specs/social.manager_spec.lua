@@ -12,7 +12,7 @@ local PostResponse = require("social.PostResponse")
 require("specs.helpers")
 local match = require("specs.matchers")
 
-describe("iap.Social", function()
+describe("social.Manager", function()
     local subject
     local bridge
 
@@ -41,14 +41,14 @@ describe("iap.Social", function()
 
             before_each(function()
                 stub(bridge, "configure", BridgeResponse(false, 5, "An error message", info))
-                response, _error = subject.configure("Twitter", {appkeya="1234", secret="itsasecret"})
+                response, _error = subject.configure("Twitter", {appkey="1234", secret="itsasecret"})
             end)
 
             it("should fail", function()
                 assert.falsy(response)
             end)
 
-            it("should return error", function()
+            it("should return an error", function()
                 assert.equal(1, _error.getCode())
                 assert.equal("An error message", _error.getMessage())
             end)
