@@ -81,6 +81,9 @@ class CocosPathBuilder (object):
     def mediationconfigpath(self, platform):
         return self.path("res/mediation-{}.config.json".format(platform))
 
+    def socialluapath(self, platform):
+        return self.path("src/Social-{}.lua".format(platform))
+
     def iapluapath(self, platform):
         return self.path("src/IAP-{}.lua".format(platform))
 
@@ -150,6 +153,10 @@ class ProjectPathBuilder (object):
     def mediationpath(self, platform):
         self.check_platform(platform)
         return self.path("platform/{}/mediation.server.json".format(platform))
+
+    def socialpath(self, platform):
+        self.check_platform(platform)
+        return self.path("platform/{}/social.config.json".format(platform))
 
     def iappath(self, platform):
         self.check_platform(platform)
