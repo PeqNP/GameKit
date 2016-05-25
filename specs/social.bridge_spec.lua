@@ -64,7 +64,7 @@ describe("bridges.modules.social Receive", function()
         local json
 
         before_each(function()
-            json = "{\"id\": 4, \"success\": true, \"code\": 1, \"error\": \"An error!\"}"
+            json = "{\"error\":\"Image Url must be an http:// or https:// url\",\"id\":1,\"success\":false,\"code\":2}"
             social__completed(json)
         end)
 
@@ -74,10 +74,10 @@ describe("bridges.modules.social Receive", function()
         end)
 
         it("should have set the correct values", function()
-            assert.equal(4, response.getId())
-            assert.equal(true, response.isSuccess())
-            assert.equal(1, response.getCode())
-            assert.equal("An error!", response.getError())
+            assert.equal(1, response.getId())
+            assert.equal(false, response.isSuccess())
+            assert.equal(2, response.getCode())
+            assert.equal("Image Url must be an http:// or https:// url", response.getError())
         end)
     end)
 end)
