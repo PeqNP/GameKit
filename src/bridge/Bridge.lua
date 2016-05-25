@@ -62,6 +62,8 @@ function Bridge.new(self)
 
     function self.send(method, request, sig)
         local payload = request and request.toDict() or nil
+        -- @fixme This needs to do the same thing as sendAsync, where it checks
+        -- if response is nil, etc.
         return adaptor.send(method, payload, sig)
     end
 
@@ -86,7 +88,7 @@ function Bridge.new(self)
                 requests[tostring(response.id)] = req
                 numRequests = numRequests + 1
             else
-                req.reject(string.format("Response failed w/ error (%s)", response.error))
+                req.reject(response.error)
             end
         else
             req.reject(string.format("Failed to call method (%s)", method))

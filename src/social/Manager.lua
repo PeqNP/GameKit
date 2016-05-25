@@ -39,8 +39,8 @@ function Manager.new(self)
                 promise.reject(Error(response.getCode(), response.getError()))
             end
         end)
-        call.fail(function()
-            promise.reject(Error(2, "Unknown error occurred."))
+        call.fail(function(_error)
+            promise.reject(Error(2, _error))
         end)
         return promise
     end
