@@ -26,7 +26,7 @@ end
 
 function social__completed(payload)
     local response = json.decode(payload)
-    bridge.receive(QueryResponse(response.id, response.skus))
+    bridge.receive(PostResponse(response.id, response.success, response.code, response.error))
 end
 
 return social
