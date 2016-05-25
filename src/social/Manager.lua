@@ -33,6 +33,7 @@ function Manager.new(self)
         local promise = Promise()
         local response, call = bridge.post(PostRequest(service, message, image, resource))
         call.done(function(response)
+            Log.d("SocialManager.post: Responded w/ success (%s)", response.isSuccess())
             if response.isSuccess() then
                 promise.resolve()
             else
