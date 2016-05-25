@@ -285,7 +285,7 @@ describe("Bridge", function()
         end)
 
         it("should have rejected immediately", function()
-            assert.equals("Response failed w/ error (My failure)", _error)
+            assert.equals("My failure", _error)
         end)
     end)
 

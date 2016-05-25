@@ -122,7 +122,7 @@ describe("social.Manager", function()
 
         context("when the response fails", function()
             before_each(function()
-                call.reject()
+                call.reject("Unknown error occurred.")
             end)
 
             it("should return error", function()
