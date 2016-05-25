@@ -36,10 +36,10 @@ from ugf.android.gradle import GradleConfigBuilder
 
 VERSION = getversion(__file__, "1.0.0")
 
-def interpolate_iospbxproj(project, blob):
+def interpolate_iospbxprojplist(project, blob):
     # Global
     blob = re.sub("productName = GameTools;", "productName = {};".format(project.executable), blob)
-    blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = {};".format(project.get_bundle("ios")), blob)
+    blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = \"{}\";".format(project.get_bundle("ios")), blob)
     # Mobile
     blob = re.sub("GameTools-mobile\.app", "{}-mobile.app".format(project.executable), blob)
     blob = re.sub("\/\* GameTools-mobile \*\/", "/* {}-mobile */".format(project.executable), blob)
@@ -54,6 +54,18 @@ def interpolate_iospbxproj(project, blob):
     #blob = re.sub("\/\* GameTools \*\/", "/* {} */".format(project.executable), blob)
     blob = re.sub('"GameTools"', '"{}"'.format(project.executable), blob)
     #blob = re.sub('= GameTools;', '= {};'.format(project.executable), blob)
+    return blob
+
+def interpolate_iospbxprojxml(project, blob):
+    # Global
+    blob = re.sub("com.upstartillustration.GameTools", project.get_bundle("ios"), blob)
+    blob = re.sub("<string>GameTools</string>", "<string>{}</string>".format(project.get_bundle("ios")), blob)
+    # Mobile
+    blob = re.sub("GameTools-mobile\.app", "{}-mobile.app".format(project.executable), blob)
+    blob = re.sub('GameTools-mobile', '{}-mobile'.format(project.executable), blob)
+    # Desktop
+    blob = re.sub("GameTools-desktop\.app", "{}-desktop.app".format(project.executable), blob)
+    blob = re.sub('GameTools-desktop', '{}-desktop'.format(project.executable), blob)
     return blob
 
 def interpolate_iosplist(project, blob):
@@ -313,13 +325,14 @@ def configure_ios_targets(project, source, cocos, stage):
     # Interpolate template files
     keys = get_main_keys("ios")
 
-    # The pbxproj should not be a template, as it changes often. All replacements
-    # can be done by replacing GameTools anyways.
+    # The pbxproj should not be a template, as it changes often.
     shutil.copyfile(cocos.iosprojectpath(), stage.path("project.pbxproj"))
 
     interpolator = Interpolator(project, cocos, stage, keys)
     interpolator.interpolate("templates/project/ios/Info.plist", cocos.iosmacprojpath("ios/Info.plist"), interpolate_iosplist)
-    interpolator.interpolate("stage/project.pbxproj", cocos.iosprojectpath(), interpolate_iospbxproj)
+    # Interpolate both PLIST and XML formatted pbxproj files.
+    interpolator.interpolate("stage/project.pbxproj", cocos.iosprojectpath(), interpolate_iospbxprojxml)
+    interpolator.interpolate("stage/project.pbxproj", cocos.iosprojectpath(), interpolate_iospbxprojplist)
     interpolator.interpolate("templates/project/ios/GKConfig.m", cocos.iosmacprojpath("GameKit/GameTools/GKConfig.m"))
 
     # TODO: Cleanup stage directory
