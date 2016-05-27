@@ -32,13 +32,16 @@ def create_config(source, dest, project, orientation=None):
     interpolator.interpolate(source, dest)
 
 def create_configs(source, project, app_types, orientation):
-    # @todo Create config for each type w/ correct name config-{type}.json.
-    # @todo If types given, remove the config.json file.
-    create_config(source.path("config.json"), source.path("config.json"), project, orientation)
+    if app_types:
+        for app_type in app_types:
+            shutil.copy(source.path("config.json"), source.path("config-{}.json".format(app_type)))
+            create_config(source.path("config-{}.json".format(app_type)), source.path("config-{}.json".format(app_type)), project, orientation)
+        os.unlink(source.path("config.json"))
+    else:
+        create_config(source.path("config.json"), source.path("config.json"), project, orientation)
 
 # Copies all of the contents in GameKit/template to the new project's path.
 def copy_files(gamekit, source):
-    #call("cp", "-r", gamekit.templatepath(), source.basepath())
     shutil.copytree(gamekit.templatepath(), source.basepath())
 
 if __name__ == "__main__":
@@ -65,7 +68,9 @@ if __name__ == "__main__":
 
     print("Creating project ({}) at path ({})".format(args.project, source.basepath()))
 
+    app_types = args.app_types and args.app_types.split(",") or None
+
     copy_files(gamekit, source)
-    create_configs(source, args.project, args.app_types, args.orientation)
-    print("Please modify this project's config file, located at ({}), before selecting the project.".format(source.basepath())
+    create_configs(source, args.project, app_types, args.orientation)
+    print("Please modify this project's config file(s), located at ({}), before selecting the project.".format(source.basepath()))
     sys.exit(0)
