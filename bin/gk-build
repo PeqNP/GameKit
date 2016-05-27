@@ -31,6 +31,9 @@ function set_ccache_config()
 function build_android()
 {
     echo "Building for android platform in mode: $mode"
+    # @todo It may be useful to display an ERROR when attempting to build for
+    # 'release' and the keystore has not yet been setup.
+    gk-keystore check
     cocos run -p android --android-studio --ndk-mode=$mode
 }
 
