@@ -6,7 +6,7 @@ import json
 import os
 import sys
 
-from ugf import gethomedir
+from gamekit import gethomedir
 
 def configpath():
     return os.path.join(gethomedir(), ".ugf")

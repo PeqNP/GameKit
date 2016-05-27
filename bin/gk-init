@@ -8,9 +8,9 @@
 import os
 from datetime import datetime
 
-from ugf import getversion
-from ugf.config import configpath, Config
-from ugf.pathbuilder import defaultandroidpath
+from gamekit import getversion
+from gamekit.config import configpath, Config
+from gamekit.pathbuilder import defaultandroidpath
 
 VERSION = getversion(__file__, "1.0.0")
 

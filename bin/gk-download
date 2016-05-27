@@ -14,9 +14,9 @@ import sys
 from datetime import datetime
 from subprocess import call
 
-from ugf import getversion, gethomedir
-from ugf.config import configpath, checkconfig, get_app_types, Config, ProjectConfig
-from ugf.pathbuilder import CocosPathBuilder, ProjectPathBuilder
+from gamekit import getversion, gethomedir
+from gamekit.config import configpath, checkconfig, get_app_types, Config, ProjectConfig
+from gamekit.pathbuilder import CocosPathBuilder, ProjectPathBuilder
 
 VERSION = getversion(__file__, "1.0.0")
 

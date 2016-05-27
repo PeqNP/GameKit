@@ -9,9 +9,9 @@ from subprocess import call
 
 import os
 
-from ugf import gethomedir
-from ugf.config import configpath, checkconfig, Config, ProjectConfig
-from ugf.pathbuilder import CocosPathBuilder, ProjectPathBuilder
+from gamekit import gethomedir
+from gamekit.config import configpath, checkconfig, Config, ProjectConfig
+from gamekit.pathbuilder import CocosPathBuilder, ProjectPathBuilder
 
 def main(cocos):
     os.chdir(cocos.basepath())

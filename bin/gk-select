@@ -13,11 +13,11 @@ import re
 import shutil
 import sys
 
-from ugf import getversion
-from ugf.config import configpath, Config, ProjectConfig
-from ugf.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder
-from ugf.interpolator import Interpolator
-from ugf.mediation import load_mediation_config
+from gamekit import getversion
+from gamekit.config import configpath, Config, ProjectConfig
+from gamekit.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder
+from gamekit.interpolator import Interpolator
+from gamekit.mediation import load_mediation_config
 
 VERSION = getversion(__file__, "1.0.0")
 

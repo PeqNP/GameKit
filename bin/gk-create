@@ -12,10 +12,10 @@ import os
 import shutil
 import sys
 
-from ugf import getversion
-from ugf.config import configpath, checkconfig, Config, ProjectConfig
-from ugf.pathbuilder import CocosPathBuilder, GameKitPathBuilder, ProjectPathBuilder
-from ugf.interpolator import SimpleInterpolator
+from gamekit import getversion
+from gamekit.config import configpath, checkconfig, Config, ProjectConfig
+from gamekit.pathbuilder import CocosPathBuilder, GameKitPathBuilder, ProjectPathBuilder
+from gamekit.interpolator import SimpleInterpolator
 
 VERSION = getversion(__file__, "1.0.0")
 

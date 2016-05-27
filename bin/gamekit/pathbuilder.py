@@ -4,7 +4,7 @@
 
 import os
 
-from ugf import gethomedir
+from gamekit import gethomedir
 
 def defaultandroidpath():
     # @todo Mac OS X only for now.

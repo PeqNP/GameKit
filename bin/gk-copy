@@ -16,14 +16,14 @@ import shutil
 from datetime import datetime
 from subprocess  import call
 
-from ugf import getversion, gethomedir, emptydir, rmdir
-from ugf.config import configpath, checkconfig, Config, ProjectConfig
-from ugf.pathbuilder import CocosPathBuilder, GameKitPathBuilder, StagePathBuilder, ProjectPathBuilder
+from gamekit import getversion, gethomedir, emptydir, rmdir
+from gamekit.config import configpath, checkconfig, Config, ProjectConfig
+from gamekit.pathbuilder import CocosPathBuilder, GameKitPathBuilder, StagePathBuilder, ProjectPathBuilder
 
-def copy_gamekit(gamekit, source, cocos):
+def copy_gamekit(gk, source, cocos):
     rmdir(cocos.path("src/ugf"))
     # @todo fix this path
-    call(["cp", "-r", gamekit.path("src"), cocos.path("src/ugf")])
+    call(["cp", "-r", gk.path("src"), cocos.path("src/ugf")])
 
 def copy_ios_assets(source, cocos):
     emptydir(cocos.path("frameworks/runtime-src/proj.ios_mac/Resources"))
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     checkconfig(config)
 
     source = ProjectPathBuilder(config)
-    gamekit = GameKitPathBuilder(config)
+    gk = GameKitPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
     cocos = CocosPathBuilder(config, project.cocos)
 
@@ -88,7 +88,7 @@ if __name__ == "__main__":
         copy_android_assets(source, cocos)
     if "gamekit" in options:
         print "Copying GameKit files."
-        copy_gamekit(gamekit, source, cocos)
+        copy_gamekit(gk, source, cocos)
     if "project" in options:
         print "Copying project source files."
         copy_source(source, cocos)
