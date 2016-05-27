@@ -29,9 +29,9 @@ function Manager.new(self)
     end
 
     -- @param string - Service to post to. Supported: Twitter, Facebook and Baidu
-    function self.post(service, message, image, resource)
+    function self.post(service, message, image, link)
         local promise = Promise()
-        local response, call = bridge.post(PostRequest(service, message, image, resource))
+        local response, call = bridge.post(PostRequest(service, message, image, link))
         call.done(function(response)
             Log.d("SocialManager.post: Responded w/ success (%s)", response.isSuccess())
             if response.isSuccess() then

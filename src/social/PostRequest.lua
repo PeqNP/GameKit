@@ -9,19 +9,19 @@ function PostRequest.new(self)
     local service
     local message
     local image
-    local resource
+    local link
 
-    function self.init(_service, _message, _image, _resource)
+    function self.init(_service, _message, _image, _link)
         service = _service
         message = _message
         image = _image
-        resource = _resource
+        link = _link
     end
 
     -- BridgeRequestProtocol
 
     function self.toDict()
-        return {service=service, message=message, image=image, resource=resource}
+        return {service=service, message=message, image=image, link=link}
     end
 end
 

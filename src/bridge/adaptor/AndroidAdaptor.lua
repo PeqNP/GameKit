@@ -49,9 +49,10 @@ function AndroidAdaptor.new(self)
           ret - converted value, on the native side, to its respective Lua value.
         --]]
         if not ret then
-            Log.w("AndroidAdaptor:call(%s, %s, %s) - ok (%s)", method, args, returnType, ok)
+            Log.w("AndroidAdaptor:send(%s, %s, %s) - ok (%s)", method, args, returnType, ok)
             return nil
         end
+        Log.d("AndroidAdaptor:send(%s, %s, %s) - ret (%s)", method, args, returnType, ret)
         return getReturn(ret)
     end
 end
