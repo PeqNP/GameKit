@@ -21,9 +21,9 @@ from gamekit.config import configpath, checkconfig, Config, ProjectConfig
 from gamekit.pathbuilder import CocosPathBuilder, GameKitPathBuilder, StagePathBuilder, ProjectPathBuilder
 
 def copy_gamekit(gk, source, cocos):
-    rmdir(cocos.path("src/ugf"))
+    rmdir(cocos.path("src/gamekit"))
     # @todo fix this path
-    call(["cp", "-r", gk.path("src"), cocos.path("src/ugf")])
+    call(["cp", "-r", gk.path("src"), cocos.path("src/gamekit")])
 
 def copy_ios_assets(source, cocos):
     emptydir(cocos.path("frameworks/runtime-src/proj.ios_mac/Resources"))

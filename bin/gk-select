@@ -22,13 +22,13 @@ from gamekit.mediation import load_mediation_config
 VERSION = getversion(__file__, "1.0.0")
 
 def run_pre_select(config, source, cocos):
-    script = source.path("ugf/pre-select")
+    script = source.path("gamekit/pre-select")
     if os.path.isfile(script):
         print("Running pre-select script...")
         call([script, cocos.basepath(), config.apptype])
 
 def run_post_select(config, source, cocos):
-    script = source.path("ugf/post-select")
+    script = source.path("gamekit/post-select")
     if os.path.isfile(script):
         print("Running post-select script...")
         call([script, cocos.basepath(), config.apptype])
