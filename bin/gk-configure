@@ -440,7 +440,7 @@ if __name__ == "__main__":
 
     operations = ["dependencies", "lua", "gamekit", "project"]
 
-    parser = argparse.ArgumentParser(description="GameKit - Configures a project into a Cocos2d-x project")
+    parser = argparse.ArgumentParser(description="GameKit - Configure Cocos2d-x with project config")
     parser.add_argument('operations', help="Configuration processes to perform on project: {}".format(", ".join(operations)), nargs="*", default=["all"])
     parser.add_argument('--android', help="Only perform operations for Android platform", dest="android", action="store_true")
     parser.add_argument('--iosmac', help="Only perform operations for iOS/Mac platform", dest="ios", action="store_true")
@@ -488,7 +488,7 @@ if __name__ == "__main__":
             return True
         return False
 
-    # ---- Mediation -----
+    ### Mediation
     if config_ios() and ios_mediation and ios_mediation.hasNetworks():
         if "dependencies" in options:
             configure_ios_pods(ios_mediation.getPods(), project, cocos, stage)
@@ -512,7 +512,7 @@ if __name__ == "__main__":
     else:
         print("No mediation networks configured for Android project. Skipping...")
 
-    # ----- Social -----
+    ### Social
     if config_ios() and ios_social:
         if "lua" in options:
             create_lua_social(ios_social, cocos)
@@ -525,7 +525,7 @@ if __name__ == "__main__":
     else:
         print("No Social configured for Android project. Skipping...")
 
-    # ----- IAP -----
+    ### IAP
     if config_ios() and ios_iap:
         if "lua" in options:
             create_lua_iap(ios_iap, cocos)
@@ -538,7 +538,7 @@ if __name__ == "__main__":
     else:
         print("No IAP configured for Android project. Skipping...")
 
-    # ----- Royal Ad Network -----
+    ### Royal Ad Network
     if config_ios() and ios_royal:
         if "lua" in options:
             create_lua_royal(ios_royal, cocos)

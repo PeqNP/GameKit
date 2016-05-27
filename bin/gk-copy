@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     valid_options = ["all", "assets", "gamekit", "project", "resource"]
 
-    parser = argparse.ArgumentParser(description="GameKit - Copy project files to Cocos2d-x project")
+    parser = argparse.ArgumentParser(description="GameKit - Copy source code and asset files into Cocos2d-x project")
     parser.add_argument('files', help="Copy files. Options: ({})".format(", ".join(valid_options)), nargs="*", default=["all"])
     args = parser.parse_args()
 
