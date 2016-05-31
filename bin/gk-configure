@@ -82,7 +82,7 @@ def interpolate_iosplist(project, blob):
         <string>UIInterfaceOrientationPortrait</string>"""
     blob = re.sub("##UGF-ORIENTATION##", c, blob)
     # Facebook ID
-    if project.facebookid:
+    if project.android.facebookid:
         c = """<key>CFBundleURLTypes</key>
         <array>
             <dict>
@@ -95,7 +95,7 @@ def interpolate_iosplist(project, blob):
         <key>FacebookAppID</key>
         <string>{}</string>
         <key>FacebookDisplayName</key>
-        <string>Blobfish Evolution</string>""".format(project.facebookid, project.facebookid)
+        <string>Blobfish Evolution</string>""".format(project.android.facebookid, project.android.facebookid)
         blob = re.sub("##UGF-FACEBOOK##", c, blob)
     return blob
 
@@ -109,9 +109,9 @@ def interpolate_projectconfig(project, blob):
 
 def configure_ios_sdk_dependencies(project, cocos, stage):
     defines = []
-    if project.facebookid:
+    if project.android.facebookid:
         defines.append("#define FACEBOOK_ENABLED")
-    if project.hockeyappid:
+    if project.ios.hockeyappid:
         defines.append("#define HOCKEYAPP_ENABLED")
     keys = {
         "##UGF-SDK-DEPENDENCIES##": "\n".join(defines)
@@ -301,8 +301,8 @@ def get_main_keys(platform):
       , "##UGF-APP-VERSION##": project.version
       , "##UGF-APP-BUILD##": project.build
       , "##UGF-EXECUTABLE##": project.executable
-      , "##UGF-HOCKEY-APP-ID##": project.hockeyappid
-      , "##UGF-FACEBOOK-ID##": project.facebookid
+      , "##UGF-HOCKEY-APP-ID##": project.ios.hockeyappid
+      , "##UGF-FACEBOOK-ID##": project.android.facebookid
       , "##UGF-DESIGN-WIDTH##": project.design["width"]
       , "##UGF-DESIGN-HEIGHT##": project.design["height"]
       , "##UGF-SHOW-FPS##": "false"

@@ -27,12 +27,19 @@ This diagram provides an overview of the design of GameKit.
 
 ## Installation
 
-Install dependencies
+Download and execute the bootstrap script. This downloads all necessary GameKit depenendencies and provides instructions on how to obtain the other necessary dependencies that GameKit (and underlying dependencies such as Cocos2d-x) requries in order to operate.
+```
+curl -L https://raw.github.com/PeqNP/GameKit/bin/gk-bootstrap | bash
+```
+
+**NOTE:** This script provides additional information required to get GameKit running. Follow the instructions, provided at the end of the script's run, which may include adding any paths to your bash(rc|_profile), etc.
+
+After you have performed the configuration steps, as outlined by the script, initialize GameKit by running the following command:
 ```
 $ gk-init
 ```
 
-This script will provide you with the rest of the information needed to setup your environment.
+This command configures where GameKit will save/search for dependencies and projects.
 
 ## Dependencies
 

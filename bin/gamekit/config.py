@@ -134,7 +134,7 @@ class ProjectConfig (object):
         return ["cocos", "bundle", "name", "executable", "version", "build", "device", "orientation", "design"]
 
     def optionalvals(self):
-        return ["hockeyappid", "facebookid", "android"]
+        return ["ios", "android"]
 
     def save(self):
         config = self.__dict__.copy()

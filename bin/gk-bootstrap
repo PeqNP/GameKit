@@ -114,7 +114,7 @@ echo "export PATH=$HOME/git/GameKit/bin:\$PATH"
 echo
 echo "1) Initialize GameKit"
 echo " ------------------------------"
-echo " After you have added paths to your bash rc you must run the following:"
+echo " After you have added the above paths to your bashrc you must run the following:"
 echo " $ gk-init"
 echo 
 echo "2) Create a GameKit project"
