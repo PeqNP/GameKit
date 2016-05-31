@@ -9,7 +9,7 @@ import sys
 from gamekit import gethomedir
 
 def configpath():
-    return os.path.join(gethomedir(), ".ugf")
+    return os.path.join(gethomedir(), ".gamekit")
 
 def print_configure():
     print("Please configure GameKit by running the gk-path CLI tool")
