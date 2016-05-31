@@ -92,6 +92,24 @@ class KeystoreConfig (object):
     def requiredvals(self):
         return ["filepath", "password", "keyalias", "keypassword"]
 
+class AndroidConfig (object):
+    def __init__(self, facebookid=None, keystore=None):
+        self.facebookid = facebookid
+        if keystore:
+            self.keystore = KeystoreConfig(**keystore)
+        else:
+            self.keystore = None
+
+class iOSConfig (object):
+    def __init__(self, hockeyappid=None):
+        self.hockeyappid = hockeyappid
+
+def load_platform_config(platform, class_ref, config):
+    if config.get(platform):
+        c = config.get(platform)
+        return class_ref(**c)
+    return class_ref()
+
 # Project configuration structure.
 class ProjectConfig (object):
     @staticmethod
@@ -107,11 +125,9 @@ class ProjectConfig (object):
     def __init__(self, path, **entries):
         self.path = path
         self.__dict__.update(entries)
+        self.ios = load_platform_config("ios", iOSConfig, entries)
+        self.android = load_platform_config("android", AndroidConfig, entries)
         self.checkvals()
-        if self.android["keystore"]:
-            self.keystore = KeystoreConfig(**self.android["keystore"])
-        else:
-            self.keystore = None
 
     def get_bundle(self, platform):
         if type(self.bundle) is dict:
@@ -138,9 +154,14 @@ class ProjectConfig (object):
 
     def save(self):
         config = self.__dict__.copy()
-        config.pop("keystore")
         config.pop("path")
-        config["android"]["keystore"] = self.keystore.__dict__
+        config["android"] = {
+            "facebookid": self.android.facebookid,
+            "keystore": self.android.keystore.__dict__
+        }
+        config["ios"] = {
+            "hockeyappid": self.ios.hockeyappid
+        }
         fh = open(self.path, "w")
         fh.write(json.dumps(config, indent=4, separators=(',', ': '), sort_keys=True))
         fh.close()
