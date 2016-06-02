@@ -1,4 +1,8 @@
 --
+-- Currently all messages are being passed in/out as strings. In the future
+-- attempt to support as many VM Type signatures as possible.
+-- http://journals.ecs.soton.ac.uk/java/tutorial/native1.1/implementing/method.html
+--
 -- @copyright (c) 2016 Upstat Illustration LLC. All rights reserved.
 --
 
@@ -17,7 +21,7 @@ function AndroidAdaptor.new(self)
     end
 
     local function getArgs(args)
-        return json.encode(args)
+        return args and {json.encode(args)} or {}
     end
 
     local function getReturn(ret)
@@ -25,7 +29,7 @@ function AndroidAdaptor.new(self)
     end
 
     local function getSignature(args, ret)
-        local P = {} -- Default, no params
+        local P = "" -- Default, no params
         local R = "V" -- Default, 'void' for return
         -- Parameters
         if args then
@@ -33,14 +37,16 @@ function AndroidAdaptor.new(self)
         end
         -- Return
         if ret then
-            R = "Ljava/lang/String;" -- Send parameters as JSON encoded string.
+            R = "Ljava/lang/String;" -- Receive parameters as JSON encoded string.
         end
         return string.format("(%s)%s", P, R)
     end
 
-    function self.send(method, args, returnType)
-        --Log.i("BridgeAdaptor:send() - method (%s) args (%s:%s) ret (%s) sig (%s)", method, type(args), args, retType, sig)
-        local ok, ret = adaptor.callStaticMethod(controller, method, getArgs(args), getSignature(args, returnType))
+    function self.send(method, args, retType)
+        local sig = getSignature(args, retType)
+        local argsf = getArgs(args)
+        Log.i("BridgeAdaptor:send() - method (%s) retType (%s) args:f (%s) sig (%s)", method, retType, argsf, sig)
+        local ok, ret = adaptor.callStaticMethod(controller, method, argsf, sig)
         --[[
           ok - numeric value returned by the native system that indicates the type of error. This is different
           for each platform, apparently. 0 is 'OK' but it's better to just check if the return value is nil.

@@ -19,6 +19,7 @@ function Music.new(self)
     local isOn = true
 
     function self.Preload(path)
+        Log.d("Music.Preload: path (%s)", path)
         engine:preloadMusic(path)
     end
 
@@ -58,6 +59,7 @@ function Music.new(self)
     end
 
     function self.FadeTo(to, length, bgPath)
+        Log.d("Music.FadeTo: Playing music to (%s) length (%s) path (%s)...", to, length, bgPath)
         local p = Promise()
         -- Always set the bg path so that when the sound is turned back on
         -- it can be loaded.

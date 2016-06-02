@@ -256,7 +256,7 @@ function shim.GetFullFilepath(path)
 end
 
 function shim.AddSearchPath(path)
-    cc.FileUtils:getInstance():addSearchPath(path);
+    cc.FileUtils:getInstance():addSearchPath(path)
 end
 
 -- ----- Scheduler -----

@@ -17,8 +17,7 @@ function BridgeAdaptor.getAdaptor(platform)
         adaptor = AppleAdaptor(luaoc, "GKGameRouter")
     elseif platform == "android" then
         local AndroidAdaptor = require("bridge.adaptor.AndroidAdaptor")
-        local luaj = require("cocos.cocos2d.luaj")
-        adaptor = AndroidAdaptor(luaj, "com.upstartillustration.gamekit.Router")
+        adaptor = AndroidAdaptor(LuaJavaBridge, "com.upstartillustration.gamekit.Router")
     else
         Log.s("Unable to configure BridgeAdaptor for platform '%s'", platform and platform or "None")
     end

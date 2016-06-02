@@ -19,15 +19,19 @@ function Manager.new(self)
     end
 
     function self.getNotifications()
+        Log.d("app.Manager.getNotifications(): Getting notifications")
         local response = bridge.getNotifications()
         if response.isSuccess() then
+            Log.d("app.Manager.getNotifications(): Successfully queried notifications")
             return response.getNotifications()
         end
+        Log.d("app.Manager.getNotifications(): Failed to get notifications")
         _error = response.getError()
         return 0
     end
 
     function self.setupNotification(message, interval)
+        Log.d("app.Manager.getNotifications(): Setting up notifications w/ message (%s) interval (%s)", message, interval)
         local response = bridge.setupNotification(AppSetupNotificationRequest(message, interval))
         if response.isSuccess() then
             return true
