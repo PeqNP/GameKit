@@ -150,6 +150,7 @@ function Client.new(self)
                     promise.reject(Error(2, "Failed to download resources"))
                 end)
             else
+                cc.SpriteFrameCache:getInstance():addSpriteFrames(config.getPlistFilepath())
                 promise.resolve(manifest)
             end
         end)
