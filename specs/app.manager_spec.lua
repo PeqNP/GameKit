@@ -1,6 +1,9 @@
 require "specs.busted"
 require "specs.Cocos2d-x"
 require "lang.Signal"
+require "Logger"
+
+Log.setLevel(LogLevel.Warning)
 
 local BridgeResponse = require("bridge.BridgeResponse")
 local AppManager = require("app.Manager")

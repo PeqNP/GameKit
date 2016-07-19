@@ -12,6 +12,7 @@ require("Logger")
 local Promise = require("Promise")
 local AdManifest = require("royal.AdManifest")
 local Error = require("Error")
+local shim = require("shim.System")
 
 local Client = Class()
 
@@ -94,8 +95,19 @@ function Client.new(self)
             return nil, false
         end
         if cachedManifest and cachedManifest.isActive(manifest.getCreated()) then
-            Log.d("royal.Client:callback__ads() - Using cached manifest")
-            return cachedManifest, false
+            Log.d("royal.Client:writeManifest() - Using cached manifest")
+            local download = false
+            -- Make sure all assets exist. Note: even if the assets exist, they may still be
+            -- in an invalid state, which is not part of the checks.
+            if not shim.FileExists(config.getPlistFilepath()) then
+                Log.w("royal.Client.writeManifest: Cached manfiest exists but no plist (%s)", config.getPlistFilepath())
+                download = true
+            end
+            if not shim.FileExists(config.getImageFilepath()) then
+                Log.w("royal.Client.writeManifest: Cached manfiest exists but no image (%s)", config.getImageFilepath())
+                download = true
+            end
+            return cachedManifest, download
         end
         Log.d("royal.Client:callback__ads() - Saving manifest to cache")
         writeFile(config.getConfigFilename(), contents)
@@ -129,7 +141,7 @@ function Client.new(self)
             if download then
                 local resources = downloadResources()
                 resources.done(function()
-                    -- @todo Should this add the sprite frames immediately?
+                    Log.i("royal.Client.fetchConfig: Loading plist @ path (%s)", config.getPlistFilepath())
                     cc.SpriteFrameCache:getInstance():addSpriteFrames(config.getPlistFilepath())
                     plistLoaded = true
                     promise.resolve(manifest)

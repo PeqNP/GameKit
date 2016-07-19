@@ -181,7 +181,7 @@ end
 
 function shim.TakeScreenShot()
     local promise = Promise()
-    local path = cc.FileUtils:getInstance():getWritablePath() .. "screen.png"
+    local path = shim.GetWritablePath() .. "screen.png"
     cc.utils:captureScreen(function(succeed, outputFile)
         if succeed then
             Log.i("Screenshot saved at (%s)", outputFile)
@@ -251,12 +251,20 @@ end
 
 -- ----- File Utilities -----
 
+function shim.GetWritablePath()
+    return cc.FileUtils:getInstance():getWritablePath()
+end
+
 function shim.GetFullFilepath(path)
     return cc.FileUtils:getInstance():fullPathForFilename(path)
 end
 
 function shim.AddSearchPath(path)
     cc.FileUtils:getInstance():addSearchPath(path)
+end
+
+function shim.FileExists(path)
+    return cc.FileUtils:getInstance():isFileExist(path)
 end
 
 -- ----- Scheduler -----

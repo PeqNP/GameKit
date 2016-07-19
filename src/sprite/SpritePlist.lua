@@ -77,6 +77,7 @@ function SpritePlist.new(self)
         even occassionaly fails to work on iOS.
         cc.Director:getInstance():getTextureCache():addImageAsync(imageName, textureLoaded)
         --]]
+        Log.i("SpritePlist.loadFrames: Loading image into cache (%s)", imageName)
         cc.Director:getInstance():getTextureCache():addImage(imageName)
         textureLoaded()
         return promise

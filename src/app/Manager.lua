@@ -2,6 +2,8 @@
 -- @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
 --
 
+require("Logger")
+
 local AppSetupNotificationRequest = require("app.request.AppSetupNotificationRequest")
 
 local Manager = Class()

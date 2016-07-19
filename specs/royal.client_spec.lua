@@ -17,6 +17,11 @@ local AdManifest = require("royal.AdManifest")
 local Client = require("royal.Client")
 local AdUnit = require("royal.AdUnit")
 local Error = require("Error")
+local System = require("shim.System")
+
+System.FileExists = function(path)
+    return true
+end
 
 describe("Client", function()
     local subject
