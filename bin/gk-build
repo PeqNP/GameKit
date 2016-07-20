@@ -9,6 +9,10 @@
 # run this script while in runtime-src.
 #
 
+# FIXME
+echo "NOTE: This must be ran from Cocos2d-x/frameworks/runtime-src"
+echo
+
 platform=$1
 mode=$2
 
