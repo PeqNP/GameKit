@@ -4,7 +4,7 @@ import os
 # Network pod aliases
 POD_NETWORKS = {
     "AdColony": "pod 'AdColony', '~> 2.6'"
-  , "AdMob": "pod 'Google-Mobile-Ads-SDK', '~> 7.0'"
+  , "AdMob": "pod 'Google-Mobile-Ads-SDK', '~> 7.8'"
   , "Chartboost": "pod 'ChartboostSDK', '~> 6.0'"
   , "Leadbolt": "pod 'Leadbolt-iOS-SDK', :git => 'https://github.com/PeqNP/Leadbolt-iOS-SDK.git', :tag => '6.0.0'"
   , "Vungle": "pod 'VungleSDK-iOS', '~> 3.2'"

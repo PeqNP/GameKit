@@ -21,6 +21,7 @@ local Manager = Class()
 
 -- Graduated timeout intervals.
 local TIMEOUT = {15, 30, 60, 120, 240, 600}
+local SHORT_TIMEOUT = 1.0
 
 function Manager.new(self)
     local adaptor
@@ -52,7 +53,11 @@ function Manager.new(self)
             return
         end
         delayInProgress = true
-        shim.DelayCall(private.rebuildRequests, getNextDelay())
+        private.rebuildRequestsWithDelay(getNextDelay())
+    end
+
+    function private.rebuildRequestsWithDelay(delay)
+        shim.DelayCall(private.rebuildRequests, delay)
     end
 
     function private.cacheAds(ads)
@@ -154,12 +159,12 @@ function Manager.new(self)
         local deferred = Promise()
         promise.done(function(response)
             request.setState(AdState.Complete)
-            private.rebuildRequests()
             if response.isSuccess() then
                 deferred.resolve(response.isClicked(), response.getReward())
             else
                 deferred.reject(response.getError())
             end
+            private.rebuildRequestsWithDelay(SHORT_TIMEOUT)
         end)
         promise.fail(function(response)
             request.setState(AdState.Complete)

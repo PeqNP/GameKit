@@ -653,8 +653,8 @@ describe("AdManager", function()
                             assert.equal(AdState.Complete, requestv.getState())
                         end)
 
-                        it("should cache ad immediately", function()
-                            assert.stub(bridge.cache).was.called()
+                        it("should cache ad after short delay", function()
+                            assert.stub(shim.DelayCall).was.called()
                         end)
                     end)
 
