@@ -32,27 +32,36 @@ function Logger.new(self)
         level = _level
     end
 
+    function self.noMessage()
+        Logger.pipe(string.format("S: Logging event was not provided with message!"))
+    end
+
     function self.d(message, ...)
+        if not message then self.noMessage() return end
         if level > LogLevel.Debug then return end
         Logger.pipe(string.format("D: " .. message, ...))
     end
 
     function self.i(message, ...)
+        if not message then self.noMessage() return end
         if level > LogLevel.Info then return end
         Logger.pipe(string.format("I: " .. message, ...))
     end
 
     function self.w(message, ...)
+        if not message then self.noMessage() return end
         if level > LogLevel.Warning then return end
         Logger.pipe(string.format("W: " .. message, ...))
     end
 
     function self.e(message, ...)
+        if not message then self.noMessage() return end
         if level > LogLevel.Error then return end
         Logger.pipe(string.format("E: " .. message, ...))
     end
 
     function self.s(message, ...)
+        if not message then self.noMessage() return end
         Logger.pipe(string.format("S: " .. message, ...))
     end
 
