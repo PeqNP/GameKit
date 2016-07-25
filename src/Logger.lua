@@ -34,6 +34,7 @@ function Logger.new(self)
 
     function self.noMessage()
         Logger.pipe(string.format("S: Logging event was not provided with message!"))
+        Logger.pipe(debug.traceback())
     end
 
     function self.d(message, ...)
