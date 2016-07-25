@@ -285,7 +285,7 @@ describe("modules.ad", function()
         local c
 
         before_each(function()
-            response = {success=false, error="An error"}
+            response = {success=false, error="ID (1): Ad has not been registered"}
             stub(bridge, "sendAsync", response, call)
             r, c = subject.show(request)
         end)
@@ -307,7 +307,7 @@ describe("modules.ad", function()
         end)
 
         it("should have set correct error on response", function()
-            assert.equals("An error", r.getError())
+            assert.equals("ID (1): Ad has not been registered", r.getError())
         end)
     end)
 
@@ -355,7 +355,7 @@ describe("modules.ad", function()
 
         context("when caching is unsuccessful", function()
             before_each(function()
-                c_response = "{\"success\": false, \"id\": 10, \"error\": \"An error\"}"
+                c_response = "{\"success\": false, \"id\": 10, \"error\": \"ID (10): Ad has not been registered\"}"
                 ad__cached(c_response)
             end)
 
@@ -377,7 +377,7 @@ describe("modules.ad", function()
             end)
 
             it("should have set the error", function()
-                assert.equals("An error", response.getError())
+                assert.equals("ID (10): Ad has not been registered", response.getError())
             end)
         end)
     end)

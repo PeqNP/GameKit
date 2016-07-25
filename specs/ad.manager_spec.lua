@@ -264,6 +264,30 @@ describe("AdManager", function()
         end)
     end)
 
+    describe("show ad request", function()
+        context("when the request fails", function()
+            local responsei
+            local promisei
+            local showAdReturn
+
+            before_each(function()
+                responsei = BridgeResponse(false, nil, "ID (1): Ad is not registered")
+                promisei = BridgeCall()
+                stub(bridge, "show", responsei, promise)
+                local adRequest = AdRequest()
+                showAdReturn = subject.showAdRequest(adRequest)
+            end)
+
+            it("should return nil", function()
+                assert.falsy(showAdReturn)
+            end)
+
+            it("should set an error", function()
+                assert.equal(subject.getError(), "ID (1): Ad is not registered")
+            end)
+        end)
+    end)
+
     describe("adding ad modules", function()
         local requests
         local adb

@@ -9,6 +9,7 @@ describe("AdRespose", function()
         subject = BridgeResponse(1, 10, nil)
         assert.truthy(subject.isSuccess())
         assert.truthy(10, subject.getId())
+        assert.falsy(subject.getError())
     end)
 
     it("should be successful when success is true", function()
