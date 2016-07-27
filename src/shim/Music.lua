@@ -59,7 +59,7 @@ function Music.new(self)
     end
 
     function self.FadeTo(to, length, bgPath)
-        Log.d("Music.FadeTo: Playing music to (%s) length (%s) path (%s)...", to, length, bgPath)
+        Log.d("Music.FadeTo: Will fade music to (%s) length (%s) path (%s)", to, length, bgPath)
         local p = Promise()
         -- Always set the bg path so that when the sound is turned back on
         -- it can be loaded.
@@ -67,36 +67,33 @@ function Music.new(self)
             _bgPath = bgPath
         end
         if not isOn then
-            Log.d("fadeTo Off")
+            Log.d("Music.FadeTo: Music not on")
             p.resolve()
             return p
         end
-        Log.d("Starting music...")
+        Log.d("Music.FadeTo: Fading music")
         if tweenId then
-            Log.w("Attempting to fade music in before the previous transition is over!")
+            Log.w("Music.FadeTo: Attempting to fade music in before the previous transition is over!")
             shim.UnscheduleFunc(tweenId)
             tweenId = nil
         end
         local from
-        --if cc.SimpleAudioEngine:getInstance():isMusicPlaying() then
+        -- Note: When a consumer provides a bgPath, it means they want to fade in to a new song.
         if bgPath then
-            -- This is for sanity only For some reason, isMusicPlaying always
-            -- returns true... why? I don't know! But once it starts working
-            -- again this should be removed and the above if statement re-instated.
             self.Stop(true)
-            Log.d("Not playing. Load: "..bgPath)
+            Log.d("Music.FadeTo: Currently not playing music. Will load path (%s)", bgPath)
             from = 0.0
             self.Play(bgPath, true)
             self.SetVolume(0)
         else
             from = engine:getMusicVolume()
-            Log.d("Playing music @ volume (%s)", from)
+            Log.d("Music.FadeTo: Currently playing music @ volume (%s)", from)
         end
         local tweenEndTime = gettime() + length
-        local function tweenTick()
+        local function onEnterFrame(event)
             local diff = tweenEndTime - gettime()
             if diff <= 0.0 then
-                Log.d("Music finished")
+                Log.d("Music.FadeTo: Finished fading music")
                 self.SetVolume(to)
                 shim.UnscheduleFunc(tweenId)
                 tweenId = nil
@@ -114,7 +111,7 @@ function Music.new(self)
             end
             self.SetVolume(volume)
         end
-        tweenId = shim.ScheduleFunc(tweenTick, 0, false)
+        tweenId = shim.ScheduleFunc(onEnterFrame, 0, false)
         return p
     end
 end

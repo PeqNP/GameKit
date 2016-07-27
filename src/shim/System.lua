@@ -38,6 +38,12 @@ function shim.GetRandomPoint(sprite)
     return cc.p(x, y)
 end
 
+function shim.GetMidPoint()
+    local size = shim.GetVisibleSize()
+    local origin = shim.GetOrigin()
+    return cc.p(origin.x + (size.width / 2), origin.y + (size.height / 2))
+end
+
 --
 -- Returns a point which represents the position of a location.
 --
@@ -278,28 +284,16 @@ end
 --
 -- @return number - ID of script registration
 --
-function shim.ScheduleFunc(fn, priority, paused)
-    return director:getScheduler():scheduleScriptFunc(fn, priority, paused)
+function shim.ScheduleFunc(fn, interval, paused)
+    Log.d("shim.ScheduleFunc: fn (%s) interval (%s) paused (%s)", fn, interval, paused)
+    return director:getScheduler():scheduleScriptFunc(fn, interval, paused)
 end
 
 -- @todo Find pauseScheduleFunc
 
 function shim.UnscheduleFunc(scheduleId)
+    Log.d("shim.ScheduleFunc: Unschedule scheduleId (%s)", scheduleId)
     director:getScheduler():unscheduleScriptEntry(scheduleId)
-end
-
-function shim.GetMidPoint()
-    local size = shim.GetVisibleSize()
-    local origin = shim.GetOrigin()
-    return cc.p(origin.x + (size.width / 2), origin.y + (size.height / 2))
-end
-
---
--- Delay N seconds before executing call.
---
-function shim.DelayCall(fn, delay)
-    local sequence = shim.Sequence(shim.Delay(delay), shim.Call(fn))
-    shim.RunAction(sequence)
 end
 
 -- ----- Objects ------
@@ -437,6 +431,14 @@ end
 
 function shim.TransitionFade(t, scene)
     return cc.TransitionFade:create(t, scene)
+end
+
+--
+-- Delay N seconds before executing call.
+--
+function shim.DelayCall(fn, delay)
+    local sequence = shim.Sequence(shim.Delay(delay), shim.Call(fn))
+    shim.RunAction(sequence)
 end
 
 -- ----- Conversions -----
