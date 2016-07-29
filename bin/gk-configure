@@ -302,6 +302,7 @@ def get_main_keys(platform):
       , "##UGF-APP-BUILD##": project.build
       , "##UGF-EXECUTABLE##": project.executable
       , "##UGF-HOCKEY-APP-ID##": project.ios.hockeyappid
+      , "##UGF-FABRIC-ID##": project.android.fabricid
       , "##UGF-FACEBOOK-ID##": project.android.facebookid
       , "##UGF-DESIGN-WIDTH##": project.design["width"]
       , "##UGF-DESIGN-HEIGHT##": project.design["height"]
@@ -355,6 +356,8 @@ def configure_android_targets(networks, project, source, cocos, stage):
             appconfig.append(interpolator.interpolate("templates/project/android/application/adcolony"))
     # @todo If Facebook, add.
     appconfig.append(interpolator.interpolate("templates/project/android/application/facebook"))
+    # @todo If Fabric (Twitter), add.
+    appconfig.append(interpolator.interpolate("templates/project/android/application/fabric"))
 
     keys["##UGF-APP-CONFIG##"] = "\n\n".join(appconfig)
 

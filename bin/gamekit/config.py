@@ -93,8 +93,9 @@ class KeystoreConfig (object):
         return ["filepath", "password", "keyalias", "keypassword"]
 
 class AndroidConfig (object):
-    def __init__(self, facebookid=None, keystore=None):
+    def __init__(self, facebookid=None, fabricid=None, keystore=None):
         self.facebookid = facebookid
+        self.fabricid = fabricid
         if keystore:
             self.keystore = KeystoreConfig(**keystore)
         else:
@@ -157,6 +158,7 @@ class ProjectConfig (object):
         config.pop("path")
         config["android"] = {
             "facebookid": self.android.facebookid,
+            "fabricid": self.android.fabricid,
             "keystore": self.android.keystore.__dict__
         }
         config["ios"] = {
