@@ -31,7 +31,6 @@ function Config.fromJson(jsonBlob)
     local dict = json.decode(jsonBlob)
     local ads = {}
     for _, c in ipairs(dict["ads"]) do
-        -- @fixme Should call MediationAdConfig.fromDictionary() class method from within MediationConfig.fromDictionary
         local config = AdConfig.fromDictionary(c)
         table.insert(ads, config)
     end

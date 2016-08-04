@@ -1,6 +1,5 @@
 --
--- Provides the Ad network; which provides a client interface to download
--- a JSON format of MediationAdConfig[].
+-- Provides ability to fetch mediation (ad) configuration from a server.
 --
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
@@ -24,7 +23,6 @@ function Service.new(self)
 
     function self.fetchConfig()
         Log.i("mediation.Service:fetchConfig() - Downloading mediation from (%s)", url)
-
         local defer = Promise()
         local promise = http.get(url, HTTPResponseType.String)
         promise.done(function(status, contents)
