@@ -100,11 +100,16 @@ function Client.new(self)
             -- Make sure all assets exist. Note: even if the assets exist, they may still be
             -- in an invalid state, which is not part of the checks.
             if not shim.FileExists(config.getPlistFilepath()) then
-                Log.w("royal.Client.writeManifest: Cached manfiest exists but no plist (%s)", config.getPlistFilepath())
+                Log.w("royal.Client.writeManifest: Cached manifest exists but no plist (%s)", config.getPlistFilepath())
                 download = true
             end
             if not shim.FileExists(config.getImageFilepath()) then
-                Log.w("royal.Client.writeManifest: Cached manfiest exists but no image (%s)", config.getImageFilepath())
+                Log.w("royal.Client.writeManifest: Cached manifest exists but image does not exist (%s)", config.getImageFilepath())
+                download = true
+            end
+            local imageData = shim.GetFileData(config.getImageFilepath())
+            if not imageData then
+                Log.w("royal.Client.writeManifest: Cached manifest exists but image is corrupt (%s)", config.getImageFilepath())
                 download = true
             end
             return cachedManifest, download
