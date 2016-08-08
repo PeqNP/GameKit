@@ -1,0 +1,21 @@
+{
+    "version": 1,
+    "ads": [
+        {
+            "adnetwork": 2,
+            "adtype": 2,
+            "adimpressiontype": 1,
+            "frequency": 80,
+            "impression": 5,
+            "click": 25
+        },
+        {
+            "adnetwork": 5,
+            "adtype": 2,
+            "adimpressiontype": 1,
+            "frequency": 20,
+            "impression": 5,
+            "click": 20 
+        }
+    ]
+}
