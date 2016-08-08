@@ -57,6 +57,12 @@ function Client.new(self)
         end
     end
 
+    local function removeAllFiles()
+        shim.RemoveFile(config.getConfigFilename())
+        shim.RemoveFile(config.getPlistFilepath())
+        shim.RemoveFile(config.getImageFilepath())
+    end
+
     local function getRequest(file, responseType, callback)
         local request = http.get(url .. file, responseType)
         request.done(function(status, contents)
@@ -141,6 +147,7 @@ function Client.new(self)
             local manifest, download = writeManifest(contents)
             if not manifest then
                 promise.reject(Error(1, "Manifest failed to be decoded"))
+                removeAllFiles()
                 return
             end
             if download then
@@ -148,11 +155,26 @@ function Client.new(self)
                 resources.done(function()
                     Log.i("royal.Client.fetchConfig: Loading plist @ path (%s)", config.getPlistFilepath())
                     cc.SpriteFrameCache:getInstance():addSpriteFrames(config.getPlistFilepath())
+                    local adUnits = manifest.getAdUnits()
+                    -- Sanity: make sure all frames are available.
+                    if adUnits and #adUnits > 0 then
+                        for _, unit in adUnits do
+                            local imageName = unit.getBannerName()
+                            local frame = shim.GetSpriteFrame(imageName)
+                            -- Destroy cache and redownload at another time.
+                            if not frame then
+                                promise.reject(Error(3, "royal.Client.fetchConfig: One or more of the downloaded images is corrupt."))
+                                removeAllFiles()
+                                return
+                            end
+                        end
+                    end
                     plistLoaded = true
                     promise.resolve(manifest)
                 end)
                 resources.fail(function()
                     promise.reject(Error(2, "Failed to download resources"))
+                    removeAllFiles()
                 end)
             else
                 cc.SpriteFrameCache:getInstance():addSpriteFrames(config.getPlistFilepath())
@@ -161,6 +183,7 @@ function Client.new(self)
         end)
         request.fail(function(status, _error)
             promise.reject(Error(status, _error))
+            removeAllFiles()
         end)
         return promise
     end

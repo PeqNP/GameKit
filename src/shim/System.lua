@@ -277,6 +277,10 @@ function shim.FileExists(path)
     return cc.FileUtils:getInstance():isFileExist(path)
 end
 
+function shim.RemoveFile(path)
+    return cc.FileUtils:getInstance():removeFile(path)
+end
+
 -- ----- Scheduler -----
 
 --
@@ -320,6 +324,10 @@ function shim.SpriteButton(normal, selected, disabled, callback)
         button:registerScriptTapHandler(callback)
     end
     return button
+end
+
+function shim.GetSpriteFrame(name)
+    return cc.SpriteFrameCache:getInstance():getSpriteFrame(name)
 end
 
 -- ----- Utility ------
