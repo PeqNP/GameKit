@@ -54,6 +54,7 @@ end
 --
 function shim.GetPointForLocation(location, sprite, padding)
     local size = shim.GetVisibleSize()
+    local origin = shim.GetOrigin()
     local x, y
     if location == Location.Random then
         location = math.random(Location.MIN, Location.MAX-1) -- -1 to remove 'Random'
@@ -65,32 +66,32 @@ function shim.GetPointForLocation(location, sprite, padding)
     local wpad = (bbox.width / 2) + padding -- Width padding
     local hpad = (bbox.height / 2) + padding -- height padding
     if location == Location.TopLeft then
-        x = wpad
-        y = size.height - hpad
+        x = origin.x + wpad
+        y = origin.y + (size.height - hpad)
     elseif location == Location.Top then
-        x = size.width / 2
-        y = size.height - hpad
+        x = origin.x + (size.width / 2)
+        y = origin.y + (size.height - hpad)
     elseif location == Location.TopRight then
-        x = size.width - wpad
-        y = size.height - hpad
+        x = origin.x + (size.width - wpad)
+        y = origin.y + (size.height - hpad)
     elseif location == Location.Right then
-        x = size.width - wpad
-        y = size.height / 2
+        x = origin.x + (size.width - wpad)
+        y = origin.y + (size.height / 2)
     elseif location == Location.BottomRight then
-        x = size.width - wpad
-        y = hpad + BOTTOM_AD_HEIGHT + BUTTON_PADDING
+        x = origin.x + size.width - wpad
+        y = origin.y + (hpad + BOTTOM_AD_HEIGHT + BUTTON_PADDING)
     elseif location == Location.Bottom then
-        x = size.width / 2
-        y = hpad + BOTTOM_AD_HEIGHT + BUTTON_PADDING
+        x = origin.x + size.width / 2
+        y = origin.y + (hpad + BOTTOM_AD_HEIGHT + BUTTON_PADDING)
     elseif location == Location.BottomLeft then
-        x = wpad
-        y = hpad + BOTTOM_AD_HEIGHT + BUTTON_PADDING
+        x = origin.x + wpad
+        y = origin.y + (hpad + BOTTOM_AD_HEIGHT + BUTTON_PADDING)
     elseif location == Location.Left then
-        x = wpad
-        y = size.height / 2
+        x = origin.x + wpad
+        y = origin.y + (size.height / 2)
     elseif location == Location.Center then
-        x = size.width / 2
-        y = (size.height / 2) + BOTTOM_AD_HEIGHT
+        x = origin.x + (size.width / 2)
+        y = origin.y + ((size.height / 2) + BOTTOM_AD_HEIGHT)
     else
         Log.e("Invalid location (%s)", tostring(location))
     end
