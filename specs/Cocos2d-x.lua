@@ -247,6 +247,10 @@ function cc.FileUtils:fullPathForFilename(filename)
     return "/Cocos2d-x/" .. filename
 end
 
+function cc.FileUtils:removeFile(path)
+    return true
+end
+
 cc.GLProgramCache = class()
 
 function cc.GLProgramCache:getInstance()

@@ -265,10 +265,6 @@ function shim.GetFullFilepath(path)
     return cc.FileUtils:getInstance():fullPathForFilename(path)
 end
 
-function shim.GetFileData(path)
-    return cc.FileUtils:getInstance():getDataFromFile(path)
-end
-
 function shim.AddSearchPath(path)
     cc.FileUtils:getInstance():addSearchPath(path)
 end

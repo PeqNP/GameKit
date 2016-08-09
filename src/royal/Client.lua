@@ -113,11 +113,6 @@ function Client.new(self)
                 Log.w("royal.Client.writeManifest: Cached manifest exists but image does not exist (%s)", config.getImageFilepath())
                 download = true
             end
-            local imageData = shim.GetFileData(config.getImageFilepath())
-            if not imageData then
-                Log.w("royal.Client.writeManifest: Cached manifest exists but image is corrupt (%s)", config.getImageFilepath())
-                download = true
-            end
             return cachedManifest, download
         end
         Log.d("royal.Client:callback__ads() - Saving manifest to cache")
@@ -158,7 +153,7 @@ function Client.new(self)
                     local adUnits = manifest.getAdUnits()
                     -- Sanity: make sure all frames are available.
                     if adUnits and #adUnits > 0 then
-                        for _, unit in adUnits do
+                        for _, unit in ipairs(adUnits) do
                             local imageName = unit.getBannerName()
                             local frame = shim.GetSpriteFrame(imageName)
                             -- Destroy cache and redownload at another time.
