@@ -412,7 +412,7 @@ def configure_android_gradle(cocos, stage, source, project):
     gradle = GradleConfigBuilder(filepath=stagepath)
     # @todo If AdMob
     # @todo If Facebook
-    gradle.add("dependencies", "compile 'com.facebook.android:facebook-android-sdk:4.+'")
+    gradle.add("dependencies", "compile 'com.facebook.android:facebook-android-sdk:4.1.0'")
     # @todo If GooglePlay Services
     gradle.add("dependencies", "compile 'com.google.android.gms:play-services-ads:8.4.0'")
     # @todo If Twitter

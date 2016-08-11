@@ -38,7 +38,7 @@ function build_android()
     # @todo It may be useful to display an ERROR when attempting to build for
     # 'release' and the keystore has not yet been setup.
     gk-keystore check
-    cocos run -p android --android-studio --ndk-mode=$mode
+    cocos run -p android --android-studio --ndk-mode=$mode --mode=$mode
 }
 
 function build_ios()
