@@ -119,7 +119,7 @@ class GradleConfigBuilder (object):
         for entry in self.registry[:]:
             for idx, item in enumerate(entry[:]):
                 if subject in item:
-                    item = item.replace(subject, replacement)
+                    item = item.replace(subject, str(replacement))
                     entry[idx] = item
             registry.append(entry)
         self.registry = registry

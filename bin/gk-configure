@@ -436,8 +436,8 @@ def configure_android_gradle(cocos, stage, source, project):
         gradle.replace("RELEASE_KEY_PASSWORD", "\"{}\"".format(project.android.keystore.keypassword))
     # Update bundle
     gradle.replace("com.upstartillustration.GameTools", project.get_bundle("android"))
-    gradle.replace("UGF_APP_BUILD", project.build)
     gradle.replace("UGF_APP_VERSION", project.version)
+    gradle.replace("UGF_APP_BUILD", project.build)
     gradle.save(gradlepath)
 
 if __name__ == "__main__":
