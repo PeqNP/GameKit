@@ -336,8 +336,32 @@ function shim.p3(x, y, z)
     return {x=x, y=y, z=z}
 end
 
+local shim_delt_time = false -- Use delta time
+local shim_base_time = gettime() -- Base time
+local shim_incr_time = gettime() -- Incremented CPU time since base time was set.
+function shim.SetTime(t)
+    shim_delt_time = true
+    shim_base_time = t
+    shim_incr_time = gettime()
+end
+
 function shim.GetTime()
+    if shim_delt_time then
+        return (shim_base_time + (gettime() - shim_incr_time)) * 1.0
+    end
     return gettime()
+end
+
+function shim.UpdateTimeFromServer()
+    local NTPClient = require("ntp.Client")
+    local client = NTPClient()
+    response = client.requestTime()
+    if response.isSuccess() then
+        Log.i("shim.UpdateTimeFromServer: date (%s)", response.getDate())
+        return
+    end
+    -- Set to gettime()
+    Log.w("shim.UpdateTimeFromServer: Failed to update time from server (%s)", response.getError())
 end
 
 -- --------------------
