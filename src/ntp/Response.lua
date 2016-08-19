@@ -38,6 +38,10 @@ function Response.new(self)
 
     local date_format = "(%d+) (%d+)-(%d+)-(%d+) (%d+):(%d+):(%d+)"
     function self.getEpoch()
+        if not sucess then
+            Log.w("NTP.Response.getEpoch: Attempting to get epoch when request failed. Returning current time.")
+            return gettime()
+        end
         local parts = string.split(date, " ")
         -- Take the first three parts of the date:
         -- 1. ms 2. YY-MM-DD 3. HH:MM:SS
