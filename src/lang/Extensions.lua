@@ -233,6 +233,24 @@ function table.euclid(table1)
     return result
 end
 
+function table.slice(tbl, first, last, step)
+  local sliced = {}
+  for i = first or 1, last or #tbl, step or 1 do
+    sliced[#sliced+1] = tbl[i]
+  end
+  return sliced
+end
+
+function table.join(tbl, delimiter)
+    local len = #tbl
+    if len == 0 then return "" end
+    local s = tbl[1]
+    for i = 2, len do
+        s = s .. delimiter .. tbl[i]
+    end
+    return s
+end
+
 --[[ Reverse order of ipairs
 
 @param table to reverse values for

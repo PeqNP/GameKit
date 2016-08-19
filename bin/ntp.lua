@@ -10,6 +10,5 @@ require("Logger")
 local NTPClient = require("ntp.Client")
 local client = NTPClient()
 response = client.requestTime()
-Log.i("NTPResponse: date (%s) time (%s) success (%s) error (%s)", response.getDate(), response.getEpochTime(), response.isSuccess(), response.getError())
-
+Log.i("NTPResponse: date (%s) time (%s) success (%s) error (%s)", response.getDate(), response.getEpoch(), response.isSuccess(), response.getError())
 os.exit(0)

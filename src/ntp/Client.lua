@@ -53,7 +53,7 @@ function Client.new(self)
             return NTPResponse(nil, false, "Error in receiving: " .. err)
         end
         
-        if string.find(line, "UTC") then
+        if line and string.find(line, "UTC") then
             return NTPResponse(line, true, nil)
         end
 

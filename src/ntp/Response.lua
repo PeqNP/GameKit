@@ -15,13 +15,36 @@ function Response.new(self)
         err = e
     end
 
+    -- Removing leading zero.
+    local function lz(num)
+        local n = string.format("%u", tostring(num))
+        if not n then assert(false, "number is nil") end
+        --print("n", n)
+        return tonumber(n)
+    end
+
+    -- Prepend current century to year.
+    local function century(year)
+        if string.len(year) >= 4 then
+            return year
+        end
+        local century = string.sub(os.date("%Y"), 1, 2)
+        return tonumber(century .. tostring(year))
+    end
+
     function self.getDate()
         return date
     end
 
-    function self.getEpochTime()
-        -- TODO:
-        return date
+    local date_format = "(%d+) (%d+)-(%d+)-(%d+) (%d+):(%d+):(%d+)"
+    function self.getEpoch()
+        local parts = string.split(date, " ")
+        -- Take the first three parts of the date:
+        -- 1. ms 2. YY-MM-DD 3. HH:MM:SS
+        parts = table.slice(parts, 1, 3)
+        local date_only = table.join(parts, " ")
+        local ms, year, month, day, hour, minute, second, _, _, _, _, _ = date_only:match(date_format)
+        return os.time({day=lz(day), month=lz(month), year=century(year), hour=lz(hour), min=lz(minute), sec=lz(second)})
     end
 
     function self.isSuccess()
