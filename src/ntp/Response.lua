@@ -38,8 +38,8 @@ function Response.new(self)
 
     local date_format = "(%d+) (%d+)-(%d+)-(%d+) (%d+):(%d+):(%d+)"
     function self.getEpoch()
-        if not sucess then
-            Log.w("NTP.Response.getEpoch: Attempting to get epoch when request failed. Returning current time.")
+        if not success then
+            Log.w("NTP.Response.getEpoch: Attempting to get epoch when request failed")
             return nil
         end
         local parts = string.split(date, " ")

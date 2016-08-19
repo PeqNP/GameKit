@@ -355,10 +355,11 @@ end
 
 function shim.UpdateTimeFromServer()
     local client = NTPClient()
-    response = client.requestTime()
-    if response.isSuccess() then
-        Log.i("shim.UpdateTimeFromServer: date (%s)", response.getDate())
-        shim.SetTime(response.getEpoch())
+    local response = client.requestTime()
+    local epoch = response.getEpoch()
+    if epoch then
+        Log.i("shim.UpdateTimeFromServer: date (%s) epoch (%s)", response.getDate(), epoch)
+        shim.SetTime(epoch)
         return
     end
     Log.w("shim.UpdateTimeFromServer: Failed to update time from server (%s)", response.getError())
