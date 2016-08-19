@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+# Run any script that uses the Signal lib.
+#
+
+filename=$1
+if [ "$filename" == "" ]; then
+    echo "Signal file not provided"
+    exit 1
+fi
+
+export LUA_PATH="/usr/local/share/lua/5.2/?.lua;/usr/local/share/lua/5.2/?/init.lua;/usr/local/lib/lua/5.2/?.lua;/usr/local/lib/lua/5.2/?/init.lua;./?.lua;$HOME/git/GameKit/?.lua;$HOME/git/GameKit/specs/?.lua;$HOME/git/GameKit/src/?.lua"
+
+lua $filename
