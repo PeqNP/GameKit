@@ -40,7 +40,7 @@ function Response.new(self)
     function self.getEpoch()
         if not sucess then
             Log.w("NTP.Response.getEpoch: Attempting to get epoch when request failed. Returning current time.")
-            return gettime()
+            return nil
         end
         local parts = string.split(date, " ")
         -- Take the first three parts of the date:
@@ -51,7 +51,7 @@ function Response.new(self)
         local epoch = os.time({day=lz(day), month=lz(month), year=century(year), hour=lz(hour), min=lz(minute), sec=lz(second)})
         if not epoch then
             Log.w("NTP.Response.getEpoch: Failed to compute epoch for date (%s)", date_only)
-            return gettime()
+            return nil
         end
         return epoch
     end

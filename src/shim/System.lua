@@ -9,6 +9,7 @@ require "Logger"
 
 local Error = require("Error")
 local Promise = require("Promise")
+local NTPClient = require("ntp.Client")
 
 local shim = {}
 
@@ -353,15 +354,15 @@ function shim.GetTime()
 end
 
 function shim.UpdateTimeFromServer()
-    local NTPClient = require("ntp.Client")
     local client = NTPClient()
     response = client.requestTime()
     if response.isSuccess() then
         Log.i("shim.UpdateTimeFromServer: date (%s)", response.getDate())
+        shim.SetTime(response.getEpoch())
         return
     end
-    -- Set to gettime()
     Log.w("shim.UpdateTimeFromServer: Failed to update time from server (%s)", response.getError())
+    shim.SetTime(gettime())
 end
 
 -- --------------------
