@@ -21,7 +21,7 @@ function Client.new(self)
         port = p or TIME_SERVER_PORT
     end
 
-    function self.requestTime()
+    function self.requestTime(timeout)
         local client, err = socket.tcp()
         if err then
             return NTPResponse(nil, false, "Could not create TCP socket: " .. err)
@@ -29,7 +29,9 @@ function Client.new(self)
 
         Log.i("NTP.client.requestTime: Connecting to NTP @ %s:%s", host, port)
 
-        client:settimeout(2.0, "t")
+        if timeout and timeout > 0.0 then
+            client:settimeout(timeout, "t")
+        end
         client:connect(host, port)
         
         --[[ Where is the 'err' coming from?
@@ -57,7 +59,7 @@ function Client.new(self)
             return NTPResponse(line, true, nil)
         end
 
-        return NTPResponse(nil, false, "Bad result from server: " .. err)
+        return NTPResponse(nil, false, "Bad result from server: " .. line)
     end
 end
 
