@@ -72,8 +72,23 @@ function clearbit(x, p)
   return hasbit(x, p) and x - p or x
 end
 
--- Convenience function returns time in sub-second precision.
-gettime = socket.gettime
+local t_gettime = socket.gettime
+local t_base_time -- Base time
+local t_incr_time -- Incremented CPU time since base time was set.
+function settime(t)
+    t = tonumber(t)
+    Log.i("lang.Extensions.settime: Setting system time to (%s)", t)
+    t_base_time = t * 1.0
+    t_incr_time = t_gettime()
+end
+
+function gettime()
+    if t_base_time then
+        --Log.i("t_base_time (%s) t_incr_time (%s) gettime() %s", t_base_time, t_incr_time, gettime())
+        return t_base_time + (t_gettime() - t_incr_time)
+    end
+    return t_gettime()
+end
 
 -- 
 -- Create shallow copy of table.

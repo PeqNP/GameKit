@@ -337,31 +337,8 @@ function shim.p3(x, y, z)
     return {x=x, y=y, z=z}
 end
 
-local shim_base_time -- Base time
-local shim_incr_time -- Incremented CPU time since base time was set.
-function shim.SetTime(t)
-    shim_base_time = t * 1.0
-    shim_incr_time = gettime()
-end
-
 function shim.GetTime()
-    if shim_base_time then
-        --Log.i("shim_base_time (%s) shim_incr_time (%s) gettime() %s", shim_base_time, shim_incr_time, gettime())
-        return shim_base_time + (gettime() - shim_incr_time)
-    end
     return gettime()
-end
-
-function shim.UpdateTimeFromServer(timeout)
-    local client = NTPClient()
-    local response = client.requestTime(timeout)
-    local epoch = response.getEpoch()
-    if epoch then
-        Log.i("shim.UpdateTimeFromServer: date (%s) epoch (%s)", response.getDate(), epoch)
-        shim.SetTime(epoch)
-        return
-    end
-    Log.w("shim.UpdateTimeFromServer: Failed to update time from server (%s)", response.getError())
 end
 
 -- --------------------
