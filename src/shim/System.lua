@@ -239,6 +239,10 @@ function shim.GetWinSizeInPixels()
     return director:getWinSizeInPixels()
 end
 
+function shim.GetContentScaleFactor()
+    return director:getContentScaleFactor()
+end
+
 -- ----- Actions ------
 
 function shim.RunAction(action)

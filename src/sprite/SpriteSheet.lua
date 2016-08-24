@@ -5,6 +5,7 @@
 --
 
 local Frame = require("sprite.Frame")
+local System = require("shim.System")
 
 local SpriteSheet = Class()
 
@@ -82,8 +83,8 @@ function SpriteSheet.new(self)
             Log.i("Sheet: Loading texture (%s)...", textureName)
             texture = cc.Director:getInstance():getTextureCache():addImage(textureName)
         end
-        self.width = texture:getPixelsWide() / cols
-        self.height = texture:getPixelsHigh() / rows
+        self.width = (texture:getPixelsWide() / cols) / System.GetContentScaleFactor()
+        self.height = (texture:getPixelsHigh() / rows) / System.GetContentScaleFactor()
         --Log.d("Texture size w(%s) h(%s)", self.width, self.height)
         local orderedFrames = {}
         for idx, frame in pairs(frames) do
