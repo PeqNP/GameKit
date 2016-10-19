@@ -15,6 +15,7 @@ function AdFactory.new(self)
     local queues = {}
     local lastError = false
     local private = {}
+    local counters = {}
 
     function self.init(_configs)
         configs = _configs
@@ -24,6 +25,7 @@ function AdFactory.new(self)
         local groups = private.getGroupedConfigs()
         for adType, c in ipairs(groups) do
             queues[adType] = private.getQueueForConfigs(c)
+            counters[adType] = 0
             Log.d("MediationAdFactory.init: AdType %s has %d config(s)", adType, queues[adType] and #queues[adType] or 0)
         end
     end
@@ -152,7 +154,6 @@ function AdFactory.new(self)
         return queues[adType]
     end
 
-    local interval = 0
     function self.nextAd(adType)
         local queue = queues[adType]
         if not queue then
@@ -163,10 +164,13 @@ function AdFactory.new(self)
             return nil
         end
 
-        interval = interval + 1
+        local counter = counters[adType]
+        local interval = counter + 1
         if interval > #queue then
             interval = 1
         end
+        Log.d("Next ad type (%d) interval (%d)", adType, interval)
+        counters[adType] = interval
         return queue[interval]
     end
 end
