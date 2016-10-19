@@ -10,6 +10,7 @@ local MediationConfig = require("mediation.Config")
 local AdManager = require("ad.Manager")
 local Error = require("Error")
 local Promise = require("Promise")
+local Bridge = require("bridge.Bridge")
 local BridgeResponse = require("bridge.BridgeResponse")
 
 local ServerManager = require("ad.ServerManager")
@@ -20,7 +21,8 @@ describe("ServerManager - when no service is provided", function()
     local service
 
     before_each(function()
-        bridge = require("bridge.modules.ad")
+        bridge = mock(require("bridge.modules.ad"), true)
+        stub(bridge, "configure", mock(BridgeResponse(), true))
         local adConfig = {}
         local networks = {}
         service = MediationService()
@@ -31,7 +33,6 @@ describe("ServerManager - when no service is provided", function()
         local adManager
 
         before_each(function()
-            stub(bridge, "configure", mock(BridgeResponse(), true))
             local factory = mock(MediationAdFactory({}), true)
             adManager = subject.getAdManager(factory)
         end)
@@ -48,6 +49,7 @@ describe("ServerManager - when no service is provided", function()
         local _error
 
         before_each(function()
+            adManager = nil
             _error = nil
             promise = Promise()
             stub(service, "fetchConfig", promise)
@@ -67,7 +69,7 @@ describe("ServerManager - when no service is provided", function()
             context("when the server has configs", function()
                 before_each(function()
                     config = MediationConfig()
-                    stub(config, "getAds", {MediationAdConfig()})
+                    stub(config, "getAds", {MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 100)})
 
                     promise.resolve(config)
                 end)

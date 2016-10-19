@@ -782,7 +782,7 @@ describe("AdManager when no ad factory", function()
             assert.falsy(ad)
         end)
 
-        it("should not return request or ad if the add type is not registered", function()
+        it("should not return request or ad if the ad type is not registered", function()
             local request, ad = subject.getNextAdRequest(AdType.Video)
             assert.falsy(request)
             assert.falsy(ad)

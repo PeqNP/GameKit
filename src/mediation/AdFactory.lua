@@ -28,6 +28,20 @@ function AdFactory.new(self)
             counters[adType] = 0
             Log.d("MediationAdFactory.init: AdType %s has %d config(s)", adType, queues[adType] and #queues[adType] or 0)
         end
+        private.checkQueue()
+    end
+
+    function private.checkQueue()
+        if lastError then
+            return
+        end
+        local numConfigs = 0
+        for _, configs in ipairs(queues) do
+            numConfigs = numConfigs + #configs
+        end
+        if numConfigs == 0 then
+            lastError = Error(ErrorCode.ValueError, "There are no configurations")
+        end
     end
 
     --
@@ -41,7 +55,11 @@ function AdFactory.new(self)
         local cfg = {}
         for _, config in ipairs(configs) do
             if config.getAdType() == adType then
-                table.insert(cfg, config)
+                if config.getFrequency() < 1 then
+                    Log.i("Ad network (%d) type (%d) has no frequency and will not be used.", config.getAdNetwork(), adType)
+                else
+                    table.insert(cfg, config)
+                end
             end
         end
         return cfg

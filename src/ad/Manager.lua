@@ -189,7 +189,7 @@ function Manager.new(self)
     end
 
     -- Returns the respective AdRequest, for the given Ad, if the request
-    -- is ready to show.
+    -- is ready to show. This assumes that all requests are of the same ad type.
     function private.getAdRequestForAd(ad, _requests)
         for _, request in ipairs(_requests) do
             if request.getAdNetwork() == ad.getAdNetwork() and request.getState() == AdState.Ready then
@@ -279,11 +279,12 @@ function Manager.new(self)
         local nextAd = adFactory.nextAd(adType)
         if nextAd then
             local request = private.getAdRequestForAd(nextAd, _requests)
-            if request then -- No ad reqeusts, for this given ad type, are available.
-                --cachedNextAd = nil
+            if request then
                 return request, nextAd
             end
             Log.i("The next ad for network (%s) type (%s) is not ready. Returning first available ad of this type.", nextAd.getAdNetwork(), nextAd.getAdType())
+        else
+            Log.i("The next ad for ad type (%s) is not ready. Returning first available ad of this type.", adType)
         end
         local request = private.getFirstAvailableAdRequest(_requests)
         if request then

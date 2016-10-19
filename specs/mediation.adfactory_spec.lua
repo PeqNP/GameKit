@@ -12,7 +12,7 @@ require "lang.Signal"
 require "specs.Cocos2d-x"
 require "Logger"
 
-Log.setLevel(LogLevel.Info)
+Log.setLevel(LogLevel.Warning)
 
 require "ad.Constants"
 local MediationAdConfig = require("mediation.AdConfig")
@@ -168,33 +168,6 @@ describe("MediationAdFactory", function()
         end)
     end)
 
-    --[[ Fix: premiumAd is after premiumAd2.
-    describe("Intersitial 50/50, w/ two premium at same interval", function()
-        local premiumAd2
-
-        before_each(function()
-            admobAd = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
-            regularAd = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
-            premiumAd = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Premium, 5, 20)
-            premiumAd2 = MediationAdConfig(AdNetwork.iAd, AdType.Interstitial, AdImpressionType.Premium, 5, 30)
-            configs = {admobAd, regularAd, premiumAd, premiumAd2}
-            subject = MediationAdFactory(configs)
-        end)
-
-        it("should produce the correct queue", function()
-            local queue = subject.getQueue(AdType.Interstitial)
-            assert.equals(6, #queue)
-
-            assert.equals(admobAd, queue[1])
-            assert.equals(regularAd, queue[2])
-            assert.equals(admobAd, queue[3])
-            assert.equals(regularAd, queue[4])
-            assert.equals(premiumAd, queue[5])
-            assert.equals(premiumAd2, queue[6])
-        end)
-    end)
-    --]]
-
     describe("Intersitial 50/50, w/ two premium at different interval, first premium is 3, last is 5", function()
         local premiumAd2
 
@@ -220,7 +193,7 @@ describe("MediationAdFactory", function()
         end)
     end)
 
-    describe("when there is no frequency in the ad configurations", function()
+    describe("when the configurations have no frequencies", function()
         before_each(function()
             admobAd = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 0, 5)
             regularAd = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 0, 5)
@@ -232,7 +205,23 @@ describe("MediationAdFactory", function()
             local lerror = subject.getLastError()
             assert.truthy(lerror)
             assert.equals(ErrorCode.ValueError, lerror.getCode())
-            assert.equals("Total frequency (0.00) does not equal 100", lerror.getMessage())
+            assert.equals("There are no configurations", lerror.getMessage())
+        end)
+    end)
+
+    describe("when the frequences do not equal 100%", function()
+        before_each(function()
+            admobAd = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 20, 5)
+            regularAd = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 60, 5)
+            configs = {admobAd, regularAd}
+            subject = MediationAdFactory(configs)
+        end)
+
+        it("should have set the error", function()
+            local lerror = subject.getLastError()
+            assert.truthy(lerror)
+            assert.equals(ErrorCode.ValueError, lerror.getCode())
+            assert.equals("Total frequency (80.00) does not equal 100", lerror.getMessage())
         end)
     end)
 
@@ -261,31 +250,4 @@ describe("MediationAdFactory", function()
             end)
         end)
     end)
-
-    --[[ Fix: last regularAd is in position 5.
-    describe("Intersitial 50/50, w/ two premium at different interval", function()
-        local premiumAd2
-
-        before_each(function()
-            admobAd = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
-            regularAd = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
-            premiumAd = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Premium, 5, 20)
-            premiumAd2 = MediationAdConfig(AdNetwork.iAd, AdType.Interstitial, AdImpressionType.Premium, 3, 30) -- @note before premiumAd
-            configs = {admobAd, regularAd, premiumAd, premiumAd2}
-            subject = MediationAdFactory(configs)
-        end)
-
-        it("should produce the correct queue", function()
-            local queue = subject.getQueue(AdType.Interstitial)
-            assert.equals(6, #queue)
-
-            assert.equals(admobAd, queue[1])
-            assert.equals(regularAd, queue[2])
-            assert.equals(premiumAd2, queue[3])
-            assert.equals(admobAd, queue[4])
-            assert.equals(premiumAd, queue[5])
-            assert.equals(regularAd, queue[6])
-        end)
-    end)
-    --]]
 end)
