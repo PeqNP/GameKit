@@ -169,9 +169,10 @@ function AdFactory.new(self)
         if interval > #queue then
             interval = 1
         end
-        Log.d("Next ad type (%d) interval (%d)", adType, interval)
         counters[adType] = interval
-        return queue[interval]
+        local ad = queue[interval]
+        Log.d("Next ad type (%d) interval (%d) network (%d)", adType, interval, ad.getAdNetwork())
+        return ad
     end
 end
 
