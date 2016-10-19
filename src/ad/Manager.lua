@@ -108,8 +108,9 @@ function Manager.new(self)
         local response, promise = adaptor.cache(request)
 
         if not response.isSuccess() then
+            request.setState(AdState.Complete)
             private.delayRebuildRequests()
-            Log.i("private.cacheAd: Cache response failed")
+            Log.w("private.cacheAd: Failed to cache ad for network (%s) type (%s) error (%s)", ad.getAdNetwork(), ad.getAdType(), response.getError())
             return
         end
 
