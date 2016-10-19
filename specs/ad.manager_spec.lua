@@ -3,7 +3,7 @@ require "specs.Cocos2d-x"
 require "lang.Signal"
 require "Logger"
 
-Log.setLevel(LogLevel.Warning)
+Log.setLevel(LogLevel.Error)
 
 require "ad.Constants"
 
@@ -314,6 +314,7 @@ describe("AdManager", function()
             leadbolt_response = BridgeResponse(true, 120)
 
             function bridge.cache(request)
+                -- NOTE: The AdMob banner ad does not get cached.
                 if request.getAdNetwork() == AdNetwork.AdMob then
                     promisei = BridgeCall()
                     return responsei, promisei
@@ -343,7 +344,7 @@ describe("AdManager", function()
             assert.equal(adb, modules[3])
         end)
 
-        it("should have created two requests for none banner ads", function()
+        it("should have created two requests, none for banner ad", function()
             assert.equal(2, #requests)
         end)
 
@@ -351,7 +352,9 @@ describe("AdManager", function()
             requesti = requests[1]
             requestv = requests[2]
             assert.equal(AdState.Loading, requesti.getState())
+            assert.equal(AdNetwork.AdMob, requesti.getAd().getAdNetwork())
             assert.equal(AdState.Loading, requestv.getState())
+            assert.equal(AdNetwork.AdColony, requestv.getAd().getAdNetwork())
             assert.truthy(promisei)
             assert.truthy(promisev)
         end)
@@ -366,7 +369,7 @@ describe("AdManager", function()
             assert.falsy(subject.showAd(AdType.Video))
         end)
 
-        describe("when the interstitial ad is cached", function()
+        context("when the interstitial ad is cached successfully", function()
             local requesti
             local requestv
 
@@ -538,7 +541,7 @@ describe("AdManager", function()
             end)
         end)
 
-        context("when the ad fails to be cached", function()
+        context("when the interstitial ad fails to be cached", function()
             local delayfn
             local delayval
 
@@ -554,7 +557,10 @@ describe("AdManager", function()
                 promisei.reject(BridgeResponse(false, 100, "Cache failure"))
             end)
 
-            it("should have completed request", function()
+            it("should have completed the request", function()
+                local iad = requesti.getAd()
+                assert.equal(AdNetwork.AdMob, iad.getAdNetwork())
+                assert.equal(AdType.Interstitial, iad.getAdType())
                 assert.equal(AdState.Complete, requesti.getState())
             end)
 
@@ -797,9 +803,15 @@ describe("AdManager when no ad factory", function()
             assert.stub(shim.DelayCall).was.called_with(match._, 30)
         end)
 
-        it("should not have added request to tracked requests", function()
+        it("should have added the request to tracked requests", function()
             local requests = subject.getRequests()
-            assert.equals(0, #requests)
+            assert.equals(1, #requests)
+        end)
+
+        it("should have completed the request immediately", function()
+            local requests = subject.getRequests()
+            local request = requests[1]
+            assert.equals(AdState.Complete, request.getState())
         end)
 
         it("should NOT allow AdMob interstitial ad to be displayed", function()

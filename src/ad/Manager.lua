@@ -106,6 +106,7 @@ function Manager.new(self)
         local request = AdRequest(ad)
         request.setState(AdState.Loading)
         local response, promise = adaptor.cache(request)
+        table.insert(requests, request)
 
         if not response.isSuccess() then
             request.setState(AdState.Complete)
@@ -115,8 +116,6 @@ function Manager.new(self)
         end
 
         Log.d("Cache request success w/ request ID (%s)", response.getId())
-
-        table.insert(requests, request)
         promise.done(function(response)
             if response.isSuccess() then
                 request.setState(AdState.Ready)
