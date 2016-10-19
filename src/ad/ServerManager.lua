@@ -28,7 +28,7 @@ function ServerManager.new(self)
     end
 
     function self.getAdManager(adFactory)
-        Log.d("Registering %d MediationAdConfig(s) with an AdManager", #networks)
+        Log.d("Registering %d MediationAdConfig(s) with AdManager", #networks)
         local adManager = AdManager(bridge, adFactory)
         adManager.configure(adConfig)
         adManager.registerNetworks(networks)
@@ -52,7 +52,7 @@ function ServerManager.new(self)
             Log.i("ServerManager:fetchConfig() - Downloaded mediation network config w/ # configs (%d)", #configs)
             if #configs > 0 then
                 for _, c in ipairs(configs) do
-                    Log.i("ServerManager:fetchConfig() - Network (%d) impression reward (%s) click reward (%s)", c.getAdNetwork(), c.getRewardForImpression() or "", c.getRewardForClick() or "")
+                    Log.i("ServerManager:fetchConfig() - Network (%d) type (%d) impression (%s) click (%s)", c.getAdNetwork(), c.getAdType(), c.getRewardForImpression() or "", c.getRewardForClick() or "")
                 end
 
                 local factory = MediationAdFactory(configs)

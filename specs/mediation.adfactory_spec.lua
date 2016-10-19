@@ -22,6 +22,7 @@ describe("MediationAdFactory", function()
     local subject
     local configs
 
+    local admobBanner
     local admobAd
     local regularAd
     local premiumAd
@@ -29,6 +30,7 @@ describe("MediationAdFactory", function()
 
     describe("Intersitial 50/50, show premium every 5 ads", function()
         before_each(function()
+            admobBanner = MediationAdConfig(AdNetwork.AdMob, AdType.Banner, AdImpressionType.Regular, 100, 10)
             admobAd = MediationAdConfig(AdNetwork.AdMob, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
             regularAd = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Regular, 50, 5)
             premiumAd = MediationAdConfig(AdNetwork.Leadbolt, AdType.Interstitial, AdImpressionType.Premium, 5, 20)
@@ -68,23 +70,26 @@ describe("MediationAdFactory", function()
             assert.falsy(config)
         end)
 
-        describe("next interstitial", function()
-            it("should return correct values", function()
-                assert.equals(admobAd, subject.nextAd(AdType.Interstitial))
-                assert.equals(regularAd, subject.nextAd(AdType.Interstitial))
-                assert.equals(admobAd, subject.nextAd(AdType.Interstitial))
-                assert.equals(regularAd, subject.nextAd(AdType.Interstitial))
-                assert.equals(premiumAd, subject.nextAd(AdType.Interstitial))
-                -- should restart
-                assert.equals(admobAd, subject.nextAd(AdType.Interstitial))
-            end)
+        it("should return correct ads when interleaving ad types", function()
+            assert.equals(admobAd, subject.nextAd(AdType.Interstitial))
+            assert.equals(videoAd, subject.nextAd(AdType.Video))
+            assert.equals(regularAd, subject.nextAd(AdType.Interstitial))
+            assert.equals(videoAd, subject.nextAd(AdType.Video))
         end)
 
-        describe("next video", function()
-            it("should return correct ads", function()
-                assert.equal(videoAd, subject.nextAd(AdType.Video))
-                assert.equal(videoAd, subject.nextAd(AdType.Video))
-            end)
+        it("should round-robin when frequency has been exhausted", function()
+            assert.equals(admobAd, subject.nextAd(AdType.Interstitial))
+            assert.equals(regularAd, subject.nextAd(AdType.Interstitial))
+            assert.equals(admobAd, subject.nextAd(AdType.Interstitial))
+            assert.equals(regularAd, subject.nextAd(AdType.Interstitial))
+            assert.equals(premiumAd, subject.nextAd(AdType.Interstitial))
+            -- should restart
+            assert.equals(admobAd, subject.nextAd(AdType.Interstitial))
+        end)
+
+        it("should always return the video ad", function()
+            assert.equal(videoAd, subject.nextAd(AdType.Video))
+            assert.equal(videoAd, subject.nextAd(AdType.Video))
         end)
     end)
 
