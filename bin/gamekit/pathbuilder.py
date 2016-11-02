@@ -148,12 +148,18 @@ class ProjectPathBuilder (object):
     def path(self, path):
         return os.path.join(self.basepath(), path)
 
+    def get_apptype_ext(self):
+        return self.config.has_app_type() and "-{}".format(self.config.apptype) or ""
+
     def configpath(self):
-        apptype = self.config.apptype and "-{}".format(self.config.apptype) or ""
+        apptype = self.get_apptype_ext()
         return os.path.join(self.basepath(), "config{}.json".format(apptype))
 
     def apptypedir(self):
-        return self.config.apptype and len(self.config.apptype) > 0 and self.config.apptype+"/" or ""
+        return self.config.has_app_type() and self.config.apptype+"/" or ""
+
+    def buildnumberpath(self, platform):
+        return self.path("platform/{}/build{}".format(platform, self.get_apptype_ext()))
 
     def resourcepath(self, platform, resource):
         self.check_platform(platform)

@@ -14,7 +14,7 @@ import sys
 import shutil
 
 from datetime import datetime
-from subprocess  import call
+from subprocess import call
 
 from gamekit import getversion, gethomedir, emptydir, rmdir
 from gamekit.config import configpath, checkconfig, Config, ProjectConfig

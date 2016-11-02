@@ -62,6 +62,9 @@ class Config (object):
     def hasConfig(self):
         return self.basepath and self.remote
 
+    def has_app_type(self):
+        return self.apptype and len(self.apptype)
+
     def save(self, path):
         json_blob = json.dumps(self.__dict__)
         fh = open(path, "w")
