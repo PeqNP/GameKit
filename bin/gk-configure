@@ -302,7 +302,7 @@ def get_main_keys(platform):
         "##UGF-APP-BUNDLE##": project.get_appid(platform)
       , "##UGF-APP-NAME##": project.name
       , "##UGF-APP-VERSION##": project.get_version(platform)
-      , "##UGF-APP-BUILD##": project.build
+      , "##UGF-APP-BUILD##": project.get_build(platform)
       , "##UGF-EXECUTABLE##": project.get_executable(platform)
       , "##UGF-HOCKEY-APP-ID##": project.ios.vendor.get("hockeyappid")
       , "##UGF-FABRIC-ID##": project.android.vendor.get("fabricid")

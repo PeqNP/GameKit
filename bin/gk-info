@@ -31,4 +31,6 @@ if __name__ == "__main__":
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
     print("GameKit Config: basepath ({}) remote ({})".format(config.basepath, config.remote))
-    print("Project: {}{} v{} b{}".format(project.name, config.apptype and " ({})".format(config.apptype) or "", project.version, project.build))
+    print("Project: {}{}".format(project.name, config.apptype and " ({})".format(config.apptype) or ""))
+    for platform in project.get_platforms():
+        print(" - {} v{} b{}".format(platform.get_name(), platform.get_version(), platform.get_build()))

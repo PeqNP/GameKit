@@ -95,7 +95,6 @@ class KeystoreConfig (object):
 class Vendor (object):
     def __init__(self, vendors):
         self.vendors = {}
-        print("vendors", vendors)
         for key, value in vendors.items():
             self.add(key, value)
 
@@ -121,6 +120,12 @@ class PlatformConfig (object):
         self.executable = executable
         self.vendor = Vendor(vendor)
 
+    def get_version(self):
+        return self.version
+    
+    def get_build(self):
+        return 1 # TODO
+
 class AndroidConfig (PlatformConfig):
     def __init__(self, keystore=None, **kv):
         super(AndroidConfig, self).__init__(**kv)
@@ -129,11 +134,17 @@ class AndroidConfig (PlatformConfig):
         else:
             self.keystore = None
 
-class iOSConfig (PlatformConfig):
-    pass
+    def get_name(self):
+        return "Android"
 
-def load_platform_config(platform, class_ref, config):
+class iOSConfig (PlatformConfig):
+    def get_name(self):
+        return "iOS"
+
+def load_platform_config(platform, class_ref, config, project):
     c = config["platform"].get(platform)
+    if "appid" not in c: c["appid"] = project.appid
+    if "version" not in c: c["version"] = project.version
     if c: return class_ref(**c)
     return class_ref()
 
@@ -158,11 +169,14 @@ class ProjectConfig (object):
         self.path = path
         self.__dict__.update(entries)
         self.platform = {
-            "ios": load_platform_config("ios", iOSConfig, entries),
-            "android": load_platform_config("android", AndroidConfig, entries)
+            "ios": load_platform_config("ios", iOSConfig, entries, self),
+            "android": load_platform_config("android", AndroidConfig, entries, self)
         }
         self.graphics = Graphics(**entries["graphics"])
         self.checkvals()
+
+    def check_platform(self, platform):
+        assert platform in self.platform, "Platform is not supported: {}".format(platform)
 
     def get_appid(self, platform):
         """
@@ -170,33 +184,29 @@ class ProjectConfig (object):
         main Application ID.
 
         """
-        if platform in self.platform:
-            appid = self.platform[platform].get("appid")
-            return appid and appid or self.appid
-        return self.appid
+        check_platform(platform)
+        return self.platform[platform].get("appid")
 
     def get_version(self, platform):
         """
         Return a platform's configured version. If not configured, return the project's main version.
 
         """
-        if platform in self.platform:
-            version = self.platform[platform].get("version")
-            return version and version or self.version
-        return self.version
+        check_platform(platform)
+        return self.platform[platform].version
 
     def get_build(self, platform):
-        # TODO
-        return 1
+        check_platform(platform)
+        return self.platform[platform].get_build()
+
+    def get_platforms(self):
+        return self.platform.values()
 
     def checkvals(self):
         for val in self.requiredvals():
             if val not in self.__dict__ or len(str(self.__dict__[val])) < 1:
                 print("Project configuration {} must have value for key '{}'".format(self.path, val))
                 sys.exit(1)
-        for val in self.optionalvals():
-            if val not in self.__dict__:
-                print("Project configuration {} must contain key '{}'".format(self.path, val))
         for val in ["name", "version"]:
             if val not in self.graphics.__dict__:
                 print("Project configuration {} must have value for 'graphics.{}'".format(self.path, val))
@@ -204,9 +214,6 @@ class ProjectConfig (object):
 
     def requiredvals(self):
         return ["graphics", "appid", "name", "version", "device", "orientation", "design", "platform"]
-
-    def optionalvals(self):
-        return ["ios", "android"]
 
     def save(self):
         config = self.__dict__.copy()

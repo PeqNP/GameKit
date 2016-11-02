@@ -61,7 +61,7 @@ if __name__ == "__main__":
     cocos = get_graphics_path_builder(config, project.graphics)
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
-    print("Project: {} v{} b{}".format(project.name, project.version, project.build))
+    print("Project: {}".format(project.name))
 
     # @todo Possibly create a script that copies any _modified_ files, in the currently configured
     # graphics lib repository, back into the current project's file structure. This way, if app icons
