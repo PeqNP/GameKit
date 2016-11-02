@@ -91,7 +91,7 @@ def main(project_name, app_type, git_url, suppress_warnings):
     config.apptype = app_type and app_type or get_app_type(config.path(project_name))
     # Download dependencies
     source = ProjectPathBuilder(config)
-    project = ProjectConfig.load(source.configpath())
+    project = ProjectConfig.load(source)
     cocos = get_graphics_path_builder(config, project.graphics)
     download_cocos(config, cocos, suppress_warnings=suppress_warnings)
 

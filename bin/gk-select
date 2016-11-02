@@ -60,7 +60,7 @@ if __name__ == "__main__":
     config.save(configpath())
 
     source = ProjectPathBuilder(config)
-    project = ProjectConfig.load(source.configpath())
+    project = ProjectConfig.load(source)
     cocos = get_graphics_path_builder(config, project.graphics)
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))

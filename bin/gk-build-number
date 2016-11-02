@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+#
+# Increments and returns the build number for a given environment.
+#
+# @copyright 2016 Upstart Illustration LLC. All rights reserved.
+#
+
+import sys
+
+from subprocess import call
+
+from gamekit import getversion, gethomedir, emptydir, rmdir
+from gamekit.config import configpath, checkconfig, Config, ProjectConfig
+from gamekit.pathbuilder import get_graphics_path_builder, GameKitPathBuilder, StagePathBuilder, ProjectPathBuilder
+from gamekit.buildnumber import BuildNumber
+
+def get_build_number(path):
+    number = BuildNumber(path)
+    number.increment(1)
+    number.save()
+    return number.get_value()
+
+if __name__ == "__main__":
+    import argparse
+
+    valid_options = ["all", "assets", "gamekit", "project", "resource"]
+
+    parser = argparse.ArgumentParser(description="GameKit - Increase, save and return build number for environment")
+    parser.add_argument("platform", help="The platform to increase build number for")
+    args = parser.parse_args()
+
+    config = Config.load(configpath())
+    checkconfig(config)
+
+    source = ProjectPathBuilder(config)
+    gk = GameKitPathBuilder(config)
+    project = ProjectConfig.load(source)
+    project.check_platform(args.platform)
+
+    buildpath = source.buildnumberpath(args.platform)
+    sys.stdout.write(str(get_build_number(buildpath)))
+    sys.exit(0)

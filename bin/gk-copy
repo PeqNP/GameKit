@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
     source = ProjectPathBuilder(config)
     gk = GameKitPathBuilder(config)
-    project = ProjectConfig.load(source.configpath())
+    project = ProjectConfig.load(source)
     cocos = get_graphics_path_builder(config, project.graphics)
 
     print("{}, Time: {}".format(getversion(__file__, "1.0.0"), str(datetime.now())))

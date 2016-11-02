@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     checkconfig(config)
     source = ProjectPathBuilder(config)
-    project = ProjectConfig.load(source.configpath())
+    project = ProjectConfig.load(source)
     version = args.version and args.version or project.graphics.version
     graphics = get_graphics_path_builder(config, project.graphics, version=version)
     print("Cleaning graphics library ({}) version ({}) at ({})".format(graphics.name, version, graphics.basepath()))

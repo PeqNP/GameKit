@@ -7,6 +7,7 @@ import os
 import sys
 
 from gamekit import gethomedir
+from gamekit.buildnumber import BuildNumber
 
 def configpath():
     return os.path.join(gethomedir(), ".gamekit")
@@ -118,6 +119,7 @@ class Vendor (object):
 
 class PlatformConfig (object):
     def __init__(self, appid=None, version=None, executable=None, vendor=None):
+        self.build = 1
         self.appid = appid
         self.version = version
         self.executable = executable
@@ -133,7 +135,7 @@ class PlatformConfig (object):
         return self.executable
     
     def get_build(self):
-        return 1 # TODO
+        return self.build
 
 class AndroidConfig (PlatformConfig):
     def __init__(self, keystore=None, **kv):
@@ -150,12 +152,18 @@ class iOSConfig (PlatformConfig):
     def get_name(self):
         return "iOS"
 
-def load_platform_config(platform, class_ref, config, project):
+def load_platform_config(platform, class_ref, builder, project, config):
     c = config["platform"].get(platform)
     if "appid" not in c: c["appid"] = project.appid
     if "version" not in c: c["version"] = project.version
-    if c: return class_ref(**c)
-    return class_ref()
+    inst = None
+    if c:
+        inst = class_ref(**c)
+    else:
+        inst = class_ref()
+    number = BuildNumber(builder.buildnumberpath(platform))
+    inst.build = number.get_value()
+    return inst
 
 class Graphics (object):
     def __init__(self, name=None, version=None):
@@ -165,24 +173,34 @@ class Graphics (object):
 # Project configuration structure.
 class ProjectConfig (object):
     @staticmethod
-    def load(path):
+    def load(builder):
+        path = builder.configpath()
         if not os.path.isfile(path):
             raise IOError("Project config file does not exist at path {}. Does this project have an app type?".format(path))
         fh = open(path, "r")
         json_blob = fh.read()
         fh.close()
         config = json.loads(json_blob)
-        return ProjectConfig(path, **config)
-
-    def __init__(self, path, **entries):
-        self.path = path
-        self.__dict__.update(entries)
-        self.platform = {
-            "ios": load_platform_config("ios", iOSConfig, entries, self),
-            "android": load_platform_config("android", AndroidConfig, entries, self)
+        project = ProjectConfig(path)
+        project.__dict__.update(config)
+        project.platform = {
+            "ios": load_platform_config("ios", iOSConfig, builder, project, config),
+            "android": load_platform_config("android", AndroidConfig, builder, project, config)
         }
-        self.graphics = Graphics(**entries["graphics"])
-        self.checkvals()
+        project.graphics = Graphics(**config["graphics"])
+        project.checkvals()
+        return project
+
+    def __init__(self, path):
+        self.path = path
+        self.name = None
+        self.appid = None
+        self.version = None
+        self.device = None
+        self.orientation = None
+        self.design = None
+        self.platform = {}
+        self.graphics = None
 
     def check_platform(self, platform):
         assert platform in self.platform, "Platform is not supported: {}".format(platform)

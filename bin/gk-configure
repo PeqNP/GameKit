@@ -468,7 +468,7 @@ if __name__ == "__main__":
     checkconfig(config)
 
     source = ProjectPathBuilder(config)
-    project = ProjectConfig.load(source.configpath())
+    project = ProjectConfig.load(source)
     cocos = get_graphics_path_builder(config, project.graphics)
     ios_gamekit = iOS_GameKitPathBuilder(config)
     android_gamekit = Android_GameKitPathBuilder(config)

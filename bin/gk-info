@@ -27,7 +27,7 @@ if __name__ == "__main__":
     config = Config.load(configpath())
     checkconfig(config)
     source = ProjectPathBuilder(config)
-    project = ProjectConfig.load(source.configpath())
+    project = ProjectConfig.load(source)
     graphics = get_graphics_path_builder(config, project.graphics)
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
