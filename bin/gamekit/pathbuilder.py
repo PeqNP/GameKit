@@ -1,8 +1,9 @@
 #
 # @copyright 2015 Upstart Illustration LLC. All rights reserved.
 #
-
 import os
+
+from subprocess import call
 
 from gamekit import gethomedir
 
@@ -40,11 +41,18 @@ def getrelativepath(libpath, fullpath, relativepath):
     #relativeto: /Users/eric/git/Cocos2dx_3.8.1/frameworks/runtime-src/proj.android/
     #=../../../../../Library/sdk/extras/google/google_play_services/libproject/google-play-services_lib
 
+def get_graphics_path_builder(config, graphics, version=None):
+    selected_version = version and version or graphics.version
+    if graphics.name == "cocos":
+        return CocosPathBuilder(config, version)
+    return None
+
 # Builds Cocos2d-x realted paths.
 class CocosPathBuilder (object):
     # @param Config
     # @param str - Version of Cocos
     def __init__(self, config, version):
+        self.name = "Cocos"
         self.config = config
         self.version = version
 
@@ -95,6 +103,14 @@ class CocosPathBuilder (object):
 
     def gradlepath(self):
         return self.androidprojpath("build.gradle")
+
+    def clean(self):
+        os.chdir(self.basepath())
+        # Removes all unstaged files
+        call(["git", "reset", "HEAD"])
+        call(["git", "checkout", "."])
+        # Removes all untracked files
+        call(["git", "clean", "-f", "-d"])
 
 class StagePathBuilder (object):
     def __init__(self, cocospath):

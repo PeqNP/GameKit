@@ -14,7 +14,7 @@ import sys
 
 from gamekit import getversion
 from gamekit.config import configpath, checkconfig, Config, ProjectConfig
-from gamekit.pathbuilder import CocosPathBuilder, GameKitPathBuilder, ProjectPathBuilder
+from gamekit.pathbuilder import GameKitPathBuilder, ProjectPathBuilder
 from gamekit.interpolator import SimpleInterpolator
 
 VERSION = getversion(__file__, "1.0.0")

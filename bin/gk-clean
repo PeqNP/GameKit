@@ -1,30 +1,20 @@
 #!/usr/bin/env python
 #
-# Cleans a Cocos2d-x project.
+# Cleans a selected graphics library built directory.
 #
 # @copyright 2015 Upstart Illustration LLC. All rights reserved.
 #
-
-from subprocess import call
 
 import os
 
 from gamekit import gethomedir
 from gamekit.config import configpath, checkconfig, Config, ProjectConfig
-from gamekit.pathbuilder import CocosPathBuilder, ProjectPathBuilder
-
-def main(cocos):
-    os.chdir(cocos.basepath())
-    # Removes all unstaged files
-    call(["git", "reset", "HEAD"])
-    call(["git", "checkout", "."])
-    # Removes all untracked files
-    call(["git", "clean", "-f", "-d"])
+from gamekit.pathbuilder import get_graphics_path_builder, ProjectPathBuilder
 
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="GameKit - Clean a Cocos2d-x project")
+    parser = argparse.ArgumentParser(description="GameKit - Clean a graphics project")
     parser.add_argument('--version', help="The version of cocos to clean. Version must be in the format of #.#.# (e.g. 1.0.4)")
     args = parser.parse_args()
 
@@ -36,8 +26,8 @@ if __name__ == "__main__":
         checkconfig(config)
         source = ProjectPathBuilder(config)
         project = ProjectConfig.load(source.configpath())
-        version = project.cocos
+        version = project.graphics.version
 
-    cocos = CocosPathBuilder(config, version)
-    print("Cleaning Cocos2d-x version ({}) at ({})".format(version, cocos.basepath()))
-    main(cocos)
+    builder = get_graphics_path_builder(config, project.graphics, version=version)
+    print("Cleaning graphics library ({}) version ({}) at ({})".format(graphics.name, version, builder.basepath()))
+    builder.clean()

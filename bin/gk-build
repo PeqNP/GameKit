@@ -10,7 +10,7 @@
 #
 
 # FIXME
-echo "NOTE: This must be ran from Cocos2d-x/frameworks/runtime-src"
+echo "NOTE: If graphics lib is Cocos2d-x, this must be ran from Cocos2d-x/frameworks/runtime-src"
 echo
 
 platform=$1

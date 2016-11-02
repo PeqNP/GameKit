@@ -95,14 +95,18 @@ class KeystoreConfig (object):
 class Vendor (object):
     def __init__(self, vendors):
         self.vendors = {}
-        for key, value in vendors:
+        print("vendors", vendors)
+        for key, value in vendors.items():
             self.add(key, value)
 
     def add(self, key, value):
         self.vendors[key] = value
 
+    def has(self, key):
+        return key in self.vendors
+
     def get(self, key):
-        if not key in self.vendords.keys():
+        if not self.has(key):
             raise Exception("Vendor key ({}) is not registered".format(key))
         return self.vendors[key]
 
@@ -129,7 +133,7 @@ class iOSConfig (PlatformConfig):
     pass
 
 def load_platform_config(platform, class_ref, config):
-    c = config.get(platform)
+    c = config["platform"].get(platform)
     if c: return class_ref(**c)
     return class_ref()
 
@@ -153,19 +157,37 @@ class ProjectConfig (object):
     def __init__(self, path, **entries):
         self.path = path
         self.__dict__.update(entries)
-        self.ios = load_platform_config("ios", iOSConfig, entries)
-        self.android = load_platform_config("android", AndroidConfig, entries)
+        self.platform = {
+            "ios": load_platform_config("ios", iOSConfig, entries),
+            "android": load_platform_config("android", AndroidConfig, entries)
+        }
         self.graphics = Graphics(**entries["graphics"])
         self.checkvals()
 
-    def get_bundle(self, platform):
-        # TODO: Look on platform. If none, return main.
-        if type(self.bundle) is dict:
-            bundle = self.bundle.get(platform)
-            if not bundle:
-                raise Exception("Platform {} does not have a configured bundle ID".format(platform))
-            return bundle
-        return self.bundle
+    def get_appid(self, platform):
+        """
+        Return a platform's configured Application ID. If not configured, return the project's
+        main Application ID.
+
+        """
+        if platform in self.platform:
+            appid = self.platform[platform].get("appid")
+            return appid and appid or self.appid
+        return self.appid
+
+    def get_version(self, platform):
+        """
+        Return a platform's configured version. If not configured, return the project's main version.
+
+        """
+        if platform in self.platform:
+            version = self.platform[platform].get("version")
+            return version and version or self.version
+        return self.version
+
+    def get_build(self, platform):
+        # TODO
+        return 1
 
     def checkvals(self):
         for val in self.requiredvals():

@@ -26,7 +26,7 @@ import sys
 
 from gamekit import getversion
 from gamekit.config import configpath, checkconfig, Config, ProjectConfig
-from gamekit.pathbuilder import CocosPathBuilder, StagePathBuilder, ProjectPathBuilder, iOS_GameKitPathBuilder, Android_GameKitPathBuilder, DependenciesPathBuilder
+from gamekit.pathbuilder import get_graphics_path_builder, StagePathBuilder, ProjectPathBuilder, iOS_GameKitPathBuilder, Android_GameKitPathBuilder, DependenciesPathBuilder
 from gamekit.interpolator import Interpolator
 from gamekit.mediation import load_mediation_config
 from gamekit.social import load_social_config
@@ -37,35 +37,37 @@ from gamekit.android.gradle import GradleConfigBuilder
 VERSION = getversion(__file__, "1.0.0")
 
 def interpolate_iospbxprojplist(project, blob):
+    executable = project.get_executable("ios")
     # Global
-    blob = re.sub("productName = GameTools;", "productName = {};".format(project.executable), blob)
-    blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = \"{}\";".format(project.get_bundle("ios")), blob)
+    blob = re.sub("productName = GameTools;", "productName = {};".format(executable), blob)
+    blob = re.sub("PRODUCT_BUNDLE_IDENTIFIER = com.upstartillustration.GameTools;", "PRODUCT_BUNDLE_IDENTIFIER = \"{}\";".format(project.get_appid("ios")), blob)
     # Mobile
-    blob = re.sub("GameTools-mobile\.app", "{}-mobile.app".format(project.executable), blob)
-    blob = re.sub("\/\* GameTools-mobile \*\/", "/* {}-mobile */".format(project.executable), blob)
-    blob = re.sub('"GameTools-mobile"', '"{}-mobile"'.format(project.executable), blob)
-    blob = re.sub('GameTools-mobile', '{}-mobile'.format(project.executable), blob)
+    blob = re.sub("GameTools-mobile\.app", "{}-mobile.app".format(executable), blob)
+    blob = re.sub("\/\* GameTools-mobile \*\/", "/* {}-mobile */".format(executable), blob)
+    blob = re.sub('"GameTools-mobile"', '"{}-mobile"'.format(executable), blob)
+    blob = re.sub('GameTools-mobile', '{}-mobile'.format(executable), blob)
     # Desktop
-    blob = re.sub("GameTools-desktop\.app", "{}-desktop.app".format(project.executable), blob)
-    blob = re.sub("\/\* GameTools-desktop \*\/", "/* {}-desktop */".format(project.executable), blob)
-    blob = re.sub('"GameTools-desktop"', '"{}-desktop"'.format(project.executable), blob)
-    blob = re.sub('GameTools-desktop', '{}-desktop'.format(project.executable), blob)
+    blob = re.sub("GameTools-desktop\.app", "{}-desktop.app".format(executable), blob)
+    blob = re.sub("\/\* GameTools-desktop \*\/", "/* {}-desktop */".format(executable), blob)
+    blob = re.sub('"GameTools-desktop"', '"{}-desktop"'.format(executable), blob)
+    blob = re.sub('GameTools-desktop', '{}-desktop'.format(executable), blob)
     # Final (order matters...)
-    #blob = re.sub("\/\* GameTools \*\/", "/* {} */".format(project.executable), blob)
-    blob = re.sub('"GameTools"', '"{}"'.format(project.executable), blob)
-    #blob = re.sub('= GameTools;', '= {};'.format(project.executable), blob)
+    #blob = re.sub("\/\* GameTools \*\/", "/* {} */".format(executable), blob)
+    blob = re.sub('"GameTools"', '"{}"'.format(executable), blob)
+    #blob = re.sub('= GameTools;', '= {};'.format(executable), blob)
     return blob
 
 def interpolate_iospbxprojxml(project, blob):
+    executable = project.get_executable("ios")
     # Global
-    blob = re.sub("com.upstartillustration.GameTools", project.get_bundle("ios"), blob)
-    blob = re.sub("<string>GameTools</string>", "<string>{}</string>".format(project.get_bundle("ios")), blob)
+    blob = re.sub("com.upstartillustration.GameTools", project.get_appid("ios"), blob)
+    blob = re.sub("<string>GameTools</string>", "<string>{}</string>".format(project.get_appid("ios")), blob)
     # Mobile
-    blob = re.sub("GameTools-mobile\.app", "{}-mobile.app".format(project.executable), blob)
-    blob = re.sub('GameTools-mobile', '{}-mobile'.format(project.executable), blob)
+    blob = re.sub("GameTools-mobile\.app", "{}-mobile.app".format(executable), blob)
+    blob = re.sub('GameTools-mobile', '{}-mobile'.format(executable), blob)
     # Desktop
-    blob = re.sub("GameTools-desktop\.app", "{}-desktop.app".format(project.executable), blob)
-    blob = re.sub('GameTools-desktop', '{}-desktop'.format(project.executable), blob)
+    blob = re.sub("GameTools-desktop\.app", "{}-desktop.app".format(executable), blob)
+    blob = re.sub('GameTools-desktop', '{}-desktop'.format(executable), blob)
     return blob
 
 def interpolate_iosplist(project, blob):
@@ -82,7 +84,8 @@ def interpolate_iosplist(project, blob):
         <string>UIInterfaceOrientationPortrait</string>"""
     blob = re.sub("##UGF-ORIENTATION##", c, blob)
     # Facebook ID
-    if project.android.facebookid:
+    facebookid = project.android.vendor.get("facebookid")
+    if facebookid:
         c = """<key>CFBundleURLTypes</key>
         <array>
             <dict>
@@ -95,7 +98,7 @@ def interpolate_iosplist(project, blob):
         <key>FacebookAppID</key>
         <string>{}</string>
         <key>FacebookDisplayName</key>
-        <string>Blobfish Evolution</string>""".format(project.android.facebookid, project.android.facebookid)
+        <string>Blobfish Evolution</string>""".format(facebookid, facebookid)
         blob = re.sub("##UGF-FACEBOOK##", c, blob)
     return blob
 
@@ -109,9 +112,9 @@ def interpolate_projectconfig(project, blob):
 
 def configure_ios_sdk_dependencies(project, cocos, stage):
     defines = []
-    if project.android.facebookid:
+    if project.android.vendor.has("facebookid"):
         defines.append("#define FACEBOOK_ENABLED")
-    if project.ios.hockeyappid:
+    if project.ios.vendor.has("hockeyappid"):
         defines.append("#define HOCKEYAPP_ENABLED")
     keys = {
         "##UGF-SDK-DEPENDENCIES##": "\n".join(defines)
@@ -122,7 +125,7 @@ def configure_ios_sdk_dependencies(project, cocos, stage):
 # Adds mediation network dependencies to Pods file.
 def configure_ios_pods(pods, project, cocos, stage):
     keys = {
-        "##UGF-EXECUTABLE##": project.executable
+        "##UGF-EXECUTABLE##": project.get_executable("ios")
       , "##UGF-MEDIATION-DEPENDENCIES##": "    " + "\n    ".join(pods)
     }
     interpolator = Interpolator(project, cocos, stage, keys)
@@ -283,7 +286,7 @@ def load_royal(platform, source):
         return None
 
 #
-# Copy mediation.config.json to Cocos2d-x res/ directory.
+# Copy mediation.config.json to respective graphics lib res/ directory.
 #
 # @note This won't work as we can't load resources from code. It's staying here until
 # I can figure out how to turn the default configuration into a Lua file; which seems
@@ -296,14 +299,14 @@ def copy_mediation_config(platform, source, cocos):
 
 def get_main_keys(platform):
     return {
-        "##UGF-APP-BUNDLE##": project.get_bundle(platform)
+        "##UGF-APP-BUNDLE##": project.get_appid(platform)
       , "##UGF-APP-NAME##": project.name
-      , "##UGF-APP-VERSION##": project.version
+      , "##UGF-APP-VERSION##": project.get_version(platform)
       , "##UGF-APP-BUILD##": project.build
-      , "##UGF-EXECUTABLE##": project.executable
-      , "##UGF-HOCKEY-APP-ID##": project.ios.hockeyappid
-      , "##UGF-FABRIC-ID##": project.android.fabricid
-      , "##UGF-FACEBOOK-ID##": project.android.facebookid
+      , "##UGF-EXECUTABLE##": project.get_executable(platform)
+      , "##UGF-HOCKEY-APP-ID##": project.ios.vendor.get("hockeyappid")
+      , "##UGF-FABRIC-ID##": project.android.vendor.get("fabricid")
+      , "##UGF-FACEBOOK-ID##": project.android.vendor.get("facebookid")
       , "##UGF-DESIGN-WIDTH##": project.design["width"]
       , "##UGF-DESIGN-HEIGHT##": project.design["height"]
       , "##UGF-SHOW-FPS##": "false"
@@ -434,10 +437,9 @@ def configure_android_gradle(cocos, stage, source, project):
         gradle.replace("RELEASE_STORE_PASSWORD", "\"{}\"".format(project.android.keystore.password))
         gradle.replace("RELEASE_KEY_ALIAS", "\"{}\"".format(project.android.keystore.keyalias))
         gradle.replace("RELEASE_KEY_PASSWORD", "\"{}\"".format(project.android.keystore.keypassword))
-    # Update bundle
-    gradle.replace("com.upstartillustration.GameTools", project.get_bundle("android"))
-    gradle.replace("UGF_APP_VERSION", project.version)
-    gradle.replace("UGF_APP_BUILD", project.build)
+    gradle.replace("com.upstartillustration.GameTools", project.get_appid("android"))
+    gradle.replace("UGF_APP_VERSION", project.get_version("android"))
+    gradle.replace("UGF_APP_BUILD", project.get_build("android"))
     gradle.save(gradlepath)
 
 if __name__ == "__main__":
@@ -445,7 +447,7 @@ if __name__ == "__main__":
 
     operations = ["dependencies", "lua", "gamekit", "project"]
 
-    parser = argparse.ArgumentParser(description="GameKit - Configure Cocos2d-x with project config")
+    parser = argparse.ArgumentParser(description="GameKit - Configure graphics library")
     parser.add_argument('operations', help="Configuration processes to perform on project: {}".format(", ".join(operations)), nargs="*", default=["all"])
     parser.add_argument('--android', help="Only perform operations for Android platform", dest="android", action="store_true")
     parser.add_argument('--iosmac', help="Only perform operations for iOS/Mac platform", dest="ios", action="store_true")
@@ -466,7 +468,7 @@ if __name__ == "__main__":
 
     source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
-    cocos = CocosPathBuilder(config, project.cocos)
+    cocos = get_graphics_path_builder(config, project.graphics)
     ios_gamekit = iOS_GameKitPathBuilder(config)
     android_gamekit = Android_GameKitPathBuilder(config)
     stage = StagePathBuilder(cocos.basepath())

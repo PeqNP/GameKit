@@ -8,7 +8,7 @@ import shutil
 
 class Interpolator (object):
     # @param PathBuilder
-    # @param CocosPathBuilder
+    # @param IGraphicsPathBuilder
     # @param StagePathBuilder
     # @param dict - contains key/values to interpolate within template
     def __init__(self, project, cocos, stage, keys):

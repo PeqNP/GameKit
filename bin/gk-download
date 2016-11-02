@@ -3,7 +3,7 @@
 # Downloads a GameKit project and all necessary dependencies.
 #
 # Dependencies include:
-# - GameKit Cocos2d-x repository.
+# - GameKit graphics library (i.e. Cocos2d-x).
 # - GameKit-Dependencies (AdColony, etc.)
 #
 # @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
@@ -16,7 +16,7 @@ from subprocess import call
 
 from gamekit import getversion, gethomedir
 from gamekit.config import configpath, checkconfig, get_app_types, Config, ProjectConfig
-from gamekit.pathbuilder import CocosPathBuilder, ProjectPathBuilder
+from gamekit.pathbuilder import get_graphics_path_builder, ProjectPathBuilder
 
 VERSION = getversion(__file__, "1.0.0")
 
@@ -64,14 +64,14 @@ def download_project(config, project_name, git_url=None, suppress_warnings=False
 def download_cocos(config, cocos, suppress_warnings=False):
     cocospath = cocos.basepath()
     if not suppress_warnings and os.path.exists(cocospath):
-        print("Cocos2d-x v({}) already exists at ({})!".format(cocos.version, cocospath))
+        print("Graphics lib {} v({}) already exists at ({})!".format(cocos.name, cocos.version, cocospath))
         print("If you want a clean version of this repository, run gk-clean.")
         print("If the repository is corrupt, delete the folder and run this command again.")
         print
         sys.exit(0)
     elif os.path.exists(cocospath):
         sys.exit(0)
-    print("Downloading Cocos2d-x version ({})...".format(cocos.version))
+    print("Downloading {} v{}...".format(cocos.name, cocos.version))
     remotepath = config.giturl(cocos.foldername())
     print("Cloning ({}) to ({})".format(remotepath, cocospath))
     os.chdir(config.basepath)
@@ -88,7 +88,7 @@ def main(project_name, app_type, git_url, suppress_warnings):
     # Download dependencies
     source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
-    cocos = CocosPathBuilder(config, project.cocos)
+    cocos = get_graphics_path_builder(config, project.graphics)
     download_cocos(config, cocos, suppress_warnings=suppress_warnings)
 
 if __name__ == "__main__":
