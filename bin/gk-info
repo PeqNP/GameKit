@@ -15,7 +15,7 @@ import sys
 
 from gamekit import getversion
 from gamekit.config import configpath, checkconfig, Config, ProjectConfig
-from gamekit.pathbuilder import ProjectPathBuilder
+from gamekit.pathbuilder import get_graphics_path_builder, ProjectPathBuilder
 
 VERSION = getversion(__file__, "1.0.0")
 
@@ -28,9 +28,11 @@ if __name__ == "__main__":
     checkconfig(config)
     source = ProjectPathBuilder(config)
     project = ProjectConfig.load(source.configpath())
+    graphics = get_graphics_path_builder(config, project.graphics)
 
     print("{}, Time: {}".format(VERSION, str(datetime.now())))
     print("GameKit Config: basepath ({}) remote ({})".format(config.basepath, config.remote))
+    print("Using graphics library {} v{}".format(graphics.name, graphics.version))
     print("Project: {}{}".format(project.name, config.apptype and " ({})".format(config.apptype) or ""))
     for platform in project.get_platforms():
         print(" - {} v{} b{}".format(platform.get_name(), platform.get_version(), platform.get_build()))

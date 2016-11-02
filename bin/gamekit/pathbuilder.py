@@ -44,7 +44,7 @@ def getrelativepath(libpath, fullpath, relativepath):
 def get_graphics_path_builder(config, graphics, version=None):
     selected_version = version and version or graphics.version
     if graphics.name == "cocos":
-        return CocosPathBuilder(config, version)
+        return CocosPathBuilder(config, selected_version)
     return None
 
 # Builds Cocos2d-x realted paths.
@@ -52,7 +52,7 @@ class CocosPathBuilder (object):
     # @param Config
     # @param str - Version of Cocos
     def __init__(self, config, version):
-        self.name = "Cocos"
+        self.name = "Cocos2d-x"
         self.config = config
         self.version = version
 
