@@ -9,8 +9,6 @@ from datetime import datetime
 from subprocess import call
 
 import os
-import re
-import shutil
 import sys
 
 from gamekit import getversion
@@ -19,7 +17,7 @@ from gamekit.pathbuilder import get_graphics_path_builder, StagePathBuilder, Pro
 from gamekit.interpolator import Interpolator
 from gamekit.mediation import load_mediation_config
 
-VERSION = getversion(__file__, "1.0.0")
+VERSION = getversion(__file__, "2.0.0")
 
 def run_pre_select(config, source, cocos):
     script = source.path("gamekit/pre-select")
@@ -36,6 +34,11 @@ def run_post_select(config, source, cocos):
 def install_pods(cocos):
     os.chdir(cocos.iosmacprojpath())
     call(["pod", "install"])
+
+def run(*commands):
+    if call(commands) != 0:
+        print("Failed to run command: {}".format(" ".join(commands)))
+        sys.exit(1)
 
 if __name__ == "__main__":
     import argparse
@@ -68,8 +71,8 @@ if __name__ == "__main__":
     # are updated, etc. they are reflected back into the project's directory.
     print("To avoid Xcode crashing make sure to close the GameKit project before running!")
     run_pre_select(config, source, cocos)
-    call(["gk-clean", "--version", project.graphics.version])
-    call(["gk-configure"])
-    call(["gk-copy"])
+    run("gk-clean", "--version", project.graphics.version)
+    run("gk-configure")
+    run("gk-copy")
     run_post_select(config, source, cocos)
     install_pods(cocos)

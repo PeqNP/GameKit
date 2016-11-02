@@ -19,15 +19,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     config = Config.load(configpath())
-    version = None
-    if args.version:
-        version = args.version
-    else:
-        checkconfig(config)
-        source = ProjectPathBuilder(config)
-        project = ProjectConfig.load(source.configpath())
-        version = project.graphics.version
+    if not config.project:
+        print("Nothing to clean. No project is selected.")
+        sys.exit(0)
 
-    builder = get_graphics_path_builder(config, project.graphics, version=version)
-    print("Cleaning graphics library ({}) version ({}) at ({})".format(graphics.name, version, builder.basepath()))
-    builder.clean()
+    checkconfig(config)
+    source = ProjectPathBuilder(config)
+    project = ProjectConfig.load(source.configpath())
+    version = args.version and args.version or project.graphics.version
+    graphics = get_graphics_path_builder(config, project.graphics, version=version)
+    print("Cleaning graphics library ({}) version ({}) at ({})".format(graphics.name, version, graphics.basepath()))
+    graphics.clean()

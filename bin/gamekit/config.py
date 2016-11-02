@@ -120,8 +120,14 @@ class PlatformConfig (object):
         self.executable = executable
         self.vendor = Vendor(vendor)
 
+    def get_appid(self):
+        return self.appid
+
     def get_version(self):
         return self.version
+
+    def get_executable(self):
+        return self.executable
     
     def get_build(self):
         return 1 # TODO
@@ -184,20 +190,34 @@ class ProjectConfig (object):
         main Application ID.
 
         """
-        check_platform(platform)
-        return self.platform[platform].get("appid")
+        self.check_platform(platform)
+        return self.platform[platform].get_appid()
 
     def get_version(self, platform):
         """
         Return a platform's configured version. If not configured, return the project's main version.
 
         """
-        check_platform(platform)
+        self.check_platform(platform)
         return self.platform[platform].version
 
     def get_build(self, platform):
-        check_platform(platform)
+        self.check_platform(platform)
         return self.platform[platform].get_build()
+
+    def get_executable(self, platform):
+        self.check_platform(platform)
+        return self.platform[platform].get_executable()
+
+    def has_vendor(self, platform, vendor):
+        return self.get_platform(platform).vendor.has(vendor)
+
+    def get_vendor(self, platform, vendor):
+        return self.get_platform(platform).vendor.get(vendor)
+
+    def get_platform(self, platform):
+        self.check_platform(platform)
+        return self.platform[platform]
 
     def get_platforms(self):
         return self.platform.values()

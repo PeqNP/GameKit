@@ -34,7 +34,7 @@ from gamekit.iap import load_iap_config
 from gamekit.royal import load_royal_config
 from gamekit.android.gradle import GradleConfigBuilder
 
-VERSION = getversion(__file__, "1.0.0")
+VERSION = getversion(__file__, "2.0.0")
 
 def interpolate_iospbxprojplist(project, blob):
     executable = project.get_executable("ios")
@@ -84,7 +84,7 @@ def interpolate_iosplist(project, blob):
         <string>UIInterfaceOrientationPortrait</string>"""
     blob = re.sub("##UGF-ORIENTATION##", c, blob)
     # Facebook ID
-    facebookid = project.android.vendor.get("facebookid")
+    facebookid = project.get_vendor("android", "facebookid")
     if facebookid:
         c = """<key>CFBundleURLTypes</key>
         <array>
@@ -112,9 +112,9 @@ def interpolate_projectconfig(project, blob):
 
 def configure_ios_sdk_dependencies(project, cocos, stage):
     defines = []
-    if project.android.vendor.has("facebookid"):
+    if project.has_vendor("android", "facebookid"):
         defines.append("#define FACEBOOK_ENABLED")
-    if project.ios.vendor.has("hockeyappid"):
+    if project.has_vendor("ios", "hockeyappid"):
         defines.append("#define HOCKEYAPP_ENABLED")
     keys = {
         "##UGF-SDK-DEPENDENCIES##": "\n".join(defines)
@@ -304,9 +304,9 @@ def get_main_keys(platform):
       , "##UGF-APP-VERSION##": project.get_version(platform)
       , "##UGF-APP-BUILD##": project.get_build(platform)
       , "##UGF-EXECUTABLE##": project.get_executable(platform)
-      , "##UGF-HOCKEY-APP-ID##": project.ios.vendor.get("hockeyappid")
-      , "##UGF-FABRIC-ID##": project.android.vendor.get("fabricid")
-      , "##UGF-FACEBOOK-ID##": project.android.vendor.get("facebookid")
+      , "##UGF-HOCKEY-APP-ID##": project.get_vendor("ios", "hockeyappid")
+      , "##UGF-FABRIC-ID##": project.get_vendor("android", "fabricid")
+      , "##UGF-FACEBOOK-ID##": project.get_vendor("android", "facebookid")
       , "##UGF-DESIGN-WIDTH##": project.design["width"]
       , "##UGF-DESIGN-HEIGHT##": project.design["height"]
       , "##UGF-SHOW-FPS##": "false"
@@ -431,12 +431,13 @@ def configure_android_gradle(cocos, stage, source, project):
     gradle.add("dependencies", "compile 'com.google.code.gson:gson:2.6.1'")
     gradle.add("dependencies", "compile 'com.android.support:appcompat-v7:23.1.1'")
     # Update key store
-    if project.android.keystore:
-        keystorepath = source.path(project.android.keystore.filepath)
+    keystore = project.get_platform("android").keystore
+    if keystore:
+        keystorepath = source.path(keystore.filepath)
         gradle.replace("RELEASE_STORE_FILE", "\"{}\"".format(keystorepath))
-        gradle.replace("RELEASE_STORE_PASSWORD", "\"{}\"".format(project.android.keystore.password))
-        gradle.replace("RELEASE_KEY_ALIAS", "\"{}\"".format(project.android.keystore.keyalias))
-        gradle.replace("RELEASE_KEY_PASSWORD", "\"{}\"".format(project.android.keystore.keypassword))
+        gradle.replace("RELEASE_STORE_PASSWORD", "\"{}\"".format(keystore.password))
+        gradle.replace("RELEASE_KEY_ALIAS", "\"{}\"".format(keystore.keyalias))
+        gradle.replace("RELEASE_KEY_PASSWORD", "\"{}\"".format(keystore.keypassword))
     gradle.replace("com.upstartillustration.GameTools", project.get_appid("android"))
     gradle.replace("UGF_APP_VERSION", project.get_version("android"))
     gradle.replace("UGF_APP_BUILD", project.get_build("android"))
