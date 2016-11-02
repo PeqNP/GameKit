@@ -92,24 +92,51 @@ class KeystoreConfig (object):
     def requiredvals(self):
         return ["filepath", "password", "keyalias", "keypassword"]
 
-class AndroidConfig (object):
-    def __init__(self, facebookid=None, fabricid=None, keystore=None):
-        self.facebookid = facebookid
-        self.fabricid = fabricid
+class Vendor (object):
+    def __init__(self, vendors):
+        self.vendors = {}
+        for key, value in vendors:
+            self.add(key, value)
+
+    def add(self, key, value):
+        self.vendors[key] = value
+
+    def get(self, key):
+        if not key in self.vendords.keys():
+            raise Exception("Vendor key ({}) is not registered".format(key))
+        return self.vendors[key]
+
+#
+# Platform Configs
+#
+
+class PlatformConfig (object):
+    def __init__(self, appid=None, version=None, executable=None, vendor=None):
+        self.appid = appid
+        self.version = version
+        self.executable = executable
+        self.vendor = Vendor(vendor)
+
+class AndroidConfig (PlatformConfig):
+    def __init__(self, keystore=None, **kv):
+        super(AndroidConfig, self).__init__(**kv)
         if keystore:
             self.keystore = KeystoreConfig(**keystore)
         else:
             self.keystore = None
 
-class iOSConfig (object):
-    def __init__(self, hockeyappid=None):
-        self.hockeyappid = hockeyappid
+class iOSConfig (PlatformConfig):
+    pass
 
 def load_platform_config(platform, class_ref, config):
-    if config.get(platform):
-        c = config.get(platform)
-        return class_ref(**c)
+    c = config.get(platform)
+    if c: return class_ref(**c)
     return class_ref()
+
+class Graphics (object):
+    def __init__(self, name=None, version=None):
+        self.name = name
+        self.version = version
 
 # Project configuration structure.
 class ProjectConfig (object):
@@ -128,9 +155,11 @@ class ProjectConfig (object):
         self.__dict__.update(entries)
         self.ios = load_platform_config("ios", iOSConfig, entries)
         self.android = load_platform_config("android", AndroidConfig, entries)
+        self.graphics = Graphics(**entries["graphics"])
         self.checkvals()
 
     def get_bundle(self, platform):
+        # TODO: Look on platform. If none, return main.
         if type(self.bundle) is dict:
             bundle = self.bundle.get(platform)
             if not bundle:
@@ -146,9 +175,13 @@ class ProjectConfig (object):
         for val in self.optionalvals():
             if val not in self.__dict__:
                 print("Project configuration {} must contain key '{}'".format(self.path, val))
+        for val in ["name", "version"]:
+            if val not in self.graphics.__dict__:
+                print("Project configuration {} must have value for 'graphics.{}'".format(self.path, val))
+
 
     def requiredvals(self):
-        return ["cocos", "bundle", "name", "executable", "version", "build", "device", "orientation", "design"]
+        return ["graphics", "appid", "name", "version", "device", "orientation", "design", "platform"]
 
     def optionalvals(self):
         return ["ios", "android"]
@@ -156,14 +189,8 @@ class ProjectConfig (object):
     def save(self):
         config = self.__dict__.copy()
         config.pop("path")
-        config["android"] = {
-            "facebookid": self.android.facebookid,
-            "fabricid": self.android.fabricid,
-            "keystore": self.android.keystore.__dict__
-        }
-        config["ios"] = {
-            "hockeyappid": self.ios.hockeyappid
-        }
+        config["android"]["vendor"] = config["android"]["vendor"].vendors
+        config["ios"]["vendor"] = config["ios"]["ios"].vendors
         fh = open(self.path, "w")
         fh.write(json.dumps(config, indent=4, separators=(',', ': '), sort_keys=True))
         fh.close()
