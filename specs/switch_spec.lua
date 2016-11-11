@@ -1,7 +1,5 @@
 require "lang.Signal"
 
--- @tood All of the signalspec class tests should be in this test.
-
 local Person = enum(1, 'Unknown', 'Me', 'You')
 
 describe("switch", function()

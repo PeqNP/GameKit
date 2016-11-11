@@ -17,6 +17,12 @@ function enum(start, ...)
         start = start + 1
     end
     e['MAX'] = start - 1
+    e.has = function (value)
+        if value ~= nil and value >= e['MIN'] and value <= e['MAX'] then
+            return true
+        end
+        return false
+    end
     return e
 end
 
