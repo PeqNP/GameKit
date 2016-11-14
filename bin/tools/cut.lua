@@ -4,6 +4,15 @@
   @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --]]
 
+function set_path()
+    local path = arg[0]
+    local index = string.find(path, "/[^/]*$")
+    if not index or index == 0 then return end
+    local parent_dir = path:sub(0, index)
+    package.path = parent_dir .. "?.lua;" .. package.path
+end
+set_path()
+
 require("stdout")
 
 print("cut.lua v1.0a, Feb 27th 2015. Copyright (C) 2015 Upstart Illustration LLC")

@@ -5,6 +5,15 @@ $ lua animate.lua /path/to/my-gif-[without numbers or extension] /path/to/animat
 
 --]]
 
+function set_path()
+    local path = arg[0]
+    local index = string.find(path, "/[^/]*$")
+    if not index or index == 0 then return end
+    local parent_dir = path:sub(0, index)
+    package.path = parent_dir .. "?.lua;" .. package.path
+end
+set_path()
+
 function convert_to_gifs(source, start_frame, end_frame)
     print("Flattening images...")
     for frame=start_frame,end_frame do
