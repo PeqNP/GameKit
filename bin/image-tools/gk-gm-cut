@@ -3,10 +3,10 @@
   Cuts images in specified sized chunks.
 
   - 256 256 is the width,height respectively of each frame within the image.
-  - 1 4 is the number of rows,columns respectively.
+  - 1 4 is the number of rows and columns respectively.
   - We can deduce that this image file has a total size of 1024x256 (256 width * 4 cols) (256 * 1 row)
 
-  $ lua cut.lua  ~/path/to/source.png ~/path/to/output 256 256 1 4
+  $ lua cut.lua  ~/path/to/source.png ~/path/to/output 256 256 4 1
 
   @copyright 2015 Upstart Illustration LLC. All rights reserved.
 --]]
