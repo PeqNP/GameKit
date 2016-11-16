@@ -58,6 +58,11 @@ The features that the native GameKit libraries provide is equivalent to Cocos's 
 
 Except for rudimentary Facebook analytic support, GameKit is already feature parity with SDKBOX on the iOS platform. As soon as Android is complete it will be nearly feature parity for both platforms. Analytics and other plugins will be added as needed.
 
+If you wish to use the image manipluation scripts in bin/image you must install the imagemagick libs. On macOS this can be done using brew.
+```
+$ brew install imagemagick
+```
+
 ## Testing
 
 GameKit uses `busted`, a BDD testing framework, to test its code. The script `bin/runspecs` can be ran in your project's main directory to easily run your tests. It will ensure all necessary include paths are added to the `busted` command before running your specs.
