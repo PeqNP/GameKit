@@ -1,3 +1,4 @@
+#!/usr/local/bin/lua
 --[[
   Cuts images in specified sized chunks.
 
