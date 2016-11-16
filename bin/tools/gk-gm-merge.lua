@@ -1,3 +1,4 @@
+#!/usr/local/bin/lua
 --[[
   Merges multiple images into one image.
 

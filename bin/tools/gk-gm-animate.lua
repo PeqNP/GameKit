@@ -1,3 +1,4 @@
+#!/usr/local/bin/lua
 --[[ Creates an animated gif.
 
 Will create a looping animated gif with a 10 millisecond delay.
