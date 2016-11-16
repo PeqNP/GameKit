@@ -58,7 +58,7 @@ The features that the native GameKit libraries provide is equivalent to Cocos's 
 
 Except for rudimentary Facebook analytic support, GameKit is already feature parity with SDKBOX on the iOS platform. As soon as Android is complete it will be nearly feature parity for both platforms. Analytics and other plugins will be added as needed.
 
-If you wish to use the image manipluation scripts in bin/image you must install the imagemagick libs. On macOS this can be done using brew.
+If you wish to use the image manipluation scripts in bin/image-tools you must install the imagemagick libs. On macOS this can be done using brew.
 ```
 $ brew install imagemagick
 ```
