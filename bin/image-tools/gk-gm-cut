@@ -22,6 +22,7 @@ end
 set_path()
 
 require("stdout")
+local util = require("util")
 
 print("cut.lua v1.0a, Feb 27th 2015. Copyright (C) 2015 Upstart Illustration LLC")
 print("Current time:", os.date("%c", os.time()))
@@ -29,11 +30,7 @@ print("")
 
 local function cut_image(source, target, size, grid, offset)
     local total = 0
-    local num_tiles = grid.rows * grid.columns
-    if num_tiles < 2 then
-        num_tiles = 2
-    end
-    local num_chars = string.len(tostring(num_tiles))
+    local num_chars = util.get_char_size(grid.rows * grid.columns)
 
     for row=1, grid.rows do
         for col=1, grid.columns do

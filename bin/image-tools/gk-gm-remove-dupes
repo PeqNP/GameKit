@@ -18,18 +18,7 @@ end
 set_path()
 
 require("stdout")
-
-local function get_files(directory)
-    local files = {}
-    local pfile = io.popen('ls -a "'..directory..'"')
-    for filename in pfile:lines() do
-        if filename ~= "." and filename ~= ".." then
-            table.insert(files, filename)
-        end
-    end
-    pfile:close()
-    return files
-end
+local util = require("util")
 
 --[[
   Remove all dupe tile files within 'path'. 'path' must have an end whack.
@@ -39,7 +28,7 @@ local function remove_dupe_images(path)
     print("Removing dupes\n")
     local hashes = {}
     local dupes = 0
-    local files = get_files(path)
+    local files = util.get_files(path)
     for _, file in ipairs(files) do
         local fullpath = path..file
         local pfile = io.popen('md5 ' .. fullpath)
@@ -66,7 +55,7 @@ end
 
 local function reindex_image_files(path)
     stdout.r("\rReindexing...")
-    local files = get_files(path)
+    local files = util.get_files(path)
     local num_files = #files
     local num_chars = string.len(tostring(num_files))
     if num_chars < 2 then
@@ -80,7 +69,7 @@ local function reindex_image_files(path)
         os.rename(path..old_name, path..new_name)
     end
     -- Remove the 'm-' part from the filename.
-    files = get_files(path)
+    files = util.get_files(path)
     for _, old_name in ipairs(files) do
         local new_name = string.sub(old_name, 3)
         os.rename(path..old_name, path..new_name)
