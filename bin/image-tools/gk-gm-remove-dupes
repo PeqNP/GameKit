@@ -1,0 +1,102 @@
+#!/usr/local/bin/lua
+--[[
+  Removes dupes within provided path.
+
+  $ gk-gm-remove-dupes path/to/dir/containing/tileset/images
+
+  @copyright 2015 Upstart Illustration LLC. All rights reserved.
+
+  ]]
+
+function set_path()
+    local path = arg[0]
+    local index = string.find(path, "/[^/]*$")
+    if not index or index == 0 then return end
+    local parent_dir = path:sub(0, index)
+    package.path = parent_dir .. "?.lua;" .. package.path
+end
+set_path()
+
+require("stdout")
+
+local function get_files(directory)
+    local files = {}
+    local pfile = io.popen('ls -a "'..directory..'"')
+    for filename in pfile:lines() do
+        if filename ~= "." and filename ~= ".." then
+            table.insert(files, filename)
+        end
+    end
+    pfile:close()
+    return files
+end
+
+--[[
+  Remove all dupe tile files within 'path'. 'path' must have an end whack.
+
+  ]]
+local function remove_dupe_images(path)
+    print("Removing dupes\n")
+    local hashes = {}
+    local dupes = 0
+    local files = get_files(path)
+    for _, file in ipairs(files) do
+        local fullpath = path..file
+        local pfile = io.popen('md5 ' .. fullpath)
+        local lines = pfile:lines()
+        local hash
+        local i = 0
+        for line in pfile:lines() do
+            local index = string.find(line, "=")
+            hash = string.sub(line, index + 2) -- +2 removes the '= ', leaving only the hash
+        end
+        if hashes[ hash ] then
+            dupes = dupes + 1
+            stdout.r("\r" .. string.rep(".", dupes))
+            local success, reason = os.remove(fullpath)
+            if not success then
+                print(string.format("Failed to remove file (%s) reason (%s)", fullpath, reason))
+            end
+        else
+            hashes[ hash ] = true
+        end
+    end
+    print("\nDupes: ", dupes)
+end
+
+local function reindex_image_files(path)
+    stdout.r("\rReindexing...")
+    local files = get_files(path)
+    local num_files = #files
+    local num_chars = string.len(tostring(num_files))
+    if num_chars < 2 then
+        num_chars = 2
+    end
+    -- Re-index the file name to start at '1'
+    for i, old_name in ipairs(files) do
+        local index = string.find(old_name, '-')
+        local mod_name = string.sub(old_name, 0, index)
+        local new_name = string.format("m-%s%0" .. num_chars .. "d.png", mod_name, i) -- 'm-' ensures existing file is not over-written.
+        os.rename(path..old_name, path..new_name)
+    end
+    -- Remove the 'm-' part from the filename.
+    files = get_files(path)
+    for _, old_name in ipairs(files) do
+        local new_name = string.sub(old_name, 3)
+        os.rename(path..old_name, path..new_name)
+    end
+    stdout.r("\rReindexing...done\n")
+end
+
+local path = arg[1]
+if not path then
+    print("'path' required")
+    os.exit(1)
+end
+
+--local index = string.find(target, "/[^/]*$")
+--local path = string.sub(target, 0, index)
+remove_dupe_images(path)
+reindex_image_files(path)
+
+os.exit(0)

@@ -9,7 +9,8 @@
   $ lua cut.lua  ~/path/to/source.png ~/path/to/output 256 256 4 1
 
   @copyright 2015 Upstart Illustration LLC. All rights reserved.
---]]
+
+  ]]
 
 function set_path()
     local path = arg[0]
@@ -26,7 +27,7 @@ print("cut.lua v1.0a, Feb 27th 2015. Copyright (C) 2015 Upstart Illustration LLC
 print("Current time:", os.date("%c", os.time()))
 print("")
 
-local function main(source, target, size, grid, offset)
+local function cut_image(source, target, size, grid, offset)
     local total = 0
     local num_tiles = grid.rows * grid.columns
     if num_tiles < 2 then
@@ -46,8 +47,7 @@ local function main(source, target, size, grid, offset)
         end
     end
 
-    print("done\n")
-    print("Total tiles:", total)
+    print("\n\nTotal tiles:", total)
 end
 
 --[[ Command Line ]]--
@@ -104,6 +104,6 @@ local offset = {
   , height = 0
 }
 
-main(source, target, size, grid, offset)
+cut_image(source, target, size, grid, offset)
 
 os.exit(0)

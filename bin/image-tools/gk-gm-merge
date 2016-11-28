@@ -3,7 +3,8 @@
   Merges multiple images into one image.
 
   @copyright 2015 Upstart Illustration LLC. All rights reserved.
---]]
+
+  ]]
 
 function set_path()
     local path = arg[0]
