@@ -134,6 +134,11 @@ function string.split(str, pat)
     return t
 end
 
+function string.contains(str, pattern)
+    local idx, len = string.find(str, pattern)
+    return idx ~= nil
+end
+
 --
 -- Determine if a value is contained within a table.
 -- 

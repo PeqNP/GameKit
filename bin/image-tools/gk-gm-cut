@@ -28,13 +28,18 @@ print("")
 
 local function main(source, target, size, grid, offset)
     local total = 0
+    local num_tiles = grid.rows * grid.columns
+    if num_tiles < 2 then
+        num_tiles = 2
+    end
+    local num_chars = string.len(tostring(num_tiles))
 
     for row=1, grid.rows do
         for col=1, grid.columns do
             total = total + 1
             offset.height = (row-1) * size.height
             offset.width = (col-1) * size.width
-            local cmd = string.format("convert '%s' -crop %sx%s+%s+%s +repage '%s-%02d.png'", source, size.width, size.height, offset.width, offset.height, target, total)
+            local cmd = string.format("convert '%s' -crop %sx%s+%s+%s +repage '%s-%0" .. num_chars .. "d.png'", source, size.width, size.height, offset.width, offset.height, target, total)
             --print("Command:", cmd)
             os.execute(cmd)
             stdout.r("\r" .. string.rep(".", total))
