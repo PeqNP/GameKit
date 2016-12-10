@@ -41,7 +41,7 @@ local function merge_images(source, target, size)
     end
 
     print(string.format("Creating canvas w/ grid size %dx%d", cols, rows))
-    os.execute(string.format("convert -size %dx%d xc:green %s", rows*size.height, cols*size.width, target))
+    os.execute(string.format("convert -size %dx%d xc:none %s", rows*size.height, cols*size.width, target))
 
     for i, file in ipairs(files) do
         local path = source..file

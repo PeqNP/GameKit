@@ -279,10 +279,9 @@ end
 
 --[[ Reverse order of ipairs
 
-@param table to reverse values for
-@return Reversed table
-
-]]--
+  @param table to reverse values for
+  @return Reversed table
+  ]]
 function ripairs(t)
   local function ripairs_it(t, i)
     i = i - 1
@@ -296,3 +295,35 @@ end
 function get(value, default)
     return value or default
 end
+
+--[[
+  Returns array of numbers given 'format'.
+
+  Example:
+  -- Reads three number values where the first 4 bytes are a number, second is
+  -- 2 bytes long and the third 1 byte.
+  local nums = read_format(true, '421', binaryData) 
+
+  @param format: The number of bytes, within 'str', which should be read in at a time for a single value.
+  @param data: Binary data to convert to numbers.
+  @param little_endian: `true` when bytes should be read little-endian
+  ]]
+function read_bindata(format, binary, little_endian)
+    local idx = 0
+    local res = {}
+    for i=1, #format do
+        local size = tonumber(format:sub(i,i))
+        local val = binary:sub(idx+1, idx+size)
+        local value = 0
+        idx = idx + size
+        if little_endian then
+            val = string.reverse(val)
+        end
+        for j=1, size do
+            value = value * 256 + val:byte(j)
+        end
+        res[i] = value -- TODO: Use table.insert
+    end
+    return res
+end
+
