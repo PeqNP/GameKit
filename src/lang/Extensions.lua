@@ -277,6 +277,26 @@ function table.join(tbl, delimiter)
     return s
 end
 
+--[[
+  Return a subset of the table.
+
+  Example:
+  dataset = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+  print(unpack(subrange(dataset, 3, 5))) -- prints: 3, 4, 5
+
+  @param tbl: The subject table.
+  @param first: Beginning position of the sub.
+  @param last: Ending position of the sub.
+  ]]
+function table.sub(tbl, first, last)
+    -- TODO: last can not be greater than first
+    local sub = {}
+    for i=first, last do
+        sub[#sub + 1] = tbl[i]
+    end
+    return sub
+end
+
 --[[ Reverse order of ipairs
 
   @param table to reverse values for
@@ -296,7 +316,7 @@ function get(value, default)
     return value or default
 end
 
---[[
+--[[ NOT TESTED
   Returns array of numbers given 'format'.
 
   Example:

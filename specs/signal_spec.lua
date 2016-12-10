@@ -170,5 +170,12 @@ describe("Signal", function()
             assert.falsy(table.equals(t1, t2))
         end)
     end)
+
+    describe("table.sub", function()
+        it("should return spliced table", function()
+            local t1 = table.sub({1,2,3,4,5,6,7,8,9}, 3, 7)
+            assert.truthy(table.equals(t1, {3,4,5,6,7}))
+        end)
+    end)
 end)
 
