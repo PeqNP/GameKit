@@ -139,6 +139,17 @@ function string.contains(str, pattern)
     return idx ~= nil
 end
 
+--[[
+  Trims whitespace from both sides of string.
+
+  @param string str: The string to trim.
+  @returns string: A trimmed string.
+  ]]
+function string.trim(str)
+ 	local from = str:match"^%s*()"
+ 	return from > #str and "" or str:match(".*%S", from)
+end
+
 --
 -- Determine if a value is contained within a table.
 -- 
