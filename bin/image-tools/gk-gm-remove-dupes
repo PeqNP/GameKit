@@ -61,16 +61,17 @@ local function reindex_image_files(path, prefix)
     if num_chars < 2 then
         num_chars = 2
     end
+    local new_names = {}
     -- Re-index the file name to start at '1'
     for i, old_name in ipairs(files) do
-        local index = string.find(old_name, '-')
+        local index = string.find(old_name, "-[^-]*$") -- last '-' in string
         local mod_name = string.sub(old_name, 0, index)
         local new_name = string.format("m-%s%0" .. num_chars .. "d.png", mod_name, i) -- 'm-' ensures existing file is not over-written.
         os.rename(path..old_name, path..new_name)
+        table.insert(new_names, new_name)
     end
     -- Remove the 'm-' part from the filename.
-    files = util.get_files(path)
-    for _, old_name in ipairs(files) do
+    for _, old_name in ipairs(new_names) do
         local new_name = string.sub(old_name, 3)
         os.rename(path..old_name, path..new_name)
     end
@@ -89,8 +90,6 @@ if not prefix then
     os.exit(1)
 end
 
---local index = string.find(target, "/[^/]*$")
---local path = string.sub(target, 0, index)
 remove_dupe_images(path, prefix)
 reindex_image_files(path, prefix)
 
