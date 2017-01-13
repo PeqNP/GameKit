@@ -134,6 +134,22 @@ function string.split(str, pat)
     return t
 end
 
+--[[ Not tested.
+  ]]
+function string.startswith(str, prefix)
+    assert(str, "string.startswith: 'string' must be non-nil")
+    assert(suffix, "string.startswith: 'prefix' must be non-nil")
+    return string.sub(str, 1, string.len(prefix)) == prefix
+end
+
+--[[ Not tested.
+  ]]
+function string.endswith(str, suffix)
+    assert(str, "string.endswith: 'string' must be non-nil")
+    assert(suffix, "string.endswith: 'suffix' must be non-nil")
+   return suffix == "" or string.sub(str, -string.len(suffix)) == suffix
+end
+
 function string.contains(str, pattern)
     local idx, len = string.find(str, pattern)
     return idx ~= nil

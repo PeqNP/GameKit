@@ -1,6 +1,14 @@
 
 local util = {}
 
+function string.startswith(str, prefix)
+   return string.sub(str, 1, string.len(prefix)) == prefix
+end
+
+function string.endswith(str, suffix)
+   return suffix == "" or string.sub(str, -string.len(suffix)) == suffix
+end
+
 --[[
   Returns the number of characters which represent the number 'N'.
 
@@ -22,11 +30,13 @@ end
   Returns a list of files within 'directory'.
 
   ]]
-function util.get_files(directory)
+function util.get_files(directory, prefix)
     local files = {}
     local pfile = io.popen('ls -a "'..directory..'"')
     for filename in pfile:lines() do
-        if filename ~= "." and filename ~= ".." then
+        if filename ~= "." and filename ~= ".." and not prefix then
+            table.insert(files, filename)
+        elseif prefix and string.startswith(filename, prefix) then
             table.insert(files, filename)
         end
     end
