@@ -182,6 +182,20 @@ function table.contains(tbl, val)
     return false
 end
 
+--[[
+
+  @returns `true` when table has `key`. `false`, otherwise.
+  ]]
+function table.haskey(tbl, key)
+    if not tbl then return false end
+    for k, v in ipairs(tbl) do
+        if key == k then
+            return true
+        end
+    end
+    return false
+end
+
 function table.get(table, key, default)
     local val = table[key]
     if val == nil then

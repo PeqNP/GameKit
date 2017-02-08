@@ -1,5 +1,6 @@
-require "lang.Signal"
-require "specs.Cocos2d-x"
+require("lang.Signal")
+require("specs.Cocos2d-x")
+require("specs.busted")
 
 -- @tood All of the signal_spec class tests should be in this test.
 
@@ -237,16 +238,16 @@ describe("instantiating a class directly after require", function()
     end)
 end)
 
---[[
-describe("Subclassing a module that does not exist", function()
+xdescribe("Subclassing a module that does not exist", function()
     local MyClass
 
     before_each(function()
         MyClass = Class("specs.NotAClass") 
     end)
 
+    -- it: should have crashed the app.
+
     it("should NOT have created a class", function()
         assert.falsy(MyClass)
     end)
 end)
---]]

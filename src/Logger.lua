@@ -12,6 +12,7 @@ LogLevel = enum(0
   , 'Warning'
   , 'Error'
   , 'Severe'
+  , 'Off'
 )
 
 -- By default, print to stdout using the built-in Lua 'print' method.
@@ -63,6 +64,7 @@ function Logger.new(self)
 
     function self.s(message, ...)
         if not message then self.noMessage() return end
+        if level > LogLevel.Severe then return end
         Logger.pipe(string.format("S: " .. message, ...))
     end
 
