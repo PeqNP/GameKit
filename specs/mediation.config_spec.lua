@@ -25,8 +25,7 @@ describe("MediationConfig", function()
     local subject
 
     describe("fromJson", function()
-        local file = LuaFile()
-        local blob = file.read("specs/mediation.json")
+        local blob = LuaFile.read("specs/mediation.json")
         assert.truthy(blob)
         subject = MediationConfig.fromJson(blob)
     end)

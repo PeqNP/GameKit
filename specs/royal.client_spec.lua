@@ -10,7 +10,6 @@ require "HTTPResponseType"
 Log.setLevel(LogLevel.Severe)
 
 local HTTP = require("shim.HTTP")
-local LuaFile = require("LuaFile")
 local Promise = require("Promise")
 local AdConfig = require("royal.AdConfig")
 local AdManifest = require("royal.AdManifest")
@@ -31,7 +30,7 @@ describe("Client", function()
 
     before_each(function()
         http = HTTP()
-        config = AdConfig(LuaFile(), "/path/")
+        config = AdConfig("/path/")
         url = "http://www.example.com:80/ad/com.example.game/"
 
         subject = Client(http, config, url)

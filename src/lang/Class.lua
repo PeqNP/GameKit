@@ -88,6 +88,10 @@ function Class(extends)
                 return true
             end
         end
+        -- Subclasses conform to the protocol if their parent conforms to the protocol.
+        if extends then
+            return extends.conformsTo(protocol)
+        end
         return false
     end
 

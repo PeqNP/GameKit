@@ -125,6 +125,49 @@ describe("Protocol", function()
         end)
     end)
 
+    describe("implementing TestProtocol as a subclass", function()
+        local instance
+        local MyClass
+        local MySubclass
+
+        before_each(function()
+            MyClass = Class()
+            MyClass.implements(TestProtocol, DummyProtocol)
+            MySubclass = Class(MyClass)
+
+            function MyClass.new(self)
+                function self.testMethod()
+                end
+
+                function self.dummyMethod()
+                end
+            end
+            function MySubclass.new(self)
+            end
+
+            instance = MySubclass()
+        end)
+
+        it("should have two protocol", function()
+            local protocols = MyClass.getProtocols()
+            assert.equal(2, #protocols)
+            assert.equal(TestProtocol, protocols[1])
+            assert.equal(DummyProtocol, protocols[2])
+        end)
+
+        it("should conform to the TestProtocol", function()
+            assert.truthy(instance.conformsTo(TestProtocol))
+        end)
+
+        it("should conform to the DummyProtocol", function()
+            assert.truthy(instance.conformsTo(DummyProtocol))
+        end)
+
+        it("should not conform to a protocol it does not implement", function()
+            assert.falsy(instance.conformsTo({}))
+        end)
+    end)
+
     --[[
     describe("test failed protocol", function()
         local MyClass

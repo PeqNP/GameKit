@@ -4,7 +4,7 @@
    @copyright (c) 2016 Upstart Illustration LLC. All rights reserved.
   ]]
 
-local LuaFile = Class()
+local LuaFile = {}
 
 function LuaFile.read(path, mode)
     if not mode then

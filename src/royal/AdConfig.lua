@@ -1,20 +1,22 @@
 --
 -- Provides configuration for Ads.
 --
+-- FIXME: _file should simply use LuaFile.
+--
 -- @copyright (c) 2015 Upstart Illustration LLC. All rights reserved.
 --
+
+local LuaFile = require("LuaFile")
 
 local AdConfig = Class()
 
 function AdConfig.new(self)
-    local file
     local basepath
     local appId
     local appToken
     local imageVariant = "sd"
 
-    function self.init(_file, _basepath)
-        file = _file
+    function self.init(_basepath)
         basepath = _basepath
     end
 
@@ -60,11 +62,11 @@ function AdConfig.new(self)
     end
 
     function self.write(filename, contents, mode)
-        file.write(self.getPath(filename), contents, mode)
+        LuaFile.write(self.getPath(filename), contents, mode)
     end
 
     function self.read(filename, mode)
-        return file.read(self.getPath(filename), mode)
+        return LuaFile.read(self.getPath(filename), mode)
     end
 end
 

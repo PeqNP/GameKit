@@ -7,11 +7,9 @@ local AdConfig = require("royal.AdConfig")
 
 describe("AdConfig", function()
     local subject
-    local file
 
     before_each(function()
-        file = LuaFile()
-        subject = AdConfig(file, "/path/")
+        subject = AdConfig("/path/")
     end)
 
     it("should return the base path", function()

@@ -13,7 +13,6 @@ local BridgeResponse = require("bridge.BridgeResponse")
 local IAP = require("iap.IAP")
 local SocialManager = require("social.Manager")
 local RoyalClient = require("royal.Client")
-local LuaFile = require("LuaFile")
 local HTTP = require("shim.HTTP")
 local AdConfig = require("royal.AdConfig")
 local AdManifest = require("royal.AdManifest")
@@ -67,7 +66,7 @@ describe("FeatureFactory", function()
         local manifest
 
         before_each(function()
-            local config = AdConfig(LuaFile(), "/writable/path")
+            local config = AdConfig("/writable/path")
             manifest = AdManifest()
 
             stub(config, "read", "{\"key\": 1}")
