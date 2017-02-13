@@ -38,7 +38,7 @@ describe("ServiceLocator", function()
         subject = ServiceLocator()
     end)
 
-    context("registering a dependency", function()
+    context("registering a container", function()
         local container
 
         before_each(function()
@@ -65,6 +65,21 @@ describe("ServiceLocator", function()
 
         context("when registering the same dependencies", function()
             -- it: should crash the app if dependency is already registered.
+        end)
+    end)
+
+    context("registering a dependency", function()
+        local my
+
+        before_each(function()
+            my = MyClass()
+            subject.registerDependency("my", my)
+        end)
+
+        it("should return dependency", function()
+            local inst = subject.getDependency("my")
+            assert.truthy(inst.kindOf(MyClass))
+            assert.equal(inst, my)
         end)
     end)
 end)
