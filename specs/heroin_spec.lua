@@ -38,6 +38,10 @@ describe("ServiceLocator", function()
         subject = ServiceLocator()
     end)
 
+    it("should have set 'inject' to 'getDependency'", function()
+        assert.equal(subject.inject, subject.getDependency)
+    end)
+
     context("registering a container", function()
         local container
 
@@ -81,15 +85,5 @@ describe("ServiceLocator", function()
             assert.truthy(inst.kindOf(MyClass))
             assert.equal(inst, my)
         end)
-    end)
-end)
-
-describe("Heroin", function()
-    it("should have created a global singleton", function()
-        assert.truthy(ServiceLocator.singleton)
-    end)
-
-    it("should have created 'inject' method", function()
-        assert.equal(type(ServiceLocator.inject), "function")
     end)
 end)

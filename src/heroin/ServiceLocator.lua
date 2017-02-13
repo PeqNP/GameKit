@@ -61,10 +61,8 @@ function ServiceLocator.new(self)
             assert(false, string.format("Could not find dependency for type (%s)", T))
         end
     end
+
+    self.inject = self.getDependency
 end
-
-Singleton(ServiceLocator)
-
-ServiceLocator.inject = ServiceLocator.singleton.getDependency
 
 return ServiceLocator
