@@ -33,10 +33,10 @@ function ServiceLocator.new(self)
         end
     end
 
-    function self.registerDependency(name, dependency)
+    function self.registerDependency(name, dependency, overwrite)
         assert(name and type(name) == "string", "'name' must be a non-nil string value.")
         assert(dependency and type(dependency) == "table", "'dependency' must be a non-nil class value.")
-        if dependencies[ name ] then
+        if dependencies[ name ] and not overwrite then
             assert(false, string.format("Dependency for var (%s) has already been registered", name))
         end
         dependencies[ name ] = dependency
