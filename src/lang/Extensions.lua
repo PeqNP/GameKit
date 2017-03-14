@@ -388,3 +388,11 @@ function read_bindata(format, binary, little_endian)
     return res
 end
 
+--[[
+  Show all global variables.
+
+  ]]
+function show_all_globals()
+	print("Globals:")
+    for n in pairs(_G) do print("\t" .. n) end
+end
