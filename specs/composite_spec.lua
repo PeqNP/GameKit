@@ -87,6 +87,20 @@ describe("Composite", function()
             assert.truthy(Subclass.hasComposite(ThatBehavior))
         end)
     end)
+
+    xcontext("when a class doesn't implement a Composite's Protocol", function()
+        before_each(function()
+            local NothingBurger = Class()
+            NothingBurger.combine(Behavior)
+            function NothingBurger.new(self) end
+
+            subject = NothingBurger()
+        end)
+
+        it("should not create an instance of NothingBurger", function()
+            assert.falsy(subject)
+        end)
+    end)
 end)
 
 -- it: should fail to create the class if it does not conform to a Composite's protocol.

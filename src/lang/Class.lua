@@ -177,10 +177,10 @@ function Class(extends)
     setmetatable(class, {
         __call = function (cls, ...)
             if not cls then
-                assert(false, string.format("cls (%s) is not a class", className))
+                Signal.fail(string.format("cls (%s) is not a class", className))
             end
             if type(cls.new) ~= "function" then
-                assert(false, string.format("function %s.new() must be implemented", className))
+                Signal.fail(string.format("function %s.new() must be implemented", className))
             end
 
             local self = {}
@@ -206,7 +206,7 @@ end
 function Singleton(class, ...)
     class = get_definition(class, "class")
     if class.singleton then
-        assert(false, string.format("Can not redefine the singleton instance of class (%s)", class.__tostring()))
+        Signal.fail(string.format("Can not redefine the singleton instance of class (%s)", class.__tostring()))
     end
     class.singleton = class(...)
 end

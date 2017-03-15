@@ -33,7 +33,7 @@ function Protocol(...)
         if #methods == 0 then return end
         for _, method in ipairs(methods) do
             if method.isRequired() and type(instance[method.getName()]) ~= "function" then
-                assert(false, string.format("Class instance (%s) must implement protocol method (%s). %s", instance.getClassName(), method.getName(), instance.getClass().__tostring()))
+                Signal.fail(string.format("Class instance (%s) must implement protocol method (%s). %s", instance.getClassName(), method.getName(), instance.getClass().__tostring()))
             end
         end
     end

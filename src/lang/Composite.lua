@@ -19,12 +19,23 @@
 function Composite(protocol)
     local composite = {}
 
+    local info = debug.getinfo(2, "Sl")
+    local name = string.split(info.source, "/") -- remove everything before path
+    -- @fixme This doesn't work with Lua 5.1. I'm not sure if it's because of
+    -- the escape character used or what.
+    name = string.split(name[#name], "%.") -- remove '.lua[c|o]' extension
+    name = name[1]
+
+    function composite._getName()
+        return name
+    end
+
     function composite.getProtocol()
         return protocol
     end
 
     function composite.combine(self, ...)
-        assert(false, string.format("A Composite must have a function used to combine itself with a subject class."))
+        Signal.fail(string.format("Composite (%s) must have a function used to combine itself with a subject class.", name))
     end 
 
     return composite
