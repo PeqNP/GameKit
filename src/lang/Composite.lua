@@ -1,6 +1,9 @@
 --[[
   Provides `Composite` for `Class`es.
 
+  When the `combine` method is called, it is guaranteed that the subject will be
+  initialized (i.e. the subject's `init` method will be called).
+
   There are two possible ways to provide dependencies to a composite:
 
   1. Provide dependencies at subject's init time.
