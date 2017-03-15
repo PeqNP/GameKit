@@ -69,6 +69,29 @@ function Class(extends)
         return false
     end
 
+    -- Composites --
+    local composites = {}
+
+    function class.combine(...)
+        local args = {...}
+        for _, composite in ipairs(args) do
+            table.insert(composites, composite)
+        end
+    end
+
+    function class.hasComposite(c)
+        for _, composite in ipairs(composites) do
+            if c == composite then
+                return true
+            end
+        end
+        -- Subclasses take on the behavior of composites on their base class.
+        if extends then
+            return extends.hasComposite(c)
+        end
+        return false
+    end
+
     -- Protocol --
     local protocols = {}
 
@@ -135,12 +158,12 @@ function Class(extends)
             return className
         end
 
-        function self.conformsTo(protocol)
-            return class.conformsTo(protocol)
-        end
+        self.conformsTo = class.conformsTo
+        self.kindOf = class.kindOf
+        self.hasComposite = class.hasComposite
 
-        function self.kindOf(c)
-            return class.kindOf(c)
+        for _, composite in ipairs(composites) do
+            composite.combine(self)
         end
 
         if not validated then

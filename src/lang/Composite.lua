@@ -1,20 +1,31 @@
 --[[
-  Provides composition of classes.
+  Provides `Composite` for `Class`es.
+
+  There are two possible ways to provide dependencies to a composite:
+
+  1. Provide dependencies at subject's init time.
+  2. The composite may define a protocol which the subject conforms to. Similar
+     to a delegate model, this ensures that the composite can ask the subject
+     questions about its current state or resources required by the composite to
+     do its work.
+
+  Both of these suggestions ensure:
+  - The composite is decoupled, which allows for reusability and robustness.
+  - The composite can be tested in isolation.
 
   @copyright (c) 2017 Upstart Illustration LLC. All rights reserved.
   ]]
 
-function Composite()
-    return {}
-end
+function Composite(protocol)
+    local composite = {}
 
---[[
-  Add composite functionality of one class on to another.
+    function composite.getProtocol()
+        return protocol
+    end
 
-  @param The class to add on to the `instance`.
-  @param The instance of a class to add functionality to.
-  ]]
-function Compose(composite, instance, ...)
-    local params = {...}
-    composite.compose(instance, unpack(params))
+    function composite.combine(self, ...)
+        assert(false, string.format("A Composite must have a function used to combine itself with a subject class."))
+    end 
+
+    return composite
 end

@@ -2,7 +2,7 @@ require("lang.Signal")
 require("specs.Cocos2d-x")
 require("specs.busted")
 
--- @tood All of the signal_spec class tests should be in this test.
+-- TODO: All of the signal_spec class tests should be in this test.
 
 describe("Class", function()
     it("should create two different classes that do not conflict", function()
