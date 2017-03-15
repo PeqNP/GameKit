@@ -4,6 +4,10 @@
   When the `combine` method is called, it is guaranteed that the subject will be
   initialized (i.e. the subject's `init` method will be called).
 
+  This also means that the subject can not call _any_ method associated to the
+  `Composite` within its respective `init` method as the methods have not yet
+  been applied.
+
   There are two possible ways to provide dependencies to a composite:
 
   1. Provide dependencies at subject's init time.
