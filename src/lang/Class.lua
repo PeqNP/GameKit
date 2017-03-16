@@ -122,8 +122,45 @@ function Class(extends)
         return protocols
     end
 
+    --[[
+      Combines all Composites methods on top of the instance. Over-writes
+      any vars, methods, etc. which the composite may over-write in the
+      process of combining.
+      
+      This effectively ensures that the methods in the subject class take
+      precedence over the composites.
+
+      ]]
+    local function combine(instance)
+        if #composites < 1 then return end
+
+        local properties = {}
+        for name, property in pairs(instance) do
+            properties[ name ] = property
+        end
+
+        for _, composite in ipairs(composites) do
+            composite.combine(instance)
+        end
+
+        -- Over-write any properties (vars | method | etc.) which may have been
+        -- over-written by the Composite.
+        for name, property in pairs(properties) do
+            instance[ name ] = property
+        end
+    end
+
     local validated = false
     local function validate(instance)
+        -- Composite protocol
+        for _, composite in ipairs(composites) do
+            local composite = composite.getProtocol()
+            if composite then
+                composite.validate(instance)
+            end
+        end
+
+        -- Protocols
         if #protocols == 0 then
             validated = true
             return
@@ -162,9 +199,7 @@ function Class(extends)
         self.kindOf = class.kindOf
         self.hasComposite = class.hasComposite
 
-        for _, composite in ipairs(composites) do
-            composite.combine(self)
-        end
+        combine(self)
 
         if not validated then
             validate(self)

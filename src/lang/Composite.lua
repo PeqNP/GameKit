@@ -8,17 +8,18 @@
   `Composite` within its respective `init` method as the methods have not yet
   been applied.
 
-  There are two possible ways to provide dependencies to a composite:
+  Methods in the subject class will always override the methods in the `Composite`.
 
-  1. Provide dependencies at subject's init time.
-  2. The composite may define a protocol which the subject conforms to. Similar
-     to a delegate model, this ensures that the composite can ask the subject
-     questions about its current state or resources required by the composite to
-     do its work.
+  ## Providing Dependencies
 
-  Both of these suggestions ensure:
-  - The composite is decoupled, which allows for reusability and robustness.
-  - The composite can be tested in isolation.
+  The composite may define a protocol which the subject conforms to. Similar
+  to a delegate model, this ensures that the composite can ask the subject
+  questions about its current state or resources required by the composite to
+  do its work.
+
+  This ensures:
+  - The composite is decoupled (can be used by any other class with little effort)
+  - The composite can be tested in isolation
 
   @copyright (c) 2017 Upstart Illustration LLC. All rights reserved.
   ]]

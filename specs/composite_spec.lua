@@ -88,6 +88,28 @@ describe("Composite", function()
         end)
     end)
 
+    context("when subject and Composite have the same method", function()
+        before_each(function()
+            local Override = Class()
+            Override.combine(Behavior)
+            function Override.new(self)
+                function self.getNumber()
+                    return 1
+                end
+                function self.numberPlusOne()
+                    return -1
+                end
+            end
+
+            subject = Override()
+        end)
+
+        it("should not have overriden the class's numberPlusOne method", function()
+            assert.equals(1, subject.getNumber())
+            assert.equals(-1, subject.numberPlusOne())
+        end)
+    end)
+
     xcontext("when a class doesn't implement a Composite's Protocol", function()
         before_each(function()
             local NothingBurger = Class()
