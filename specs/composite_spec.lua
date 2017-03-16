@@ -110,6 +110,59 @@ describe("Composite", function()
         end)
     end)
 
+    context("when initializing a Composite", function()
+        local subject2
+
+        before_each(function()
+            local NumberProtocol = Protocol(Method("getNumber"))
+            local Initialize = Composite(NumberProtocol)
+            function Initialize.combine(self)
+                local one = 1
+                local value
+                function self.numberPlusOne()
+                    return one + value
+                end
+                return function()
+                    value = self.getNumber()
+                end
+            end
+
+            local MyClass = Class()
+            MyClass.combine(Initialize)
+            function MyClass.new(self)
+                function self.getNumber()
+                    return 77
+                end
+            end
+
+            local Subclass = Class(MyClass)
+            Subclass.combine(Initialize)
+            function Subclass.new(self)
+                function self.getNumber()
+                    return 79
+                end
+            end
+
+            subject = MyClass()
+            subject2 = Subclass()
+        end)
+
+        it("should return the correct number", function()
+            assert.equals(77, subject.getNumber())
+            assert.equals(78, subject.numberPlusOne())
+        end)
+
+        it("should return the correct number", function()
+            assert.equals(79, subject2.getNumber())
+            assert.equals(80, subject2.numberPlusOne())
+        end)
+
+        it("should no longer have initializers", function()
+            assert.falsy(subject._initializers)
+            assert.falsy(subject2._initializers)
+        end)
+    end)
+
     xcontext("when a class doesn't implement a Composite's Protocol", function()
         before_each(function()
             local NothingBurger = Class()

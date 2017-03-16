@@ -1,12 +1,10 @@
 --[[
   Provides `Composite` for `Class`es.
 
-  When the `combine` method is called, it is guaranteed that the subject will be
-  initialized (i.e. the subject's `init` method will be called).
-
-  This also means that the subject can not call _any_ method associated to the
-  `Composite` within its respective `init` method as the methods have not yet
-  been applied.
+  When the `combine` method is called, the subject is not yet fully initialized.
+  Therefore, protocol methods can not be called immediately. A `Composite` can
+  return a callback which gets executed _after_ the subject is initialized. This
+  allows a composite to set state and variables immediately after initialization.
 
   Methods in the subject class will always override the methods in the `Composite`.
 

@@ -140,7 +140,10 @@ function Class(extends)
         end
 
         for _, composite in ipairs(composites) do
-            composite.combine(instance)
+            local initializer = composite.combine(instance)
+            if initializer then
+                table.insert(instance._initializers, initializer)
+            end
         end
 
         -- Over-write any properties (vars | method | etc.) which may have been
@@ -148,6 +151,13 @@ function Class(extends)
         for name, property in pairs(properties) do
             instance[ name ] = property
         end
+    end
+
+    local function executeInitializers(instance)
+        for _, fn in pairs(instance._initializers) do
+            fn()
+        end
+        instance._initializers = nil
     end
 
     local validated = false
@@ -198,14 +208,12 @@ function Class(extends)
         self.conformsTo = class.conformsTo
         self.kindOf = class.kindOf
         self.hasComposite = class.hasComposite
-
+        
         combine(self)
 
         if not validated then
             validate(self)
         end
-
-        return self
     end
 
     -- Factory --
@@ -219,11 +227,14 @@ function Class(extends)
             end
 
             local self = {}
+            self._initializers = {}
             class.alloc(self)
 
             if self.init then
                 self.init(...)
             end
+
+            executeInitializers(self)
 
             return self
         end,
