@@ -18,3 +18,21 @@ function mock_protocol(protocol)
     end
     return mock
 end
+
+--[[
+  Creates a nice fake.
+
+  When creating a fake, it does not contain methods created by Signal. This could be done
+  by exposing the `alloc` method, whereby the instance could be created as it normally would
+  by Signal, but intercepted before the `init` instance method is called.
+
+  ]]
+function nice_fake(class)
+    local fake = {}
+    local stub = {}
+    class.new(fake)
+    for method in pairs(fake) do
+        stub[ method ] = function() end
+    end 
+    return stub
+end
