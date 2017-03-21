@@ -15,6 +15,9 @@ if [ "$filename" != "" ]
 then
     testpath=$filename
 fi
+currentdir=`pwd`
+echo "$currentdir/specs/"
+echo "$currentdir/src/?.lua"
 
-export LUA_PATH="/usr/local/share/lua/5.2/?.lua;/usr/local/share/lua/5.2/?/init.lua;/usr/local/lib/lua/5.2/?.lua;/usr/local/lib/lua/5.2/?/init.lua;./?.lua;$HOME/git/GameKit/?.lua;$HOME/git/GameKit/specs/?.lua;$HOME/git/GameKit/src/?.lua"
+export LUA_PATH="/usr/local/share/lua/5.2/?.lua;/usr/local/share/lua/5.2/?/init.lua;/usr/local/lib/lua/5.2/?.lua;/usr/local/lib/lua/5.2/?/init.lua;./?.lua;$HOME/git/GameKit/?.lua;$HOME/git/GameKit/specs/?.lua;$HOME/git/GameKit/src/?.lua;$currentdir/specs/?.lua;$currentdir/src/?.lua"
 busted $testpath
