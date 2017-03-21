@@ -241,6 +241,15 @@ function table.equals(o1, o2, ignore_mt)
     return true
 end
 
+function table.index(t, v)
+    for idx, value in pairs(t) do
+        if value == v then
+            return idx
+        end
+    end
+    return false
+end
+
 integer = {}
 
 --[[ Check if an integer/float value is between two values.

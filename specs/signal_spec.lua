@@ -178,6 +178,22 @@ describe("Signal", function()
         end)
     end)
 
+    describe("table.index", function()
+        it("should remove the value from the table", function()
+            local t1 = {1, 2, "eric"}
+            assert.truthy(2, table.index(t1, 2))
+            assert.truthy(1, table.index(t1, 1))
+            assert.truthy(3, table.index(t1, "eric"))
+        end)
+
+        it("should return false", function()
+            local t1 = {1, 2, "eric"}
+            assert.falsy(table.index(t1, 4))
+            assert.falsy(table.index(t1, 3))
+            assert.falsy(table.index(t1, "val"))
+        end)
+    end)
+
     describe("string.split", function()
         it("should trim string", function()
             assert.equals(string.trim(''), '')
