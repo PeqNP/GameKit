@@ -347,6 +347,37 @@ function table.sub(tbl, first, last)
     return sub
 end
 
+-- ----------------------------------------
+-- Color operations
+
+color = {}
+
+--[[
+  Converts hex color value to its respective RGB components into respective
+  byte value ranges 0-255.
+
+  @param Int hex: Hex value to convert into respective RGB components.
+  @returns Int red, Int green, Int blue, Int alpha
+  ]]
+function color.rgb(hex)
+    return math.floor((hex % 2^24) / 2^16), math.floor((hex % 2^16) / 2^8), hex % 2^8, 255
+end
+
+--[[
+  Converts hex color value to its respective RGB components into respective
+  float values ranging from 0.0-1.0.
+
+  @param Int hex: Hex value to convert into respective RGB float components.
+  @returns Int red, Int green, Int blue, Int alpha
+  ]]
+function color.rgbf(hex)
+    local r, g, b, a = color.rgb(hex)
+    return r / 255, g / 255, b / 255, a / 255
+end
+
+-- ----------------------------------------
+-- Miscellaneous
+
 --[[ Reverse order of ipairs
 
   @param table to reverse values for
