@@ -47,7 +47,7 @@ function ServiceLocator.new(self)
         if T == "string" then
             local dep = dependencies[ dependency ]
             if not dep then
-                assert(false, string.format("The dependency for var (%s) has not been registered", key))
+                assert(false, string.format("The dependency for var (%s) has not been registered", dependency))
             end
             return dep
         elseif T == "table" then
